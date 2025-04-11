@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 const PriceComparison = () => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
@@ -59,6 +60,39 @@ const PriceComparison = () => {
     return Object.entries(totals).find(([_, value]) => value === lowestTotal)?.[0] || '';
   };
 
+  // Determine price rankings (lowest, middle, highest)
+  const getPriceRankings = () => {
+    const sortedStores = Object.entries(totals)
+      .sort(([_, priceA], [__, priceB]) => priceA - priceB);
+    
+    // Create a map of store to ranking
+    const rankings: Record<string, 'lowest' | 'medium' | 'highest'> = {};
+    
+    if (sortedStores.length === 0) return rankings;
+    
+    // Always mark the first as lowest
+    rankings[sortedStores[0][0]] = 'lowest';
+    
+    // For remaining stores
+    if (sortedStores.length > 1) {
+      // Last one is always highest
+      rankings[sortedStores[sortedStores.length - 1][0]] = 'highest';
+      
+      // Middle ones are medium
+      for (let i = 1; i < sortedStores.length - 1; i++) {
+        rankings[sortedStores[i][0]] = 'medium';
+      }
+      
+      // If only two stores, second one is highest
+      if (sortedStores.length === 2) {
+        rankings[sortedStores[1][0]] = 'highest';
+      }
+    }
+    
+    return rankings;
+  };
+
+  const priceRankings = getPriceRankings();
   const lowestTotalStore = findLowestTotal();
 
   const handleSelectProduct = (product: Product) => {
@@ -74,6 +108,38 @@ const PriceComparison = () => {
         title: "Product removed from comparison",
         description: `${product.name} removed from your comparison list`,
       });
+    }
+  };
+
+  // Get color class based on price ranking
+  const getRankingColorClass = (store: string) => {
+    if (!priceRankings[store] || selectedProducts.length <= 1) return '';
+    
+    switch (priceRankings[store]) {
+      case 'lowest':
+        return 'bg-app-green text-white';
+      case 'medium':
+        return 'bg-yellow-400';
+      case 'highest':
+        return 'bg-red-500 text-white';
+      default:
+        return '';
+    }
+  };
+
+  // Get indicator badge based on price ranking
+  const getRankingBadge = (store: string) => {
+    if (!priceRankings[store] || selectedProducts.length <= 1) return null;
+    
+    switch (priceRankings[store]) {
+      case 'lowest':
+        return <Badge className="ml-2 bg-app-green">Lowest</Badge>;
+      case 'medium':
+        return <Badge className="ml-2 bg-yellow-400">Medium</Badge>;
+      case 'highest':
+        return <Badge className="ml-2 bg-red-500">Highest</Badge>;
+      default:
+        return null;
     }
   };
   
@@ -202,58 +268,86 @@ const PriceComparison = () => {
           </h3>
           
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            <div className={`p-4 rounded-lg ${lowestTotalStore === 'tamimi' ? 'bg-app-lowlight border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className="text-sm font-medium text-gray-500">Tamimi</div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'tamimi' ? 'text-app-green' : ''}`}>
+            <div className={`p-4 rounded-lg ${getRankingColorClass('tamimi')} ${lowestTotalStore === 'tamimi' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
+              <div className={`text-sm font-medium ${priceRankings['tamimi'] === 'lowest' || priceRankings['tamimi'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
+                Tamimi
+                {getRankingBadge('tamimi')}
+              </div>
+              <div className={`text-xl font-bold ${lowestTotalStore === 'tamimi' ? 'text-app-green' : ''} ${priceRankings['tamimi'] === 'lowest' || priceRankings['tamimi'] === 'highest' ? 'text-white' : ''}`}>
                 {totals.tamimi.toFixed(2)}
               </div>
             </div>
             
-            <div className={`p-4 rounded-lg ${lowestTotalStore === 'panda' ? 'bg-app-lowlight border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className="text-sm font-medium text-gray-500">Panda</div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'panda' ? 'text-app-green' : ''}`}>
+            <div className={`p-4 rounded-lg ${getRankingColorClass('panda')} ${lowestTotalStore === 'panda' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
+              <div className={`text-sm font-medium ${priceRankings['panda'] === 'lowest' || priceRankings['panda'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
+                Panda
+                {getRankingBadge('panda')}
+              </div>
+              <div className={`text-xl font-bold ${lowestTotalStore === 'panda' ? 'text-app-green' : ''} ${priceRankings['panda'] === 'lowest' || priceRankings['panda'] === 'highest' ? 'text-white' : ''}`}>
                 {totals.panda.toFixed(2)}
               </div>
             </div>
             
-            <div className={`p-4 rounded-lg ${lowestTotalStore === 'danube' ? 'bg-app-lowlight border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className="text-sm font-medium text-gray-500">Danube</div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'danube' ? 'text-app-green' : ''}`}>
+            <div className={`p-4 rounded-lg ${getRankingColorClass('danube')} ${lowestTotalStore === 'danube' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
+              <div className={`text-sm font-medium ${priceRankings['danube'] === 'lowest' || priceRankings['danube'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
+                Danube
+                {getRankingBadge('danube')}
+              </div>
+              <div className={`text-xl font-bold ${lowestTotalStore === 'danube' ? 'text-app-green' : ''} ${priceRankings['danube'] === 'lowest' || priceRankings['danube'] === 'highest' ? 'text-white' : ''}`}>
                 {totals.danube.toFixed(2)}
               </div>
             </div>
             
-            <div className={`p-4 rounded-lg ${lowestTotalStore === 'carrefour' ? 'bg-app-lowlight border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className="text-sm font-medium text-gray-500">Carrefour</div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'carrefour' ? 'text-app-green' : ''}`}>
+            <div className={`p-4 rounded-lg ${getRankingColorClass('carrefour')} ${lowestTotalStore === 'carrefour' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
+              <div className={`text-sm font-medium ${priceRankings['carrefour'] === 'lowest' || priceRankings['carrefour'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
+                Carrefour
+                {getRankingBadge('carrefour')}
+              </div>
+              <div className={`text-xl font-bold ${lowestTotalStore === 'carrefour' ? 'text-app-green' : ''} ${priceRankings['carrefour'] === 'lowest' || priceRankings['carrefour'] === 'highest' ? 'text-white' : ''}`}>
                 {totals.carrefour.toFixed(2)}
               </div>
             </div>
             
-            <div className={`p-4 rounded-lg ${lowestTotalStore === 'othaim' ? 'bg-app-lowlight border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className="text-sm font-medium text-gray-500">Othaim</div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'othaim' ? 'text-app-green' : ''}`}>
+            <div className={`p-4 rounded-lg ${getRankingColorClass('othaim')} ${lowestTotalStore === 'othaim' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
+              <div className={`text-sm font-medium ${priceRankings['othaim'] === 'lowest' || priceRankings['othaim'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
+                Othaim
+                {getRankingBadge('othaim')}
+              </div>
+              <div className={`text-xl font-bold ${lowestTotalStore === 'othaim' ? 'text-app-green' : ''} ${priceRankings['othaim'] === 'lowest' || priceRankings['othaim'] === 'highest' ? 'text-white' : ''}`}>
                 {totals.othaim.toFixed(2)}
               </div>
             </div>
             
-            <div className={`p-4 rounded-lg ${lowestTotalStore === 'lulu' ? 'bg-app-lowlight border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className="text-sm font-medium text-gray-500">LuLu</div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'lulu' ? 'text-app-green' : ''}`}>
+            <div className={`p-4 rounded-lg ${getRankingColorClass('lulu')} ${lowestTotalStore === 'lulu' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
+              <div className={`text-sm font-medium ${priceRankings['lulu'] === 'lowest' || priceRankings['lulu'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
+                LuLu
+                {getRankingBadge('lulu')}
+              </div>
+              <div className={`text-xl font-bold ${lowestTotalStore === 'lulu' ? 'text-app-green' : ''} ${priceRankings['lulu'] === 'lowest' || priceRankings['lulu'] === 'highest' ? 'text-white' : ''}`}>
                 {totals.lulu.toFixed(2)}
               </div>
             </div>
           </div>
           
-          <div className="mt-4 text-center">
-            <Button 
-              variant="default" 
-              className="bg-app-green hover:bg-app-green-dark"
-              disabled={selectedProducts.length === 0}
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Shop at {lowestTotalStore.charAt(0).toUpperCase() + lowestTotalStore.slice(1)}
-            </Button>
+          <div className="mt-6 text-center">
+            {selectedProducts.length > 0 ? (
+              <div className="flex flex-col items-center">
+                <p className="text-gray-600 mb-2">
+                  Select multiple products above to compare prices across stores
+                </p>
+                <Button 
+                  variant="default" 
+                  className="bg-app-green hover:bg-app-green-dark"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Shop at {lowestTotalStore.charAt(0).toUpperCase() + lowestTotalStore.slice(1)}
+                </Button>
+              </div>
+            ) : (
+              <p className="text-gray-600">
+                Select products above to compare prices
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

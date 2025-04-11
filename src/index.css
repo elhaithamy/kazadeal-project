@@ -110,3 +110,15 @@
   @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg;
 }
 
+.price-lowest {
+  @apply bg-app-green text-white;
+}
+
+.price-medium {
+  @apply bg-yellow-400;
+}
+
+.price-highest {
+  @apply bg-red-500 text-white;
+}
+
