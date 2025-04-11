@@ -95,9 +95,18 @@
 }
 
 .best-price {
-  @apply relative rounded-full border-2 border-app-green text-app-green font-bold;
+  @apply relative text-app-green font-bold;
 }
 
 .comparison-row:nth-child(even) {
   @apply bg-gray-50;
 }
+
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.glass-container {
+  @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg;
+}
+
