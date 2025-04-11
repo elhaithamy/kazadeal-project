@@ -1,18 +1,16 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Header from '@/components/Header';
-import PriceComparison from '@/components/PriceComparison';
+import CategoryNav from '@/components/CategoryNav';
 import BottomNav from '@/components/BottomNav';
 
-const Index = () => {
-  const [view, setView] = useState<'price-comparison' | 'category-view'>('price-comparison');
-  
+const CategoryPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       
       <main className="flex-1 mb-16">
-        <PriceComparison />
+        <CategoryNav />
       </main>
       
       <BottomNav />
@@ -20,4 +18,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default CategoryPage;
