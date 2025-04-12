@@ -1,20 +1,25 @@
 
 import React, { useState, useEffect } from 'react';
-import { Filter, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem
+} from '@/components/ui/carousel';
 
 const categories = [
-  "All",
-  "Fruits & Vegetables",
-  "Meat & Poultry",
-  "Dairy & Eggs",
-  "Bakery",
-  "Beverages",
-  "Snacks",
-  "Household",
-  "Personal Care"
+  { name: "All", icon: "🛒" },
+  { name: "Fruits & Vegetables", icon: "🍅" },
+  { name: "Meat & Poultry", icon: "🍗" },
+  { name: "Dairy & Eggs", icon: "🥚" },
+  { name: "Bakery", icon: "🍞" },
+  { name: "Beverages", icon: "🥤" },
+  { name: "Snacks", icon: "🍫" },
+  { name: "Household", icon: "🧹" },
+  { name: "Personal Care", icon: "🧴" }
 ];
 
 interface CategoryFilterProps {
@@ -25,7 +30,6 @@ interface CategoryFilterProps {
 const CategoryFilter = ({ onSearch, onCategoryChange }: CategoryFilterProps) => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchValue, setSearchValue] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -50,7 +54,7 @@ const CategoryFilter = ({ onSearch, onCategoryChange }: CategoryFilterProps) => 
   
   return (
     <div className="mb-6">
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
           <Input 
@@ -71,35 +75,35 @@ const CategoryFilter = ({ onSearch, onCategoryChange }: CategoryFilterProps) => 
           <Search className="h-4 w-4 mr-1" />
           {!isMobile && "Search"}
         </Button>
-        <Button 
-          variant="outline" 
-          size="icon"
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex-shrink-0"
-        >
-          <Filter className="h-4 w-4" />
-        </Button>
       </div>
       
-      {showFilters && (
-        <div className="overflow-x-auto pb-2 mb-2">
-          <div className="flex space-x-2">
+      <div className="mb-6">
+        <Carousel
+          opts={{
+            align: "start",
+            loop: false,
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
             {categories.map((category) => (
-              <button
-                key={category}
-                className={`px-3 py-1.5 rounded-full whitespace-nowrap text-sm ${
-                  activeCategory === category 
-                    ? 'bg-app-green text-white' 
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                }`}
-                onClick={() => handleCategoryChange(category)}
-              >
-                {category}
-              </button>
+              <CarouselItem key={category.name} className="pl-2 md:pl-4 basis-1/3 md:basis-1/5 lg:basis-1/6">
+                <div 
+                  onClick={() => handleCategoryChange(category.name)}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer transition-all hover:scale-105 ${
+                    activeCategory === category.name 
+                      ? 'bg-app-green/10 border-2 border-app-green' 
+                      : 'bg-gray-50 dark:bg-gray-800 border-2 border-transparent'
+                  }`}
+                >
+                  <div className="text-3xl">{category.icon}</div>
+                  <span className="text-xs font-medium truncate">{category.name}</span>
+                </div>
+              </CarouselItem>
             ))}
-          </div>
-        </div>
-      )}
+          </CarouselContent>
+        </Carousel>
+      </div>
     </div>
   );
 };

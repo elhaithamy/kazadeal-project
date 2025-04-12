@@ -83,7 +83,7 @@ export const products: Product[] = [
     name: "Al Walima Sella Basmati Rice",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
-    category: "Food Items",
+    category: "Bakery",
     prices: {
       lulu: 89.5,
       othaim: 67,
