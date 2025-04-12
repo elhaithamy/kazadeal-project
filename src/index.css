@@ -99,7 +99,7 @@
 }
 
 .comparison-row:nth-child(even) {
-  @apply bg-gray-50;
+  @apply bg-gray-50 dark:bg-gray-800/50;
 }
 
 .hover-scale {
@@ -107,7 +107,7 @@
 }
 
 .glass-container {
-  @apply bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg;
+  @apply bg-white/80 dark:bg-black/50 backdrop-blur-sm border border-white/20 dark:border-white/10 rounded-xl shadow-lg;
 }
 
 .price-lowest {
@@ -122,3 +122,26 @@
   @apply bg-red-500 text-white;
 }
 
+/* Mobile optimization */
+@media (max-width: 640px) {
+  .container {
+    @apply px-3;
+  }
+  
+  button, .button {
+    @apply touch-manipulation;
+  }
+  
+  input, select {
+    @apply text-base; /* Prevents zoom on iOS */
+  }
+}
+
+/* Swipe gestures */
+.swipe-container {
+  @apply overflow-x-hidden;
+}
+
+.swipe-item {
+  @apply transition-transform duration-300;
+}

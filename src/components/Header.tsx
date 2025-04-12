@@ -15,7 +15,7 @@ const Header = () => {
           <div className="h-10 w-10 rounded-full flex items-center justify-center overflow-hidden">
             <img 
               src="/lovable-uploads/de7fd74f-0164-477e-b44b-45bd2df495f3.png" 
-              alt="Offer Spotter Logo" 
+              alt="KazaDeal Logo" 
               className="h-12 w-12 object-cover"
             />
           </div>
