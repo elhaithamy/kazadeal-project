@@ -1,11 +1,12 @@
 
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { ShoppingBasket, Plus, Check, ShoppingCart } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Table,
   TableBody,
@@ -16,9 +17,28 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-const PriceComparison = () => {
+interface PriceComparisonProps {
+  searchQuery?: string;
+  activeCategory?: string;
+}
+
+const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComparisonProps) => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  
+  // Filter products based on search query and active category
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const matchesSearch = searchQuery === '' || 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCategory = activeCategory === 'All' || 
+        (activeCategory.toLowerCase() === product.category?.toLowerCase());
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, activeCategory, products]);
 
   const calculateTotals = () => {
     const totals = {
@@ -32,8 +52,8 @@ const PriceComparison = () => {
 
     // If there are selected products, calculate totals only for them
     const productsToCalculate = selectedProducts.length > 0 ? 
-      products.filter(p => selectedProducts.includes(p.id)) : 
-      products;
+      filteredProducts.filter(p => selectedProducts.includes(p.id)) : 
+      filteredProducts;
 
     productsToCalculate.forEach(product => {
       totals.lulu += product.prices.lulu;
@@ -143,17 +163,184 @@ const PriceComparison = () => {
     }
   };
   
+  // Determine which columns to show based on screen size
+  const renderMobileTable = () => (
+    <div className="overflow-x-auto">
+      {filteredProducts.map((product) => {
+        const lowestPrice = findLowestPrice(product.prices);
+        const isSelected = selectedProducts.includes(product.id);
+        return (
+          <Card key={product.id} className={`mb-4 ${isSelected ? 'border-app-green border-2' : ''}`}>
+            <CardContent className="p-4">
+              <div className="flex items-center mb-3">
+                <div className="w-16 h-16 mr-3 flex-shrink-0">
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                </div>
+                <div>
+                  <div className="font-medium">{product.name}</div>
+                  <div className="text-sm text-gray-500">Count: {product.count}</div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">LuLu</div>
+                  <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.lulu}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">Panda</div>
+                  <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.panda}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">Othaim</div>
+                  <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.othaim}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="text-gray-500"
+                  onClick={() => {
+                    // Show more details logic
+                  }}
+                >
+                  View all prices
+                </Button>
+                <Button
+                  variant={isSelected ? "default" : "outline"}
+                  size="sm"
+                  className={isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}
+                  onClick={() => handleSelectProduct(product)}
+                >
+                  {isSelected ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
+                  {isSelected ? 'Selected' : 'Compare'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+
+  const renderDesktopTable = () => (
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-50">
+            <TableHead className="w-1/3">Product</TableHead>
+            <TableHead className="text-center">Tamimi</TableHead>
+            <TableHead className="text-center">Panda</TableHead>
+            <TableHead className="text-center">Danube</TableHead>
+            <TableHead className="text-center">Carrefour</TableHead>
+            <TableHead className="text-center">Othaim</TableHead>
+            <TableHead className="text-center">LuLu</TableHead>
+            <TableHead className="text-center">Compare</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredProducts.map((product) => {
+            const lowestPrice = findLowestPrice(product.prices);
+            const isSelected = selectedProducts.includes(product.id);
+            
+            return (
+              <TableRow key={product.id} className={`border-b hover:bg-gray-50 transition-colors ${isSelected ? 'bg-app-lowlight' : ''}`}>
+                <TableCell className="py-3">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 mr-3 flex-shrink-0">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-medium">{product.name}</div>
+                      <div className="text-sm text-gray-500">Count: {product.count}</div>
+                    </div>
+                  </div>
+                </TableCell>
+                
+                <TableCell className="text-center">
+                  <div className={`${product.prices.tamimi === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.tamimi}
+                  </div>
+                </TableCell>
+                
+                <TableCell className="text-center">
+                  <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.panda}
+                  </div>
+                </TableCell>
+                
+                <TableCell className="text-center">
+                  <div className={`${product.prices.danube === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.danube}
+                  </div>
+                </TableCell>
+                
+                <TableCell className="text-center">
+                  <div className={`${product.prices.carrefour === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.carrefour}
+                  </div>
+                </TableCell>
+                
+                <TableCell className="text-center">
+                  <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.othaim}
+                  </div>
+                </TableCell>
+                
+                <TableCell className="text-center">
+                  <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.lulu}
+                  </div>
+                </TableCell>
+                
+                <TableCell className="text-center">
+                  <Button
+                    variant={isSelected ? "default" : "outline"}
+                    size="sm"
+                    className={isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}
+                    onClick={() => handleSelectProduct(product)}
+                  >
+                    {isSelected ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
+                    {isSelected ? 'Selected' : 'Compare'}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+  
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto px-0 md:px-4 py-6">
       <Card className="mb-4 bg-white">
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">Price Comparison</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800">Price Comparison</h2>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">
                 {selectedProducts.length > 0 
                   ? `${selectedProducts.length} products selected` 
-                  : 'Showing all products'}
+                  : filteredProducts.length === products.length 
+                    ? 'Showing all products'
+                    : `Showing ${filteredProducts.length} products`}
               </span>
               {selectedProducts.length > 0 && (
                 <Button 
@@ -161,102 +348,14 @@ const PriceComparison = () => {
                   size="sm"
                   onClick={() => toggleProductSelection("clear")}
                 >
-                  Clear Selection
+                  Clear
                 </Button>
               )}
             </div>
           </div>
           
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-1/3">Product</TableHead>
-                  <TableHead className="text-center">Tamimi</TableHead>
-                  <TableHead className="text-center">Panda</TableHead>
-                  <TableHead className="text-center">Danube</TableHead>
-                  <TableHead className="text-center">Carrefour</TableHead>
-                  <TableHead className="text-center">Othaim</TableHead>
-                  <TableHead className="text-center">LuLu</TableHead>
-                  <TableHead className="text-center">Compare</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product) => {
-                  const lowestPrice = findLowestPrice(product.prices);
-                  const isSelected = selectedProducts.includes(product.id);
-                  
-                  return (
-                    <TableRow key={product.id} className={`border-b hover:bg-gray-50 transition-colors ${isSelected ? 'bg-app-lowlight' : ''}`}>
-                      <TableCell className="py-3">
-                        <div className="flex items-center">
-                          <div className="w-12 h-12 mr-3 flex-shrink-0">
-                            <img 
-                              src={product.image} 
-                              alt={product.name} 
-                              className="w-full h-full object-cover rounded-md"
-                            />
-                          </div>
-                          <div>
-                            <div className="font-medium">{product.name}</div>
-                            <div className="text-sm text-gray-500">Count: {product.count}</div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <div className={`${product.prices.tamimi === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                          {product.prices.tamimi}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                          {product.prices.panda}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <div className={`${product.prices.danube === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                          {product.prices.danube}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <div className={`${product.prices.carrefour === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                          {product.prices.carrefour}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                          {product.prices.othaim}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                          {product.prices.lulu}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <Button
-                          variant={isSelected ? "default" : "outline"}
-                          size="sm"
-                          className={isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}
-                          onClick={() => handleSelectProduct(product)}
-                        >
-                          {isSelected ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-                          {isSelected ? 'Selected' : 'Compare'}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+          {/* Responsive table display */}
+          {isMobile ? renderMobileTable() : renderDesktopTable()}
         </CardContent>
       </Card>
 

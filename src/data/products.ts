@@ -5,6 +5,7 @@ export interface Product {
   name: string;
   image: string;
   count: number;
+  category?: string;
   prices: {
     lulu: number;
     othaim: number;
@@ -22,6 +23,7 @@ export const products: Product[] = [
     name: "Goody Creamy Peanut Butter",
     image: "/lovable-uploads/8a017eaf-e3f6-4a8c-93f0-48b63f40c835.png",
     count: 1,
+    category: "Snacks",
     prices: {
       lulu: 10,
       othaim: 16,
@@ -36,6 +38,7 @@ export const products: Product[] = [
     name: "Almarai Premium Yogurt",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
+    category: "Dairy & Eggs",
     prices: {
       lulu: 22,
       othaim: 22,
@@ -50,6 +53,7 @@ export const products: Product[] = [
     name: "Pride Shredded Mozzarella",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
+    category: "Dairy & Eggs",
     prices: {
       lulu: 38,
       othaim: 30,
@@ -64,6 +68,7 @@ export const products: Product[] = [
     name: "Tomato",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
+    category: "Fruits & Vegetables",
     prices: {
       lulu: 10,
       othaim: 4.7,
@@ -78,6 +83,7 @@ export const products: Product[] = [
     name: "Al Walima Sella Basmati Rice",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
+    category: "Food Items",
     prices: {
       lulu: 89.5,
       othaim: 67,
@@ -92,6 +98,7 @@ export const products: Product[] = [
     name: "Nescafe Red Mug Instant",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
+    category: "Beverages",
     prices: {
       lulu: 34.1,
       othaim: 38,
@@ -106,6 +113,7 @@ export const products: Product[] = [
     name: "Nadec Long Life Full Milk",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
+    category: "Dairy & Eggs",
     prices: {
       lulu: 53,
       othaim: 51,
@@ -120,6 +128,7 @@ export const products: Product[] = [
     name: "Bananas",
     image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=100",
     count: 1,
+    category: "Fruits & Vegetables",
     prices: {
       lulu: 6,
       othaim: 5,

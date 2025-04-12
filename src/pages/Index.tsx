@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
 import BottomNav from '@/components/BottomNav';
@@ -13,6 +13,9 @@ import { Button } from '@/components/ui/button';
 import NearbyStores from '@/components/NearbyStores';
 
 const Index = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -37,7 +40,7 @@ const Index = () => {
         <main className="flex-1 mb-16 py-4">
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">KazaDeal</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">KazaDeal</h1>
               <div className="flex gap-2">
                 <Button variant="ghost" size="icon" onClick={handleShare}>
                   <Share2 className="h-5 w-5" />
@@ -50,14 +53,28 @@ const Index = () => {
               We bring the truth about deals. No bullshit.
             </p>
             
-            <CategoryFilter />
-            <UserAccountPanel />
-            <NotificationCenter />
-            
-            <PriceComparison />
-            
-            <div className="mt-8">
-              <NearbyStores />
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6">
+              <div className="order-2 md:order-1">
+                <div className="mb-4">
+                  <CategoryFilter 
+                    onSearch={setSearchQuery} 
+                    onCategoryChange={setActiveCategory} 
+                  />
+                </div>
+                
+                <PriceComparison 
+                  searchQuery={searchQuery} 
+                  activeCategory={activeCategory} 
+                />
+              </div>
+              
+              <div className="order-1 md:order-2">
+                <div className="md:sticky md:top-4 space-y-4">
+                  <UserAccountPanel />
+                  <NotificationCenter />
+                  <NearbyStores />
+                </div>
+              </div>
             </div>
           </div>
         </main>
