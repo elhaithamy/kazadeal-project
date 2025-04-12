@@ -1,5 +1,5 @@
 
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { ShoppingBasket, Plus, Check, ShoppingCart } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import NewArrivals from '@/components/NewArrivals';
 import {
   Table,
   TableBody,
@@ -16,16 +17,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface PriceComparisonProps {
   searchQuery?: string;
   activeCategory?: string;
 }
 
+const ITEMS_PER_PAGE = 15;
+
 const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComparisonProps) => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Filter products based on search query and active category
   const filteredProducts = useMemo(() => {
@@ -39,6 +52,18 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory, products]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  
+  // Get current page products
+  const currentProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
+
+  // Check if it's the last page
+  const isLastPage = currentPage === totalPages;
 
   const calculateTotals = () => {
     const totals = {
@@ -131,6 +156,11 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Get color class based on price ranking
   const getRankingColorClass = (store: string) => {
     if (!priceRankings[store] || selectedProducts.length <= 1) return '';
@@ -163,14 +193,14 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     }
   };
   
-  // Determine which columns to show based on screen size
-  const renderMobileTable = () => (
-    <div className="overflow-x-auto">
-      {filteredProducts.map((product) => {
+  // Render product grid for mobile view
+  const renderMobileProductGrid = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {currentProducts.map((product) => {
         const lowestPrice = findLowestPrice(product.prices);
         const isSelected = selectedProducts.includes(product.id);
         return (
-          <Card key={product.id} className={`mb-4 ${isSelected ? 'border-app-green border-2' : ''}`}>
+          <Card key={product.id} className={`${isSelected ? 'border-app-green border-2' : ''}`}>
             <CardContent className="p-4">
               <div className="flex items-center mb-3">
                 <div className="w-16 h-16 mr-3 flex-shrink-0">
@@ -235,98 +265,147 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     </div>
   );
 
-  const renderDesktopTable = () => (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-gray-50">
-            <TableHead className="w-1/3">Product</TableHead>
-            <TableHead className="text-center">Tamimi</TableHead>
-            <TableHead className="text-center">Panda</TableHead>
-            <TableHead className="text-center">Danube</TableHead>
-            <TableHead className="text-center">Carrefour</TableHead>
-            <TableHead className="text-center">Othaim</TableHead>
-            <TableHead className="text-center">LuLu</TableHead>
-            <TableHead className="text-center">Compare</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredProducts.map((product) => {
-            const lowestPrice = findLowestPrice(product.prices);
-            const isSelected = selectedProducts.includes(product.id);
-            
-            return (
-              <TableRow key={product.id} className={`border-b hover:bg-gray-50 transition-colors ${isSelected ? 'bg-app-lowlight' : ''}`}>
-                <TableCell className="py-3">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 mr-3 flex-shrink-0">
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="w-full h-full object-cover rounded-md"
-                      />
-                    </div>
-                    <div>
-                      <div className="font-medium">{product.name}</div>
-                      <div className="text-sm text-gray-500">Count: {product.count}</div>
-                    </div>
-                  </div>
-                </TableCell>
-                
-                <TableCell className="text-center">
-                  <div className={`${product.prices.tamimi === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.tamimi}
-                  </div>
-                </TableCell>
-                
-                <TableCell className="text-center">
-                  <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.panda}
-                  </div>
-                </TableCell>
-                
-                <TableCell className="text-center">
-                  <div className={`${product.prices.danube === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.danube}
-                  </div>
-                </TableCell>
-                
-                <TableCell className="text-center">
-                  <div className={`${product.prices.carrefour === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.carrefour}
-                  </div>
-                </TableCell>
-                
-                <TableCell className="text-center">
-                  <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.othaim}
-                  </div>
-                </TableCell>
-                
-                <TableCell className="text-center">
+  // Render product grid for desktop view
+  const renderDesktopProductGrid = () => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {currentProducts.map((product) => {
+        const lowestPrice = findLowestPrice(product.prices);
+        const isSelected = selectedProducts.includes(product.id);
+        return (
+          <Card key={product.id} className={`hover:shadow-md transition-shadow ${isSelected ? 'border-app-green border-2' : ''}`}>
+            <CardContent className="p-4">
+              <div className="flex flex-col items-center mb-3">
+                <div className="w-20 h-20 mb-2">
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                </div>
+                <h3 className="font-medium text-center">{product.name}</h3>
+                <div className="text-sm text-gray-500">Count: {product.count}</div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">LuLu</div>
                   <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
                     {product.prices.lulu}
                   </div>
-                </TableCell>
-                
-                <TableCell className="text-center">
-                  <Button
-                    variant={isSelected ? "default" : "outline"}
-                    size="sm"
-                    className={isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}
-                    onClick={() => handleSelectProduct(product)}
-                  >
-                    {isSelected ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-                    {isSelected ? 'Selected' : 'Compare'}
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">Panda</div>
+                  <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.panda}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">Othaim</div>
+                  <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.othaim}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">Carrefour</div>
+                  <div className={`${product.prices.carrefour === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.carrefour}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">Danube</div>
+                  <div className={`${product.prices.danube === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.danube}
+                  </div>
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded">
+                  <div className="text-xs text-gray-500">Tamimi</div>
+                  <div className={`${product.prices.tamimi === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                    {product.prices.tamimi}
+                  </div>
+                </div>
+              </div>
+              
+              <Button
+                variant={isSelected ? "default" : "outline"}
+                size="sm"
+                className={`w-full ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}`}
+                onClick={() => handleSelectProduct(product)}
+              >
+                {isSelected ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
+                {isSelected ? 'Selected' : 'Compare'}
+              </Button>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
+
+  // Render pagination
+  const renderPagination = () => {
+    // Don't show pagination if there's only one page
+    if (totalPages <= 1) return null;
+    
+    return (
+      <Pagination className="my-6">
+        <PaginationContent>
+          {currentPage > 1 && (
+            <PaginationItem>
+              <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} />
+            </PaginationItem>
+          )}
+          
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+            // Show first page, last page, and pages around current page
+            if (
+              page === 1 ||
+              page === totalPages ||
+              (page >= currentPage - 1 && page <= currentPage + 1)
+            ) {
+              return (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    isActive={currentPage === page}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            }
+            
+            // Show ellipsis for skipped pages
+            if (page === 2 && currentPage > 3) {
+              return (
+                <PaginationItem key="ellipsis-start">
+                  <PaginationEllipsis />
+                </PaginationItem>
+              );
+            }
+            
+            if (page === totalPages - 1 && currentPage < totalPages - 2) {
+              return (
+                <PaginationItem key="ellipsis-end">
+                  <PaginationEllipsis />
+                </PaginationItem>
+              );
+            }
+            
+            return null;
+          })}
+          
+          {currentPage < totalPages && (
+            <PaginationItem>
+              <PaginationNext onClick={() => handlePageChange(currentPage + 1)} />
+            </PaginationItem>
+          )}
+        </PaginationContent>
+      </Pagination>
+    );
+  };
   
   return (
     <div className="max-w-4xl mx-auto px-0 md:px-4 py-6">
@@ -354,10 +433,22 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             </div>
           </div>
           
-          {/* Responsive table display */}
-          {isMobile ? renderMobileTable() : renderDesktopTable()}
+          {/* Responsive product grid display */}
+          {isMobile ? renderMobileProductGrid() : renderDesktopProductGrid()}
+          
+          {/* Pagination */}
+          {renderPagination()}
         </CardContent>
       </Card>
+
+      {/* New Arrivals (only on last page) */}
+      {isLastPage && (
+        <Card className="mb-4 bg-white">
+          <CardContent className="pt-6">
+            <NewArrivals />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Comparison Summary Card */}
       <Card className="mb-4 bg-white">
