@@ -7,15 +7,8 @@ import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NewArrivals from '@/components/NewArrivals';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import ProductTag, { TagType } from '@/components/ProductTag';
+import LastUpdateOffers from '@/components/LastUpdateOffers';
 import {
   Carousel,
   CarouselContent,
@@ -40,13 +33,20 @@ interface PriceComparisonProps {
 
 const ITEMS_PER_PAGE = 15;
 
+const getProductTag = (productId: number): TagType | null => {
+  if (productId % 10 === 0) return 'hot-deal';
+  if (productId % 7 === 0) return 'bulky';
+  if (productId % 5 === 0) return 'heavy-carry';
+  if (productId % 8 === 0) return 'bestseller';
+  return null;
+};
+
 const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComparisonProps) => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Filter products based on search query and active category
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesSearch = searchQuery === '' || 
@@ -59,7 +59,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     });
   }, [searchQuery, activeCategory, products]);
 
-  // Get unique categories from products
   const categories = useMemo(() => {
     const uniqueCategories = Array.from(
       new Set(filteredProducts.map(product => product.category))
@@ -68,7 +67,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     return uniqueCategories;
   }, [filteredProducts]);
 
-  // Group products by category
   const productsByCategory = useMemo(() => {
     const grouped: Record<string, Product[]> = {};
     
@@ -81,16 +79,13 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     return grouped;
   }, [filteredProducts, categories]);
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   
-  // Get current page products
   const currentProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [filteredProducts, currentPage]);
 
-  // Check if it's the last page
   const isLastPage = currentPage === totalPages;
 
   const calculateTotals = () => {
@@ -103,7 +98,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       tamimi: 0
     };
 
-    // If there are selected products, calculate totals only for them
     const productsToCalculate = selectedProducts.length > 0 ? 
       filteredProducts.filter(p => selectedProducts.includes(p.id)) : 
       filteredProducts;
@@ -122,41 +116,32 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
 
   const totals = calculateTotals();
   
-  // Find the lowest price for each product
   const findLowestPrice = (prices: Record<string, number>) => {
     return Math.min(...Object.values(prices));
   };
 
-  // Find which store has the lowest total
   const findLowestTotal = () => {
     const lowestTotal = Math.min(...Object.values(totals));
     return Object.entries(totals).find(([_, value]) => value === lowestTotal)?.[0] || '';
   };
 
-  // Determine price rankings (lowest, middle, highest)
   const getPriceRankings = () => {
     const sortedStores = Object.entries(totals)
       .sort(([_, priceA], [__, priceB]) => priceA - priceB);
     
-    // Create a map of store to ranking
     const rankings: Record<string, 'lowest' | 'medium' | 'highest'> = {};
     
     if (sortedStores.length === 0) return rankings;
     
-    // Always mark the first as lowest
     rankings[sortedStores[0][0]] = 'lowest';
     
-    // For remaining stores
     if (sortedStores.length > 1) {
-      // Last one is always highest
       rankings[sortedStores[sortedStores.length - 1][0]] = 'highest';
       
-      // Middle ones are medium
       for (let i = 1; i < sortedStores.length - 1; i++) {
         rankings[sortedStores[i][0]] = 'medium';
       }
       
-      // If only two stores, second one is highest
       if (sortedStores.length === 2) {
         rankings[sortedStores[1][0]] = 'highest';
       }
@@ -189,7 +174,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Get color class based on price ranking
   const getRankingColorClass = (store: string) => {
     if (!priceRankings[store] || selectedProducts.length <= 1) return '';
     
@@ -205,7 +189,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     }
   };
 
-  // Get indicator badge based on price ranking
   const getRankingBadge = (store: string) => {
     if (!priceRankings[store] || selectedProducts.length <= 1) return null;
     
@@ -221,22 +204,27 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     }
   };
 
-  // Render product item for carousel
   const renderProductItem = (product: Product) => {
     const lowestPrice = findLowestPrice(product.prices);
     const isSelected = selectedProducts.includes(product.id);
+    const productTag = getProductTag(product.id);
     
     return (
       <Card className={`h-full ${isSelected ? 'border-app-green border-2' : ''}`}>
         <CardContent className="p-4 h-full">
           <div className="flex flex-col h-full">
-            <div className="flex flex-col items-center mb-3">
-              <div className="w-16 h-16 mb-2">
+            <div className="flex flex-col items-center mb-3 relative">
+              <div className="w-16 h-16 mb-2 relative">
                 <img 
                   src={product.image} 
                   alt={product.name} 
-                  className="w-full h-full object-cover rounded-md"
+                  className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm"
                 />
+                {productTag && (
+                  <div className="absolute -top-2 -right-2">
+                    <ProductTag type={productTag} />
+                  </div>
+                )}
               </div>
               <h3 className="font-medium text-center text-sm">{product.name}</h3>
               <div className="text-xs text-gray-500">Count: {product.count}</div>
@@ -280,9 +268,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     );
   };
 
-  // Main render method for all products using carousels
   const renderCarouselProducts = () => {
-    // If active category is selected, render only that category
     if (activeCategory !== 'All') {
       const categoryProducts = filteredProducts.filter(
         product => product.category?.toLowerCase() === activeCategory.toLowerCase()
@@ -315,7 +301,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       );
     }
     
-    // Otherwise, render all categories as separate carousels
     return (
       <div className="space-y-6">
         {categories.map((category) => (
@@ -348,9 +333,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     );
   };
 
-  // Render pagination
   const renderPagination = () => {
-    // Don't show pagination if there's only one page
     if (totalPages <= 1) return null;
     
     return (
@@ -363,7 +346,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
           )}
           
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-            // Show first page, last page, and pages around current page
             if (
               page === 1 ||
               page === totalPages ||
@@ -381,7 +363,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
               );
             }
             
-            // Show ellipsis for skipped pages
             if (page === 2 && currentPage > 3) {
               return (
                 <PaginationItem key="ellipsis-start">
@@ -410,9 +391,15 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       </Pagination>
     );
   };
-  
+
   return (
     <div className="max-w-4xl mx-auto px-0 md:px-4 py-6">
+      <Card className="mb-4 bg-white">
+        <CardContent className="pt-6">
+          <LastUpdateOffers />
+        </CardContent>
+      </Card>
+      
       <Card className="mb-4 bg-white">
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
@@ -437,12 +424,10 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             </div>
           </div>
           
-          {/* Always use carousel view for all products */}
           {renderCarouselProducts()}
         </CardContent>
       </Card>
 
-      {/* New Arrivals (only on last page) */}
       {isLastPage && (
         <Card className="mb-4 bg-white">
           <CardContent className="pt-6">
@@ -451,7 +436,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
         </Card>
       )}
 
-      {/* Comparison Summary Card */}
       <Card className="mb-4 bg-white">
         <CardContent className="pt-6">
           <h3 className="text-xl font-bold mb-4 text-gray-800">
@@ -542,6 +526,8 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
           </div>
         </CardContent>
       </Card>
+      
+      {renderPagination()}
     </div>
   );
 };

@@ -11,6 +11,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from '@/hooks/use-mobile';
+import ProductTag from '@/components/ProductTag';
 
 const NewArrivals = () => {
   const newArrivals = getNewArrivals(5);
@@ -39,16 +40,19 @@ const NewArrivals = () => {
               <Card className="hover:shadow-lg transition-shadow h-full">
                 <CardContent className="p-4">
                   <div className="flex flex-col items-center">
-                    <div className="w-20 h-20 mb-3">
+                    <div className="relative w-20 h-20 mb-3">
                       <img 
                         src={product.image} 
                         alt={product.name} 
-                        className="w-full h-full object-cover rounded-md"
+                        className="w-full h-full object-cover rounded-full border-2 border-app-green shadow-md"
                       />
+                      <div className="absolute -top-2 -right-2">
+                        <ProductTag type="new" />
+                      </div>
                     </div>
                     <h3 className="font-medium text-center mb-1">{product.name}</h3>
                     <p className="text-sm text-gray-500 text-center">{product.category}</p>
-                    <div className="mt-3 text-xs text-app-green font-medium">
+                    <div className="mt-3 text-xs bg-gradient-to-r from-green-500 to-green-400 text-white px-2 py-1 rounded-full">
                       NEW IN STORES
                     </div>
                   </div>

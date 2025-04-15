@@ -8,6 +8,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import CategoryFilter from '@/components/CategoryFilter';
 import UserAccountPanel from '@/components/UserAccountPanel';
 import NotificationCenter from '@/components/NotificationCenter';
+import LastUpdateOffers from '@/components/LastUpdateOffers';
 import { Share2, Bell, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NearbyStores from '@/components/NearbyStores';
