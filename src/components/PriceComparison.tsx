@@ -3,6 +3,7 @@ import { ShoppingBasket, Plus, Check, ShoppingCart } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';

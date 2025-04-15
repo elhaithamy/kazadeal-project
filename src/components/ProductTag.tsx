@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BadgePercent, Package, Weight, Fire, Star } from 'lucide-react';
+import { BadgePercent, Package, Weight, Flame, Star } from 'lucide-react';
 
 export type TagType = 'hot-deal' | 'bulky' | 'heavy-carry' | 'new' | 'bestseller';
 
@@ -15,7 +15,7 @@ const ProductTag: React.FC<ProductTagProps> = ({ type, className = '' }) => {
       case 'hot-deal':
         return {
           text: 'Hot Deal',
-          icon: <Fire className="h-3 w-3 mr-1" />,
+          icon: <Flame className="h-3 w-3 mr-1" />,
           color: 'bg-gradient-to-r from-red-500 to-orange-400 text-white'
         };
       case 'bulky':
