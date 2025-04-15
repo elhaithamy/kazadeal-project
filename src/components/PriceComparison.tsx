@@ -1,4 +1,3 @@
-
 import React, { useContext, useMemo, useState } from 'react';
 import { ShoppingBasket, Plus, Check, ShoppingCart } from 'lucide-react';
 import { products, Product } from '@/data/products';
@@ -17,6 +16,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import {
   Pagination,
   PaginationContent,
@@ -52,6 +58,28 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory, products]);
+
+  // Get unique categories from products
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(
+      new Set(filteredProducts.map(product => product.category))
+    ).filter(Boolean) as string[];
+    
+    return uniqueCategories;
+  }, [filteredProducts]);
+
+  // Group products by category
+  const productsByCategory = useMemo(() => {
+    const grouped: Record<string, Product[]> = {};
+    
+    categories.forEach(category => {
+      grouped[category] = filteredProducts.filter(
+        product => product.category === category
+      );
+    });
+    
+    return grouped;
+  }, [filteredProducts, categories]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -192,82 +220,101 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
         return null;
     }
   };
-  
-  // Render product grid for mobile view
-  const renderMobileProductGrid = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {currentProducts.map((product) => {
-        const lowestPrice = findLowestPrice(product.prices);
-        const isSelected = selectedProducts.includes(product.id);
-        return (
-          <Card key={product.id} className={`${isSelected ? 'border-app-green border-2' : ''}`}>
-            <CardContent className="p-4">
-              <div className="flex items-center mb-3">
-                <div className="w-16 h-16 mr-3 flex-shrink-0">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </div>
-                <div>
-                  <div className="font-medium">{product.name}</div>
-                  <div className="text-sm text-gray-500">Count: {product.count}</div>
+
+  // Render product item for carousel
+  const renderProductItem = (product: Product) => {
+    const lowestPrice = findLowestPrice(product.prices);
+    const isSelected = selectedProducts.includes(product.id);
+    
+    return (
+      <Card className={`h-full ${isSelected ? 'border-app-green border-2' : ''}`}>
+        <CardContent className="p-4 h-full">
+          <div className="flex flex-col h-full">
+            <div className="flex flex-col items-center mb-3">
+              <div className="w-16 h-16 mb-2">
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover rounded-md"
+                />
+              </div>
+              <h3 className="font-medium text-center text-sm">{product.name}</h3>
+              <div className="text-xs text-gray-500">Count: {product.count}</div>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
+              <div className="text-center p-1 bg-gray-50 rounded">
+                <div className="text-gray-500">LuLu</div>
+                <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                  {product.prices.lulu}
                 </div>
               </div>
-              
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">LuLu</div>
-                  <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.lulu}
-                  </div>
-                </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">Panda</div>
-                  <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.panda}
-                  </div>
-                </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">Othaim</div>
-                  <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.othaim}
-                  </div>
+              <div className="text-center p-1 bg-gray-50 rounded">
+                <div className="text-gray-500">Panda</div>
+                <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                  {product.prices.panda}
                 </div>
               </div>
-              
-              <div className="flex justify-between items-center">
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="text-gray-500"
-                  onClick={() => {
-                    // Show more details logic
-                  }}
+              <div className="text-center p-1 bg-gray-50 rounded">
+                <div className="text-gray-500">Othaim</div>
+                <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
+                  {product.prices.othaim}
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-auto">
+              <Button
+                variant={isSelected ? "default" : "outline"}
+                size="sm"
+                className={`w-full ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}`}
+                onClick={() => handleSelectProduct(product)}
+              >
+                {isSelected ? <Check className="w-3 h-3 mr-1" /> : <Plus className="w-3 h-3 mr-1" />}
+                {isSelected ? 'Selected' : 'Compare'}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Render by category
+  const renderCategoryCarousels = () => (
+    <div className="space-y-6">
+      {categories.map((category) => (
+        <div key={category} className="mb-6">
+          <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
+          
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {productsByCategory[category].map((product) => (
+                <CarouselItem 
+                  key={product.id} 
+                  className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
                 >
-                  View all prices
-                </Button>
-                <Button
-                  variant={isSelected ? "default" : "outline"}
-                  size="sm"
-                  className={isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}
-                  onClick={() => handleSelectProduct(product)}
-                >
-                  {isSelected ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-                  {isSelected ? 'Selected' : 'Compare'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+                  {renderProductItem(product)}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0 lg:-left-12 hidden sm:flex" />
+            <CarouselNext className="right-0 lg:-right-12 hidden sm:flex" />
+          </Carousel>
+        </div>
+      ))}
     </div>
   );
 
-  // Render product grid for desktop view
-  const renderDesktopProductGrid = () => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  // Render regular product grid (for non-mobile or when filtering)
+  const renderProductGrid = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {currentProducts.map((product) => {
         const lowestPrice = findLowestPrice(product.prices);
         const isSelected = selectedProducts.includes(product.id);
@@ -433,16 +480,21 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             </div>
           </div>
           
-          {/* Responsive product grid display */}
-          {isMobile ? renderMobileProductGrid() : renderDesktopProductGrid()}
-          
-          {/* Pagination */}
-          {renderPagination()}
+          {/* Mobile view with category carousels */}
+          {isMobile && activeCategory === 'All' ? (
+            renderCategoryCarousels()
+          ) : (
+            // Desktop view or filtered results
+            <>
+              {renderProductGrid()}
+              {renderPagination()}
+            </>
+          )}
         </CardContent>
       </Card>
 
       {/* New Arrivals (only on last page) */}
-      {isLastPage && (
+      {isLastPage && !isMobile && (
         <Card className="mb-4 bg-white">
           <CardContent className="pt-6">
             <NewArrivals />
