@@ -280,13 +280,17 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     );
   };
 
-  // Render by category
-  const renderCategoryCarousels = () => (
-    <div className="space-y-6">
-      {categories.map((category) => (
-        <div key={category} className="mb-6">
-          <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
-          
+  // Main render method for all products using carousels
+  const renderCarouselProducts = () => {
+    // If active category is selected, render only that category
+    if (activeCategory !== 'All') {
+      const categoryProducts = filteredProducts.filter(
+        product => product.category?.toLowerCase() === activeCategory.toLowerCase()
+      );
+      
+      return (
+        <div className="mb-6">
+          <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{activeCategory}</h3>
           <Carousel
             opts={{
               align: "start",
@@ -295,7 +299,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {productsByCategory[category].map((product) => (
+              {categoryProducts.map((product) => (
                 <CarouselItem 
                   key={product.id} 
                   className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
@@ -308,88 +312,41 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             <CarouselNext className="right-0 lg:-right-12 hidden sm:flex" />
           </Carousel>
         </div>
-      ))}
-    </div>
-  );
-
-  // Render regular product grid (for non-mobile or when filtering)
-  const renderProductGrid = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {currentProducts.map((product) => {
-        const lowestPrice = findLowestPrice(product.prices);
-        const isSelected = selectedProducts.includes(product.id);
-        return (
-          <Card key={product.id} className={`hover:shadow-md transition-shadow ${isSelected ? 'border-app-green border-2' : ''}`}>
-            <CardContent className="p-4">
-              <div className="flex flex-col items-center mb-3">
-                <div className="w-20 h-20 mb-2">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </div>
-                <h3 className="font-medium text-center">{product.name}</h3>
-                <div className="text-sm text-gray-500">Count: {product.count}</div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">LuLu</div>
-                  <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.lulu}
-                  </div>
-                </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">Panda</div>
-                  <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.panda}
-                  </div>
-                </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">Othaim</div>
-                  <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.othaim}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">Carrefour</div>
-                  <div className={`${product.prices.carrefour === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.carrefour}
-                  </div>
-                </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">Danube</div>
-                  <div className={`${product.prices.danube === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.danube}
-                  </div>
-                </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="text-xs text-gray-500">Tamimi</div>
-                  <div className={`${product.prices.tamimi === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                    {product.prices.tamimi}
-                  </div>
-                </div>
-              </div>
-              
-              <Button
-                variant={isSelected ? "default" : "outline"}
-                size="sm"
-                className={`w-full ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}`}
-                onClick={() => handleSelectProduct(product)}
-              >
-                {isSelected ? <Check className="w-4 h-4 mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-                {isSelected ? 'Selected' : 'Compare'}
-              </Button>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
-  );
+      );
+    }
+    
+    // Otherwise, render all categories as separate carousels
+    return (
+      <div className="space-y-6">
+        {categories.map((category) => (
+          <div key={category} className="mb-6">
+            <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
+            
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {productsByCategory[category].map((product) => (
+                  <CarouselItem 
+                    key={product.id} 
+                    className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
+                  >
+                    {renderProductItem(product)}
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-0 lg:-left-12 hidden sm:flex" />
+              <CarouselNext className="right-0 lg:-right-12 hidden sm:flex" />
+            </Carousel>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   // Render pagination
   const renderPagination = () => {
@@ -480,21 +437,13 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             </div>
           </div>
           
-          {/* Mobile view with category carousels */}
-          {isMobile && activeCategory === 'All' ? (
-            renderCategoryCarousels()
-          ) : (
-            // Desktop view or filtered results
-            <>
-              {renderProductGrid()}
-              {renderPagination()}
-            </>
-          )}
+          {/* Always use carousel view for all products */}
+          {renderCarouselProducts()}
         </CardContent>
       </Card>
 
       {/* New Arrivals (only on last page) */}
-      {isLastPage && !isMobile && (
+      {isLastPage && (
         <Card className="mb-4 bg-white">
           <CardContent className="pt-6">
             <NewArrivals />

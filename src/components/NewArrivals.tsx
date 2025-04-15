@@ -36,7 +36,7 @@ const NewArrivals = () => {
               key={product.id} 
               className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
             >
-              <Card className="hover:shadow-lg transition-shadow">
+              <Card className="hover:shadow-lg transition-shadow h-full">
                 <CardContent className="p-4">
                   <div className="flex flex-col items-center">
                     <div className="w-20 h-20 mb-3">
