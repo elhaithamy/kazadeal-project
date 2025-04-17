@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { ShoppingBasket, Plus, Check, ShoppingCart } from 'lucide-react';
+import { ShoppingBasket, Plus, Check } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,22 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import NewArrivals from '@/components/NewArrivals';
 import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import ComparisonBar from '@/components/ComparisonBar';
 
 interface PriceComparisonProps {
   searchQuery?: string;
@@ -437,96 +422,12 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
         </Card>
       )}
 
-      <Card className="mb-4 bg-white">
-        <CardContent className="pt-6">
-          <h3 className="text-xl font-bold mb-4 text-gray-800">
-            {selectedProducts.length > 0 ? 'Selected Products Total' : 'All Products Total'}
-          </h3>
-          
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            <div className={`p-4 rounded-lg ${getRankingColorClass('tamimi')} ${lowestTotalStore === 'tamimi' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className={`text-sm font-medium ${priceRankings['tamimi'] === 'lowest' || priceRankings['tamimi'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
-                Tamimi
-                {getRankingBadge('tamimi')}
-              </div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'tamimi' ? 'text-app-green' : ''} ${priceRankings['tamimi'] === 'lowest' || priceRankings['tamimi'] === 'highest' ? 'text-white' : ''}`}>
-                {totals.tamimi.toFixed(2)}
-              </div>
-            </div>
-            
-            <div className={`p-4 rounded-lg ${getRankingColorClass('panda')} ${lowestTotalStore === 'panda' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className={`text-sm font-medium ${priceRankings['panda'] === 'lowest' || priceRankings['panda'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
-                Panda
-                {getRankingBadge('panda')}
-              </div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'panda' ? 'text-app-green' : ''} ${priceRankings['panda'] === 'lowest' || priceRankings['panda'] === 'highest' ? 'text-white' : ''}`}>
-                {totals.panda.toFixed(2)}
-              </div>
-            </div>
-            
-            <div className={`p-4 rounded-lg ${getRankingColorClass('danube')} ${lowestTotalStore === 'danube' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className={`text-sm font-medium ${priceRankings['danube'] === 'lowest' || priceRankings['danube'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
-                Danube
-                {getRankingBadge('danube')}
-              </div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'danube' ? 'text-app-green' : ''} ${priceRankings['danube'] === 'lowest' || priceRankings['danube'] === 'highest' ? 'text-white' : ''}`}>
-                {totals.danube.toFixed(2)}
-              </div>
-            </div>
-            
-            <div className={`p-4 rounded-lg ${getRankingColorClass('carrefour')} ${lowestTotalStore === 'carrefour' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className={`text-sm font-medium ${priceRankings['carrefour'] === 'lowest' || priceRankings['carrefour'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
-                Carrefour
-                {getRankingBadge('carrefour')}
-              </div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'carrefour' ? 'text-app-green' : ''} ${priceRankings['carrefour'] === 'lowest' || priceRankings['carrefour'] === 'highest' ? 'text-white' : ''}`}>
-                {totals.carrefour.toFixed(2)}
-              </div>
-            </div>
-            
-            <div className={`p-4 rounded-lg ${getRankingColorClass('othaim')} ${lowestTotalStore === 'othaim' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className={`text-sm font-medium ${priceRankings['othaim'] === 'lowest' || priceRankings['othaim'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
-                Othaim
-                {getRankingBadge('othaim')}
-              </div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'othaim' ? 'text-app-green' : ''} ${priceRankings['othaim'] === 'lowest' || priceRankings['othaim'] === 'highest' ? 'text-white' : ''}`}>
-                {totals.othaim.toFixed(2)}
-              </div>
-            </div>
-            
-            <div className={`p-4 rounded-lg ${getRankingColorClass('lulu')} ${lowestTotalStore === 'lulu' ? 'border-2 border-app-green' : 'bg-gray-50'}`}>
-              <div className={`text-sm font-medium ${priceRankings['lulu'] === 'lowest' || priceRankings['lulu'] === 'highest' ? 'text-white' : 'text-gray-500'}`}>
-                LuLu
-                {getRankingBadge('lulu')}
-              </div>
-              <div className={`text-xl font-bold ${lowestTotalStore === 'lulu' ? 'text-app-green' : ''} ${priceRankings['lulu'] === 'lowest' || priceRankings['lulu'] === 'highest' ? 'text-white' : ''}`}>
-                {totals.lulu.toFixed(2)}
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 text-center">
-            {selectedProducts.length > 0 ? (
-              <div className="flex flex-col items-center">
-                <p className="text-gray-600 mb-2">
-                  Select multiple products above to compare prices across stores
-                </p>
-                <Button 
-                  variant="default" 
-                  className="bg-app-green hover:bg-app-green-dark"
-                >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Shop at {lowestTotalStore.charAt(0).toUpperCase() + lowestTotalStore.slice(1)}
-                </Button>
-              </div>
-            ) : (
-              <p className="text-gray-600">
-                Select products above to compare prices
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <ComparisonBar 
+        totals={totals}
+        selectedProducts={selectedProducts}
+        priceRankings={priceRankings}
+        lowestTotalStore={lowestTotalStore}
+      />
       
       {renderPagination()}
     </div>
