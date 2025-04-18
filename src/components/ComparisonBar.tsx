@@ -29,27 +29,10 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
   priceRankings,
   lowestTotalStore,
 }) => {
-  const [currentStoreIndex, setCurrentStoreIndex] = useState(0);
-  const mediumStores = Object.entries(priceRankings)
-    .filter(([_, ranking]) => ranking === 'medium')
-    .map(([store]) => store);
-  
-  const displayStores = [lowestTotalStore, ...mediumStores.slice(0, 2)];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStoreIndex((prev) => (prev + 1) % displayStores.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [displayStores.length]);
-
-  const getCurrentStoreDisplay = () => {
-    const store = displayStores[currentStoreIndex];
+  const getLowestStoreDisplay = () => {
     return {
-      name: store.charAt(0).toUpperCase() + store.slice(1),
-      total: totals[store as keyof typeof totals].toFixed(2),
-      ranking: priceRankings[store]
+      name: lowestTotalStore.charAt(0).toUpperCase() + lowestTotalStore.slice(1),
+      total: totals[lowestTotalStore as keyof typeof totals].toFixed(2),
     };
   };
 
@@ -124,11 +107,11 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
             variant="default"
             className="w-full bg-app-green hover:bg-app-green/90 relative overflow-hidden h-16"
           >
-            <div className="flex items-center justify-center gap-2 animate-fade-in">
+            <div className="flex items-center justify-center gap-2">
               <ShoppingCart className="w-5 h-5" />
               <div className="flex flex-col items-start">
-                <span className="text-sm">Shop at {getCurrentStoreDisplay().name}</span>
-                <span className="text-lg font-bold">{getCurrentStoreDisplay().total}</span>
+                <span className="text-lg font-bold">{getLowestStoreDisplay().total}</span>
+                <span className="text-xs opacity-90">Best price at {getLowestStoreDisplay().name}</span>
               </div>
             </div>
           </Button>
@@ -154,12 +137,12 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
           <DrawerTrigger asChild>
             <Button
               size="icon"
-              className="h-16 w-16 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg animate-fade-in"
+              className="h-16 w-16 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg"
             >
               {selectedProducts.length > 0 ? (
                 <div className="flex flex-col items-center justify-center text-xs">
                   <ShoppingCart className="h-6 w-6 mb-1" />
-                  <span className="font-bold">{getCurrentStoreDisplay().total}</span>
+                  <span className="font-bold">{getLowestStoreDisplay().total}</span>
                 </div>
               ) : (
                 <ShoppingCart className="h-6 w-6" />
