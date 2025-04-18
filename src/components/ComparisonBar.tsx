@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,6 +29,30 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
   priceRankings,
   lowestTotalStore,
 }) => {
+  const [currentStoreIndex, setCurrentStoreIndex] = useState(0);
+  const mediumStores = Object.entries(priceRankings)
+    .filter(([_, ranking]) => ranking === 'medium')
+    .map(([store]) => store);
+  
+  const displayStores = [lowestTotalStore, ...mediumStores.slice(0, 2)];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentStoreIndex((prev) => (prev + 1) % displayStores.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [displayStores.length]);
+
+  const getCurrentStoreDisplay = () => {
+    const store = displayStores[currentStoreIndex];
+    return {
+      name: store.charAt(0).toUpperCase() + store.slice(1),
+      total: totals[store as keyof typeof totals].toFixed(2),
+      ranking: priceRankings[store]
+    };
+  };
+
   const getRankingColorClass = (store: string) => {
     if (!priceRankings[store] || selectedProducts.length <= 1) return '';
     
@@ -74,25 +97,21 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
               lowestTotalStore === store ? 'border-2 border-app-green' : 'bg-gray-50'
             }`}
           >
-            <div
-              className={`text-sm font-medium flex items-center justify-between ${
-                priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
-                  ? 'text-white'
-                  : 'text-gray-500'
-              }`}
-            >
+            <div className={`text-sm font-medium flex items-center justify-between ${
+              priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
+                ? 'text-white'
+                : 'text-gray-500'
+            }`}>
               <span className="capitalize">{store}</span>
               {getRankingBadge(store)}
             </div>
-            <div
-              className={`text-xl font-bold ${
-                lowestTotalStore === store ? 'text-app-green' : ''
-              } ${
-                priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
-                  ? 'text-white'
-                  : ''
-              }`}
-            >
+            <div className={`text-xl font-bold ${
+              lowestTotalStore === store ? 'text-app-green' : ''
+            } ${
+              priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
+                ? 'text-white'
+                : ''
+            }`}>
               {total.toFixed(2)}
             </div>
           </div>
@@ -103,10 +122,15 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
         <div className="mt-4">
           <Button
             variant="default"
-            className="w-full bg-app-green hover:bg-app-green/90"
+            className="w-full bg-app-green hover:bg-app-green/90 relative overflow-hidden h-16"
           >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            Shop at {lowestTotalStore.charAt(0).toUpperCase() + lowestTotalStore.slice(1)}
+            <div className="flex items-center justify-center gap-2 animate-fade-in">
+              <ShoppingCart className="w-5 h-5" />
+              <div className="flex flex-col items-start">
+                <span className="text-sm">Shop at {getCurrentStoreDisplay().name}</span>
+                <span className="text-lg font-bold">{getCurrentStoreDisplay().total}</span>
+              </div>
+            </div>
           </Button>
         </div>
       )}
@@ -130,9 +154,16 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
           <DrawerTrigger asChild>
             <Button
               size="icon"
-              className="h-12 w-12 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg"
+              className="h-16 w-16 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg animate-fade-in"
             >
-              <ShoppingCart className="h-6 w-6 text-white" />
+              {selectedProducts.length > 0 ? (
+                <div className="flex flex-col items-center justify-center text-xs">
+                  <ShoppingCart className="h-6 w-6 mb-1" />
+                  <span className="font-bold">{getCurrentStoreDisplay().total}</span>
+                </div>
+              ) : (
+                <ShoppingCart className="h-6 w-6" />
+              )}
             </Button>
           </DrawerTrigger>
           <DrawerContent>
