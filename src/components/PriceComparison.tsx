@@ -157,18 +157,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
 
   const handleSelectProduct = (product: Product) => {
     toggleProductSelection(product.id);
-    
-    if (!selectedProducts.includes(product.id)) {
-      toast({
-        title: "Product added to comparison",
-        description: `${product.name} added to your comparison list`,
-      });
-    } else {
-      toast({
-        title: "Product removed from comparison",
-        description: `${product.name} removed from your comparison list`,
-      });
-    }
   };
 
   const handlePageChange = (page: number) => {

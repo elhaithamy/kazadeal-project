@@ -73,50 +73,50 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
         {selectedProducts.length > 0 ? 'Selected Products Total' : 'All Products Total'}
       </h3>
       
-      <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2 mb-4">
         {Object.entries(totals).map(([store, total]) => (
-          <div
+          <Card
             key={store}
-            className={`p-3 rounded-lg ${getRankingColorClass(store)} ${
-              lowestTotalStore === store ? 'border-2 border-app-green' : 'bg-gray-50'
+            className={`${getRankingColorClass(store)} ${
+              lowestTotalStore === store ? 'border-2 border-app-green' : ''
             }`}
           >
-            <div className={`text-sm font-medium flex items-center justify-between ${
-              priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
-                ? 'text-white'
-                : 'text-gray-500'
-            }`}>
-              <span className="capitalize">{store}</span>
-              {getRankingBadge(store)}
-            </div>
-            <div className={`text-xl font-bold ${
-              lowestTotalStore === store ? 'text-app-green' : ''
-            } ${
-              priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
-                ? 'text-white'
-                : ''
-            }`}>
-              {total.toFixed(2)}
-            </div>
-          </div>
+            <CardContent className="p-3">
+              <div className={`text-sm font-medium flex items-center justify-between ${
+                priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
+                  ? 'text-white'
+                  : 'text-gray-500'
+              }`}>
+                <span className="capitalize">{store}</span>
+                {getRankingBadge(store)}
+              </div>
+              <div className={`text-xl font-bold ${
+                lowestTotalStore === store ? 'text-app-green' : ''
+              } ${
+                priceRankings[store] === 'lowest' || priceRankings[store] === 'highest'
+                  ? 'text-white'
+                  : ''
+              }`}>
+                {total.toFixed(2)}
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
       {selectedProducts.length > 0 && (
-        <div className="mt-4">
-          <Button
-            variant="default"
-            className="w-full bg-app-green hover:bg-app-green/90 relative overflow-hidden h-16 shadow-md"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <ShoppingCart className="w-5 h-5" />
-              <div className="flex flex-col items-start">
-                <span className="text-lg font-bold">{getLowestStoreDisplay().total}</span>
-                <span className="text-xs opacity-90">Best price at {getLowestStoreDisplay().name}</span>
-              </div>
+        <Button 
+          variant="default"
+          className="w-full bg-app-green hover:bg-app-green/90 relative overflow-hidden h-16 shadow-md"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <ShoppingCart className="w-5 h-5" />
+            <div className="flex flex-col items-start">
+              <span className="text-lg font-bold">{getLowestStoreDisplay().total}</span>
+              <span className="text-xs opacity-90">Best price at {getLowestStoreDisplay().name}</span>
             </div>
-          </Button>
-        </div>
+          </div>
+        </Button>
       )}
     </div>
   );
