@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -105,7 +106,7 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
         <div className="mt-4">
           <Button
             variant="default"
-            className="w-full bg-app-green hover:bg-app-green/90 relative overflow-hidden h-16"
+            className="w-full bg-app-green hover:bg-app-green/90 relative overflow-hidden h-16 shadow-md"
           >
             <div className="flex items-center justify-center gap-2">
               <ShoppingCart className="w-5 h-5" />
@@ -124,7 +125,7 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
     <>
       {/* Desktop view - Sticky vertical bar */}
       <div className="hidden lg:block fixed right-4 top-20 w-72 z-40">
-        <Card className="bg-white shadow-lg">
+        <Card className="bg-white shadow-lg border border-green-100">
           <CardContent className="p-4">
             <ComparisonContent />
           </CardContent>
