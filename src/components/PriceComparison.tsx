@@ -11,29 +11,19 @@ import NewArrivals from '@/components/NewArrivals';
 import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
 import ComparisonBar from '@/components/ComparisonBar';
+import { useInView } from 'react-intersection-observer';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
+} from "@/components/ui/carousel";
 
 interface PriceComparisonProps {
   searchQuery?: string;
   activeCategory?: string;
 }
-
-const ITEMS_PER_PAGE = 15;
 
 const getProductTag = (productId: number): TagType | null => {
   if (productId % 10 === 0) return 'hot-deal';
@@ -47,8 +37,27 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [displayedItems, setDisplayedItems] = useState(15);
   
+  const { ref: loadMoreRef, inView } = useInView({
+    threshold: 0.5,
+    onChange: (inView) => {
+      if (inView) {
+        setDisplayedItems(prev => prev + 15);
+      }
+    },
+  });
+
+  const { ref: offersRef, inView: offersInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: arrivalsRef, inView: arrivalsInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesSearch = searchQuery === '' || 
@@ -81,14 +90,9 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     return grouped;
   }, [filteredProducts, categories]);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
-  
   const currentProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredProducts, currentPage]);
-
-  const isLastPage = currentPage === totalPages;
+    return filteredProducts.slice(0, displayedItems);
+  }, [filteredProducts, displayedItems]);
 
   const calculateTotals = () => {
     const totals = {
@@ -116,8 +120,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     return totals;
   };
 
-  const totals = calculateTotals();
-  
   const findLowestPrice = (prices: Record<string, number>) => {
     return Math.min(...Object.values(prices));
   };
@@ -153,15 +155,11 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
   };
 
   const priceRankings = getPriceRankings();
+
   const lowestTotalStore = findLowestTotal();
 
   const handleSelectProduct = (product: Product) => {
     toggleProductSelection(product.id);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const getRankingColorClass = (store: string) => {
@@ -267,129 +265,74 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       return (
         <div className="mb-6">
           <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{activeCategory}</h3>
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {categoryProducts.map((product) => (
-                <CarouselItem 
-                  key={product.id} 
-                  className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
-                >
-                  {renderProductItem(product)}
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-0 lg:-left-12 hidden sm:flex" />
-            <CarouselNext className="right-0 lg:-right-12 hidden sm:flex" />
-          </Carousel>
+          {categoryProducts.slice(0, displayedItems).map((product) => (
+            <div key={product.id} className="mb-4">
+              {renderProductItem(product)}
+            </div>
+          ))}
         </div>
       );
     }
     
     return (
       <div className="space-y-6">
-        {categories.map((category) => (
-          <div key={category} className="mb-6">
-            <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
-            
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {productsByCategory[category].map((product) => (
-                  <CarouselItem 
-                    key={product.id} 
-                    className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
-                  >
+        {categories.map((category, index) => {
+          const categoryProducts = productsByCategory[category];
+          
+          // Insert Latest Offers after first category
+          const showOffers = index === 1;
+          // Insert New Arrivals after second category
+          const showArrivals = index === 2;
+          
+          return (
+            <React.Fragment key={category}>
+              <div className="mb-6">
+                <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
+                {categoryProducts.slice(0, displayedItems).map((product) => (
+                  <div key={product.id} className="mb-4">
                     {renderProductItem(product)}
-                  </CarouselItem>
+                  </div>
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-0 lg:-left-12 hidden sm:flex" />
-              <CarouselNext className="right-0 lg:-right-12 hidden sm:flex" />
-            </Carousel>
-          </div>
-        ))}
-      </div>
-    );
-  };
+              </div>
 
-  const renderPagination = () => {
-    if (totalPages <= 1) return null;
-    
-    return (
-      <Pagination className="my-6">
-        <PaginationContent>
-          {currentPage > 1 && (
-            <PaginationItem>
-              <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} />
-            </PaginationItem>
-          )}
-          
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-            if (
-              page === 1 ||
-              page === totalPages ||
-              (page >= currentPage - 1 && page <= currentPage + 1)
-            ) {
-              return (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    isActive={currentPage === page}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </PaginationLink>
-                </PaginationItem>
-              );
-            }
-            
-            if (page === 2 && currentPage > 3) {
-              return (
-                <PaginationItem key="ellipsis-start">
-                  <PaginationEllipsis />
-                </PaginationItem>
-              );
-            }
-            
-            if (page === totalPages - 1 && currentPage < totalPages - 2) {
-              return (
-                <PaginationItem key="ellipsis-end">
-                  <PaginationEllipsis />
-                </PaginationItem>
-              );
-            }
-            
-            return null;
-          })}
-          
-          {currentPage < totalPages && (
-            <PaginationItem>
-              <PaginationNext onClick={() => handlePageChange(currentPage + 1)} />
-            </PaginationItem>
-          )}
-        </PaginationContent>
-      </Pagination>
+              {showOffers && (
+                <div
+                  ref={offersRef}
+                  className={`transition-opacity duration-500 ${
+                    offersInView ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <Card className="mb-4 bg-white">
+                    <CardContent className="pt-6">
+                      <LastUpdateOffers />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {showArrivals && (
+                <div
+                  ref={arrivalsRef}
+                  className={`transition-opacity duration-500 ${
+                    arrivalsInView ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <Card className="mb-4 bg-white">
+                    <CardContent className="pt-6">
+                      <NewArrivals />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
     );
   };
 
   return (
     <div className="max-w-4xl mx-auto px-0 md:px-4 py-6">
-      <Card className="mb-4 bg-white">
-        <CardContent className="pt-6">
-          <LastUpdateOffers />
-        </CardContent>
-      </Card>
-      
       <Card className="mb-4 bg-white">
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
@@ -415,16 +358,22 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
           </div>
           
           {renderCarouselProducts()}
+          
+          {/* Load more trigger */}
+          {currentProducts.length < filteredProducts.length && (
+            <div 
+              ref={loadMoreRef}
+              className="py-8 flex justify-center"
+            >
+              <div className="animate-pulse flex space-x-2 items-center text-gray-400">
+                <div className="h-2 w-2 bg-current rounded-full"></div>
+                <div className="h-2 w-2 bg-current rounded-full"></div>
+                <div className="h-2 w-2 bg-current rounded-full"></div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      {isLastPage && (
-        <Card className="mb-4 bg-white">
-          <CardContent className="pt-6">
-            <NewArrivals />
-          </CardContent>
-        </Card>
-      )}
 
       <ComparisonBar 
         totals={totals}
@@ -432,8 +381,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
         priceRankings={priceRankings}
         lowestTotalStore={lowestTotalStore}
       />
-      
-      {renderPagination()}
     </div>
   );
 };
