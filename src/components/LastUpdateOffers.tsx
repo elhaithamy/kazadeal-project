@@ -75,8 +75,8 @@ const LastUpdateOffers = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div className="mb-6">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="mb-4">
+      <div className="flex items-center gap-2 mb-3">
         <Tag className="h-5 w-5 text-blue-500" />
         <h2 className="text-xl font-bold">Latest Offers</h2>
       </div>
@@ -85,24 +85,24 @@ const LastUpdateOffers = () => {
         opts={{
           align: "start",
           loop: true,
-          containScroll: "trimSnaps"
+          containScroll: false
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
+        <CarouselContent className="-ml-2 md:-ml-3">
           {offers.map((offer) => (
             <CarouselItem 
               key={offer.id} 
-              className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3"
+              className="pl-2 md:pl-3 basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/3"
             >
               <Card className="hover:shadow-lg transition-shadow h-full">
-                <CardContent className="p-4">
+                <CardContent className="p-3">
                   <div className="flex flex-col h-full">
-                    <div className={`${offer.color} text-white px-3 py-1.5 rounded-t-md -mt-4 -mx-4 mb-3`}>
-                      <div className="font-bold">{offer.store}</div>
+                    <div className={`${offer.color} text-white px-3 py-1 rounded-t-md -mt-3 -mx-3 mb-2`}>
+                      <div className="font-bold text-sm">{offer.store}</div>
                     </div>
-                    <h3 className="font-medium mb-2">{offer.title}</h3>
-                    <p className="text-sm text-gray-600 mb-3 flex-grow">{offer.description}</p>
+                    <h3 className="font-medium text-sm mb-2">{offer.title}</h3>
+                    <p className="text-xs text-gray-600 mb-2 flex-grow">{offer.description}</p>
                     <div className="flex items-center text-xs text-gray-500">
                       <Clock className="h-3 w-3 mr-1" />
                       <span>Expires: {offer.expiry}</span>
@@ -114,8 +114,8 @@ const LastUpdateOffers = () => {
           ))}
         </CarouselContent>
         
-        <CarouselPrevious className="left-0 lg:-left-8" />
-        <CarouselNext className="right-0 lg:-right-8" />
+        <CarouselPrevious className="left-0 lg:-left-6" />
+        <CarouselNext className="right-0 lg:-right-6" />
       </Carousel>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,10 +30,9 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
   lowestTotalStore,
 }) => {
   const getLowestStoreDisplay = () => {
-    return {
-      name: lowestTotalStore.charAt(0).toUpperCase() + lowestTotalStore.slice(1),
-      total: totals[lowestTotalStore as keyof typeof totals].toFixed(2),
-    };
+    const formattedStore = lowestTotalStore.charAt(0).toUpperCase() + lowestTotalStore.slice(1);
+    const total = totals[lowestTotalStore as keyof typeof totals].toFixed(2);
+    return { name: formattedStore, total };
   };
 
   const getRankingColorClass = (store: string) => {
@@ -136,12 +134,16 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
           <DrawerTrigger asChild>
             <Button
               size="icon"
-              className="h-16 w-16 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg"
+              className="h-16 w-auto px-4 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg"
             >
               {selectedProducts.length > 0 ? (
-                <div className="flex flex-col items-center justify-center text-xs">
-                  <ShoppingCart className="h-6 w-6 mb-1" />
-                  <span className="font-bold">{getLowestStoreDisplay().total}</span>
+                <div className="flex items-center gap-2 text-xs">
+                  <ShoppingCart className="h-5 w-5" />
+                  <div className="flex flex-col items-start">
+                    <span className="font-bold whitespace-nowrap">
+                      {getLowestStoreDisplay().total} • {getLowestStoreDisplay().name}
+                    </span>
+                  </div>
                 </div>
               ) : (
                 <ShoppingCart className="h-6 w-6" />

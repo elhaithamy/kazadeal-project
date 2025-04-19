@@ -1,24 +1,75 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Vegetable, Beef, Wheat, Milk, Cookie, Coffee, Beer, Bath, Baby, Sparkles } from 'lucide-react';
 
 const categories = [
-  { name: "Vegetables & Fruits", icon: "🍅", color: "bg-gradient-to-r from-green-400 to-green-500" },
-  { name: "Meat, Chicken, Fish", icon: "🍗", color: "bg-gradient-to-r from-red-400 to-red-500" },
-  { name: "Rice & Pasta", icon: "🌾", color: "bg-gradient-to-r from-amber-400 to-amber-500" },
-  { name: "Milk and Cheese", icon: "🧀", color: "bg-gradient-to-r from-yellow-300 to-yellow-400" },
-  { name: "Food Items", icon: "🥫", color: "bg-gradient-to-r from-orange-300 to-orange-400" },
-  { name: "Bread & Breakfast", icon: "🍞", color: "bg-gradient-to-r from-cyan-400 to-cyan-500" },
-  { name: "Drinks", icon: "🥤", color: "bg-gradient-to-r from-blue-400 to-blue-500" },
-  { name: "Personal Care", icon: "🧴", color: "bg-gradient-to-r from-purple-400 to-purple-500" },
-  { name: "Baby Care", icon: "🍼", color: "bg-gradient-to-r from-pink-400 to-pink-500" },
-  { name: "Household", icon: "🧹", color: "bg-gradient-to-r from-teal-400 to-teal-500" },
+  { 
+    name: "Vegetables & Fruits", 
+    icon: <Vegetable className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-green-400 to-green-500",
+    emoji: "🥬"
+  },
+  { 
+    name: "Meat, Chicken, Fish", 
+    icon: <Beef className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-red-400 to-red-500",
+    emoji: "🍗"
+  },
+  { 
+    name: "Rice & Pasta", 
+    icon: <Wheat className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-amber-400 to-amber-500",
+    emoji: "🌾"
+  },
+  { 
+    name: "Milk and Cheese", 
+    icon: <Milk className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-yellow-300 to-yellow-400",
+    emoji: "🧀"
+  },
+  { 
+    name: "Food Items", 
+    icon: <Cookie className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-orange-300 to-orange-400",
+    emoji: "🥫"
+  },
+  { 
+    name: "Bread & Breakfast", 
+    icon: <Coffee className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-cyan-400 to-cyan-500",
+    emoji: "☕️"
+  },
+  { 
+    name: "Drinks", 
+    icon: <Beer className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-blue-400 to-blue-500",
+    emoji: "🥤"
+  },
+  { 
+    name: "Personal Care", 
+    icon: <Bath className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-purple-400 to-purple-500",
+    emoji: "🧴"
+  },
+  { 
+    name: "Baby Care", 
+    icon: <Baby className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-pink-400 to-pink-500",
+    emoji: "🍼"
+  },
+  { 
+    name: "Household", 
+    icon: <Sparkles className="w-6 h-6" />, 
+    color: "bg-gradient-to-r from-teal-400 to-teal-500",
+    emoji: "✨"
+  },
 ];
 
 const CategoryNav = () => {
   return (
-    <div className="px-4 py-4">
-      <div className="relative mb-6">
+    <div className="px-3 py-3">
+      <div className="relative mb-4">
         <input
           type="text"
           placeholder="Search for a product"
@@ -32,17 +83,20 @@ const CategoryNav = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         {categories.map((category, index) => (
           <Link 
             key={index}
             to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
-            className="flex flex-col items-center space-y-3 hover-scale"
+            className="flex flex-col items-center space-y-2 hover-scale"
           >
-            <div className={`w-14 h-14 rounded-full ${category.color} flex items-center justify-center text-white shadow-md overflow-hidden`}>
-              <span className="text-xl">{category.icon}</span>
+            <div className={`w-12 h-12 rounded-xl ${category.color} flex items-center justify-center text-white shadow-md overflow-hidden`}>
+              <div className="flex flex-col items-center">
+                {category.icon}
+                <span className="text-xs mt-0.5">{category.emoji}</span>
+              </div>
             </div>
-            <span className="text-sm text-center font-medium text-gray-700">{category.name}</span>
+            <span className="text-xs font-medium text-center text-gray-700">{category.name}</span>
           </Link>
         ))}
       </div>
