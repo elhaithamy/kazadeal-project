@@ -85,6 +85,7 @@ const LastUpdateOffers = () => {
         opts={{
           align: "start",
           loop: true,
+          containScroll: "trimSnaps"
         }}
         className="w-full"
       >
@@ -92,7 +93,7 @@ const LastUpdateOffers = () => {
           {offers.map((offer) => (
             <CarouselItem 
               key={offer.id} 
-              className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3"
+              className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3"
             >
               <Card className="hover:shadow-lg transition-shadow h-full">
                 <CardContent className="p-4">
@@ -113,12 +114,8 @@ const LastUpdateOffers = () => {
           ))}
         </CarouselContent>
         
-        {!isMobile && (
-          <>
-            <CarouselPrevious className="left-0 lg:-left-12" />
-            <CarouselNext className="right-0 lg:-right-12" />
-          </>
-        )}
+        <CarouselPrevious className="left-0 lg:-left-8" />
+        <CarouselNext className="right-0 lg:-right-8" />
       </Carousel>
     </div>
   );

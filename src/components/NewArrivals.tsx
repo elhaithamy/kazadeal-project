@@ -28,6 +28,7 @@ const NewArrivals = () => {
         opts={{
           align: "start",
           loop: true,
+          containScroll: "trimSnaps"
         }}
         className="w-full"
       >
@@ -35,7 +36,7 @@ const NewArrivals = () => {
           {newArrivals.map((product) => (
             <CarouselItem 
               key={product.id} 
-              className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
+              className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
             >
               <Card className="hover:shadow-lg transition-shadow h-full">
                 <CardContent className="p-4">
@@ -62,12 +63,8 @@ const NewArrivals = () => {
           ))}
         </CarouselContent>
         
-        {!isMobile && (
-          <>
-            <CarouselPrevious className="left-0 lg:-left-12" />
-            <CarouselNext className="right-0 lg:-right-12" />
-          </>
-        )}
+        <CarouselPrevious className="left-0 lg:-left-8" />
+        <CarouselNext className="right-0 lg:-right-8" />
       </Carousel>
     </div>
   );

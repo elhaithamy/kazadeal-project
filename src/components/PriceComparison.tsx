@@ -13,13 +13,6 @@ import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
 import ComparisonBar from '@/components/ComparisonBar';
 import { useInView } from 'react-intersection-observer';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 
 interface PriceComparisonProps {
   searchQuery?: string;
@@ -209,10 +202,10 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     
     return (
       <Card className={`h-full ${isSelected ? 'border-app-green border-2' : ''}`}>
-        <CardContent className="p-4 h-full">
+        <CardContent className="p-2 h-full">
           <div className="flex flex-col h-full">
-            <div className="flex flex-col items-center mb-3 relative">
-              <div className="w-16 h-16 mb-2 relative">
+            <div className="flex flex-col items-center mb-2 relative">
+              <div className="w-12 h-12 mb-1 relative">
                 <img 
                   src={product.image} 
                   alt={product.name} 
@@ -224,25 +217,25 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                   </div>
                 )}
               </div>
-              <h3 className="font-medium text-center text-sm">{product.name}</h3>
+              <h3 className="font-medium text-center text-xs line-clamp-2">{product.name}</h3>
               <div className="text-xs text-gray-500">Count: {product.count}</div>
             </div>
             
             <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
               <div className="text-center p-1 bg-gray-50 rounded">
-                <div className="text-gray-500">LuLu</div>
+                <div className="text-gray-500 text-[10px]">LuLu</div>
                 <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
                   {product.prices.lulu}
                 </div>
               </div>
               <div className="text-center p-1 bg-gray-50 rounded">
-                <div className="text-gray-500">Panda</div>
+                <div className="text-gray-500 text-[10px]">Panda</div>
                 <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
                   {product.prices.panda}
                 </div>
               </div>
               <div className="text-center p-1 bg-gray-50 rounded">
-                <div className="text-gray-500">Othaim</div>
+                <div className="text-gray-500 text-[10px]">Othaim</div>
                 <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
                   {product.prices.othaim}
                 </div>
@@ -253,7 +246,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
               <Button
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
-                className={`w-full ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}`}
+                className={`w-full text-xs py-1 h-7 ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}`}
                 onClick={() => handleSelectProduct(product)}
               >
                 {isSelected ? <Check className="w-3 h-3 mr-1" /> : <Plus className="w-3 h-3 mr-1" />}
@@ -275,11 +268,13 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       return (
         <div className="mb-6">
           <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{activeCategory}</h3>
-          {categoryProducts.slice(0, displayedItems).map((product) => (
-            <div key={product.id} className="mb-4">
-              {renderProductItem(product)}
-            </div>
-          ))}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {categoryProducts.slice(0, displayedItems).map((product) => (
+              <div key={product.id} className="mb-0">
+                {renderProductItem(product)}
+              </div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -298,11 +293,13 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             <React.Fragment key={category}>
               <div className="mb-6">
                 <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
-                {categoryProducts.slice(0, displayedItems).map((product) => (
-                  <div key={product.id} className="mb-4">
-                    {renderProductItem(product)}
-                  </div>
-                ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {categoryProducts.slice(0, displayedItems).map((product) => (
+                    <div key={product.id}>
+                      {renderProductItem(product)}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {showOffers && (

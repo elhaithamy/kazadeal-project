@@ -123,13 +123,11 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
 
   return (
     <>
-      {/* Desktop view - Bottom page section */}
-      <div className="hidden lg:block mt-8 mb-20">
-        <Card className="bg-white shadow-lg border border-green-100">
-          <CardContent className="p-4">
-            <ComparisonContent />
-          </CardContent>
-        </Card>
+      {/* Desktop view - Fixed bar at bottom of page */}
+      <div className="hidden lg:block fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg">
+        <div className="max-w-4xl mx-auto p-4">
+          <ComparisonContent />
+        </div>
       </div>
 
       {/* Mobile view - Drawer with floating button */}
@@ -157,6 +155,9 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
           </DrawerContent>
         </Drawer>
       </div>
+      
+      {/* Spacer for desktop fixed bar */}
+      <div className="hidden lg:block h-40"></div>
     </>
   );
 };
