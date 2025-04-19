@@ -1,3 +1,4 @@
+
 import React, { useContext, useMemo, useState } from 'react';
 import { ShoppingBasket, Plus, Check } from 'lucide-react';
 import { products, Product } from '@/data/products';
@@ -23,6 +24,15 @@ import {
 interface PriceComparisonProps {
   searchQuery?: string;
   activeCategory?: string;
+}
+
+interface TotalsType {
+  lulu: number;
+  othaim: number;
+  carrefour: number;
+  danube: number;
+  panda: number;
+  tamimi: number;
 }
 
 const getProductTag = (productId: number): TagType | null => {
@@ -94,8 +104,8 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     return filteredProducts.slice(0, displayedItems);
   }, [filteredProducts, displayedItems]);
 
-  const calculateTotals = () => {
-    const totals = {
+  const calculateTotals = useMemo(() => {
+    const calculatedTotals: TotalsType = {
       lulu: 0,
       othaim: 0,
       carrefour: 0,
@@ -109,28 +119,28 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       filteredProducts;
 
     productsToCalculate.forEach(product => {
-      totals.lulu += product.prices.lulu;
-      totals.othaim += product.prices.othaim;
-      totals.carrefour += product.prices.carrefour;
-      totals.danube += product.prices.danube;
-      totals.panda += product.prices.panda;
-      totals.tamimi += product.prices.tamimi;
+      calculatedTotals.lulu += product.prices.lulu;
+      calculatedTotals.othaim += product.prices.othaim;
+      calculatedTotals.carrefour += product.prices.carrefour;
+      calculatedTotals.danube += product.prices.danube;
+      calculatedTotals.panda += product.prices.panda;
+      calculatedTotals.tamimi += product.prices.tamimi;
     });
 
-    return totals;
-  };
+    return calculatedTotals;
+  }, [filteredProducts, selectedProducts]);
 
   const findLowestPrice = (prices: Record<string, number>) => {
     return Math.min(...Object.values(prices));
   };
 
   const findLowestTotal = () => {
-    const lowestTotal = Math.min(...Object.values(totals));
-    return Object.entries(totals).find(([_, value]) => value === lowestTotal)?.[0] || '';
+    const lowestTotal = Math.min(...Object.values(calculateTotals));
+    return Object.entries(calculateTotals).find(([_, value]) => value === lowestTotal)?.[0] || '';
   };
 
   const getPriceRankings = () => {
-    const sortedStores = Object.entries(totals)
+    const sortedStores = Object.entries(calculateTotals)
       .sort(([_, priceA], [__, priceB]) => priceA - priceB);
     
     const rankings: Record<string, 'lowest' | 'medium' | 'highest'> = {};
@@ -154,9 +164,9 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     return rankings;
   };
 
-  const priceRankings = getPriceRankings();
+  const priceRankings = useMemo(() => getPriceRankings(), [calculateTotals]);
 
-  const lowestTotalStore = findLowestTotal();
+  const lowestTotalStore = useMemo(() => findLowestTotal(), [calculateTotals]);
 
   const handleSelectProduct = (product: Product) => {
     toggleProductSelection(product.id);
@@ -376,7 +386,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       </Card>
 
       <ComparisonBar 
-        totals={totals}
+        totals={calculateTotals}
         selectedProducts={selectedProducts}
         priceRankings={priceRankings}
         lowestTotalStore={lowestTotalStore}
