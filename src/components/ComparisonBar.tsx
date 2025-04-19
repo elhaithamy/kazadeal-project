@@ -123,8 +123,8 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
 
   return (
     <>
-      {/* Desktop view - Sticky vertical bar */}
-      <div className="hidden lg:block fixed right-4 top-20 w-72 z-40">
+      {/* Desktop view - Bottom page section */}
+      <div className="hidden lg:block mt-8 mb-20">
         <Card className="bg-white shadow-lg border border-green-100">
           <CardContent className="p-4">
             <ComparisonContent />
