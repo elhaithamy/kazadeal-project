@@ -102,49 +102,53 @@ const LastUpdateOffers = () => {
         <Tag className="h-5 w-5 text-blue-500" />
         <h2 className="text-xl font-bold">Latest Offers</h2>
       </div>
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-          containScroll: false
-        }}
-        className="w-full"
-      >
-        <CarouselContent className="pb-1">
-          {offers.map((offer) => (
-            <CarouselItem 
-              key={offer.id} 
-              className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
-            >
-              {/* Frameless/soft row - matches table */}
-              <div className="flex flex-col py-3 px-1 hover-scale items-start">
-                <div className="flex justify-between w-full mb-1 gap-2 items-center">
-                  <span className={`font-bold text-xs ${offer.color} bg-opacity-10 rounded-full px-2 py-0.5`}>
-                    {offer.store}
-                  </span>
-                  {offer.badge && (
-                    <span className="flex items-center bg-white/90 text-xs px-2 py-0.5 rounded-full shadow-sm">
-                      {getBadgeIcon(offer.badgeType)}
-                      <span className="font-semibold">{offer.badge}</span>
+      <div className="relative pb-8">
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+            containScroll: false
+          }}
+          className="w-full"
+        >
+          <CarouselContent className="pb-1">
+            {offers.map((offer) => (
+              <CarouselItem 
+                key={offer.id} 
+                className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
+              >
+                {/* Frameless/soft row - matches table */}
+                <div className="flex flex-col py-3 px-1 hover-scale items-start">
+                  <div className="flex justify-between w-full mb-1 gap-2 items-center">
+                    <span className={`font-bold text-xs ${offer.color} bg-opacity-10 rounded-full px-2 py-0.5`}>
+                      {offer.store}
                     </span>
-                  )}
+                    {offer.badge && (
+                      <span className="flex items-center bg-white/90 text-xs px-2 py-0.5 rounded-full shadow-sm">
+                        {getBadgeIcon(offer.badgeType)}
+                        <span className="font-semibold">{offer.badge}</span>
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-medium text-xs mb-1 text-gray-900 dark:text-white">{offer.title}</h3>
+                  <p className="text-xs text-gray-500 mb-2">{offer.description}</p>
+                  <div className="flex items-center text-xs text-gray-500 mt-auto">
+                    <Clock className="h-3 w-3 mr-1" />
+                    <span className="font-medium">Expires: {offer.expiry}</span>
+                  </div>
                 </div>
-                <h3 className="font-medium text-xs mb-1 text-gray-900 dark:text-white">{offer.title}</h3>
-                <p className="text-xs text-gray-500 mb-2">{offer.description}</p>
-                <div className="flex items-center text-xs text-gray-500 mt-auto">
-                  <Clock className="h-3 w-3 mr-1" />
-                  <span className="font-medium">Expires: {offer.expiry}</span>
-                </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="left-0 lg:-left-6" />
-        <CarouselNext className="right-0 lg:-right-6" />
-      </Carousel>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {/* BUTTONS MOVED OUTSIDE THE ROW */}
+          <div className="flex w-full justify-center gap-2 absolute bottom-0 left-0 right-0 z-10">
+            <CarouselPrevious className="static left-0 right-auto translate-y-0 relative" />
+            <CarouselNext className="static left-auto right-0 translate-y-0 relative" />
+          </div>
+        </Carousel>
+      </div>
     </div>
   );
 };
 
 export default LastUpdateOffers;
-
