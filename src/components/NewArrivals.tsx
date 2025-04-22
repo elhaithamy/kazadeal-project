@@ -2,7 +2,7 @@
 import React from 'react';
 import { getNewArrivals } from '@/data/products';
 import { Card, CardContent } from '@/components/ui/card';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Star, ThumbsUp, TrendingUp } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -14,7 +14,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import ProductTag from '@/components/ProductTag';
 
 const NewArrivals = () => {
-  const newArrivals = getNewArrivals(5);
+  const newArrivals = getNewArrivals(8); // Get more items for better carousel
   const isMobile = useIsMobile();
   
   return (
@@ -32,16 +32,16 @@ const NewArrivals = () => {
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-2 md:-ml-3">
+        <CarouselContent className="-ml-1 md:-ml-2">
           {newArrivals.map((product) => (
             <CarouselItem 
               key={product.id} 
-              className="pl-2 md:pl-3 basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+              className="pl-1 md:pl-2 basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4"
             >
               <Card className="hover:shadow-lg transition-shadow h-full">
                 <CardContent className="p-3">
                   <div className="flex flex-col items-center">
-                    <div className="relative w-16 h-16 mb-2">
+                    <div className="relative w-14 h-14 mb-2">
                       <img 
                         src={product.image} 
                         alt={product.name} 
@@ -53,7 +53,8 @@ const NewArrivals = () => {
                     </div>
                     <h3 className="font-medium text-center text-sm mb-1 line-clamp-1">{product.name}</h3>
                     <p className="text-xs text-gray-500 text-center">{product.category}</p>
-                    <div className="mt-2 text-xs bg-gradient-to-r from-green-500 to-green-400 text-white px-2 py-0.5 rounded-full">
+                    <div className="mt-2 text-xs bg-gradient-to-r from-green-500 to-green-400 text-white px-2 py-0.5 rounded-full flex items-center">
+                      <Star className="h-3 w-3 mr-1" />
                       NEW IN STORES
                     </div>
                   </div>

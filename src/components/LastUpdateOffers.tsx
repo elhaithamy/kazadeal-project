@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tag, Clock } from 'lucide-react';
+import { Tag, Clock, Star, ThumbsUp, TrendingUp } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -18,6 +18,8 @@ interface OfferItem {
   expiry: string;
   description: string;
   color: string;
+  badge?: string;
+  badgeType?: 'hot' | 'best' | 'trending';
 }
 
 const offers: OfferItem[] = [
@@ -28,6 +30,8 @@ const offers: OfferItem[] = [
     expiry: '25 Apr 2025',
     description: 'Get 20% off all fresh fruits and vegetables',
     color: 'bg-app-green',
+    badge: 'Best Deal',
+    badgeType: 'best',
   },
   {
     id: 2,
@@ -36,6 +40,8 @@ const offers: OfferItem[] = [
     expiry: '30 Apr 2025',
     description: 'On selected dairy products and bakery items',
     color: 'bg-red-600',
+    badge: 'Hot Deal',
+    badgeType: 'hot',
   },
   {
     id: 3,
@@ -44,6 +50,8 @@ const offers: OfferItem[] = [
     expiry: '22 Apr 2025',
     description: 'Special discount on all kitchenware',
     color: 'bg-blue-600',
+    badge: 'Trending',
+    badgeType: 'trending',
   },
   {
     id: 4,
@@ -60,6 +68,8 @@ const offers: OfferItem[] = [
     expiry: '23 Apr 2025',
     description: 'All frozen meals and vegetables on discount',
     color: 'bg-red-500',
+    badge: 'Hot Deal',
+    badgeType: 'hot',
   },
   {
     id: 6,
@@ -70,6 +80,19 @@ const offers: OfferItem[] = [
     color: 'bg-gray-700',
   },
 ];
+
+const getBadgeIcon = (type?: 'hot' | 'best' | 'trending') => {
+  switch (type) {
+    case 'hot':
+      return <Star className="h-3 w-3 mr-1" />;
+    case 'best':
+      return <ThumbsUp className="h-3 w-3 mr-1" />;
+    case 'trending':
+      return <TrendingUp className="h-3 w-3 mr-1" />;
+    default:
+      return null;
+  }
+};
 
 const LastUpdateOffers = () => {
   const isMobile = useIsMobile();
@@ -89,17 +112,23 @@ const LastUpdateOffers = () => {
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-2 md:-ml-3">
+        <CarouselContent className="-ml-1 md:-ml-2">
           {offers.map((offer) => (
             <CarouselItem 
               key={offer.id} 
-              className="pl-2 md:pl-3 basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/3"
+              className="pl-1 md:pl-2 basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4"
             >
               <Card className="hover:shadow-lg transition-shadow h-full">
                 <CardContent className="p-3">
                   <div className="flex flex-col h-full">
-                    <div className={`${offer.color} text-white px-3 py-1 rounded-t-md -mt-3 -mx-3 mb-2`}>
+                    <div className={`${offer.color} text-white px-3 py-1 rounded-t-md -mt-3 -mx-3 mb-2 flex justify-between items-center`}>
                       <div className="font-bold text-sm">{offer.store}</div>
+                      {offer.badge && (
+                        <div className="flex items-center bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">
+                          {getBadgeIcon(offer.badgeType)}
+                          {offer.badge}
+                        </div>
+                      )}
                     </div>
                     <h3 className="font-medium text-sm mb-2">{offer.title}</h3>
                     <p className="text-xs text-gray-600 mb-2 flex-grow">{offer.description}</p>

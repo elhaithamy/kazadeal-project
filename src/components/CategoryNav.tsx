@@ -1,12 +1,26 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Vegetable, Beef, Wheat, Milk, Cookie, Coffee, Beer, Bath, Baby, Sparkles } from 'lucide-react';
+import { 
+  Carrot, 
+  Beef, 
+  Wheat, 
+  Milk, 
+  Cookie, 
+  Coffee, 
+  Beer, 
+  Bath, 
+  Baby, 
+  Sparkles, 
+  ThumbsUp,
+  Star,
+  TrendingUp
+} from 'lucide-react';
 
 const categories = [
   { 
     name: "Vegetables & Fruits", 
-    icon: <Vegetable className="w-6 h-6" />, 
+    icon: <Carrot className="w-6 h-6" />, 
     color: "bg-gradient-to-r from-green-400 to-green-500",
     emoji: "🥬"
   },
@@ -68,7 +82,7 @@ const categories = [
 
 const CategoryNav = () => {
   return (
-    <div className="px-3 py-3">
+    <div className="px-3 py-2">
       <div className="relative mb-4">
         <input
           type="text"
@@ -83,12 +97,12 @@ const CategoryNav = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
         {categories.map((category, index) => (
           <Link 
             key={index}
             to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
-            className="flex flex-col items-center space-y-2 hover-scale"
+            className="flex flex-col items-center space-y-1 hover-scale"
           >
             <div className={`w-12 h-12 rounded-xl ${category.color} flex items-center justify-center text-white shadow-md overflow-hidden`}>
               <div className="flex flex-col items-center">
