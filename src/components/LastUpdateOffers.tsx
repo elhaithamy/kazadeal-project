@@ -98,8 +98,8 @@ const LastUpdateOffers = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div className="mb-4">
-      <div className="flex items-center gap-2 mb-3">
+    <div className="mb-3 rounded-xl card-gradient shadow border border-app-green/30">
+      <div className="flex items-center gap-2 mb-3 px-3 pt-3">
         <Tag className="h-5 w-5 text-blue-500" />
         <h2 className="text-xl font-bold">Latest Offers</h2>
       </div>
@@ -112,16 +112,16 @@ const LastUpdateOffers = () => {
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-1 md:-ml-2">
+        <CarouselContent className="-ml-1 md:-ml-2 pb-2">
           {offers.map((offer) => (
             <CarouselItem 
               key={offer.id} 
               className="pl-1 md:pl-2 basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4"
             >
-              <Card className="hover:shadow-lg transition-shadow h-full">
+              <Card className="hover:shadow-lg transition-shadow h-full rounded-xl border-2 border-transparent bg-white/90 card-gradient">
                 <CardContent className="p-3">
                   <div className="flex flex-col h-full">
-                    <div className={`${offer.color} text-white px-3 py-1 rounded-t-md -mt-3 -mx-3 mb-2 flex justify-between items-center`}>
+                    <div className={`${offer.color} text-white px-3 py-1 rounded-t-xl -mt-3 -mx-3 mb-2 flex justify-between items-center`}>
                       <div className="font-bold text-sm">{offer.store}</div>
                       {offer.badge && (
                         <div className="flex items-center bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">
