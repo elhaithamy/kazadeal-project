@@ -17,7 +17,7 @@ const NewArrivals = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="mb-3 px-0">
+    <div>
       <div className="flex items-center gap-2 mb-3 px-2 pt-2">
         <Sparkles className="h-5 w-5 text-yellow-500" />
         <h2 className="text-xl font-bold">New Arrivals</h2>
@@ -30,28 +30,28 @@ const NewArrivals = () => {
         }}
         className="w-full"
       >
-        <CarouselContent className="pb-2">
+        <CarouselContent className="pb-1">
           {newArrivals.map((product) => (
             <CarouselItem 
               key={product.id} 
               className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
             >
-              {/* Frameless, pill/soft card style */}
-              <div className="flex flex-col items-center bg-gray-50/80 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-lg transition-shadow px-3 py-4 h-full">
-                <div className="relative w-14 h-14 mb-2">
+              {/* Frameless, pill/soft card style - matches table item, no borders or card bg */}
+              <div className="flex flex-col items-center py-3 px-1 hover-scale">
+                <div className="relative w-12 h-12 mb-2">
                   <img 
                     src={product.image} 
                     alt={product.name} 
-                    className="w-full h-full object-cover rounded-full border-2 border-app-green shadow-md bg-white"
+                    className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm bg-white"
                   />
                   <div className="absolute -top-2 -right-2">
                     <ProductTag type="new" />
                   </div>
                 </div>
-                <h3 className="font-medium text-center text-sm mb-1 line-clamp-1">{product.name}</h3>
-                <p className="text-xs text-gray-500 text-center">{product.category}</p>
-                <div className="mt-2 text-xs bg-gradient-to-r from-green-500 to-green-400 text-white px-2 py-0.5 rounded-full flex items-center">
-                  <Star className="h-3 w-3 mr-1" />
+                <h3 className="font-medium text-center text-xs mb-1 line-clamp-2">{product.name}</h3>
+                <p className="text-xs text-gray-500 text-center mb-2">{product.category}</p>
+                <div className="mt-auto text-xs text-app-green font-bold bg-app-green/10 px-2 py-0.5 rounded-full flex items-center">
+                  <Star className="h-3 w-3 mr-1 text-app-green" />
                   NEW IN STORES
                 </div>
               </div>
@@ -66,3 +66,4 @@ const NewArrivals = () => {
 };
 
 export default NewArrivals;
+

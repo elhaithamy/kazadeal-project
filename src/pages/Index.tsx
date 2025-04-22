@@ -9,16 +9,21 @@ import CategoryFilter from '@/components/CategoryFilter';
 import UserAccountPanel from '@/components/UserAccountPanel';
 import NotificationCenter from '@/components/NotificationCenter';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
-import { Share2, User, Star, TrendingUp, ThumbsUp, Award, Rocket, Gift } from 'lucide-react';
+import { Share2, User, Star, TrendingUp, ThumbsUp, Award, Rocket, Gift, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NearbyStores from '@/components/NearbyStores';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 
+// Added a custom icon for KazaDeal (Store)
 const uspList = [
   {
     label: "KazaDeal",
-    icon: <Award className="w-6 h-6 text-violet-500" />,
+    icon: (
+      <div className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-violet-400 to-fuchsia-500 rounded-full shadow-sm">
+        <Store className="w-6 h-6 text-white" />
+      </div>
+    ),
     highlight: true
   },
   {
@@ -74,7 +79,7 @@ const Index = () => {
         <main className="flex-1 mb-16 py-3">
           <div className="container mx-auto px-2">
             {/* Title/Top Bar */}
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">KazaDeal</h1>
               <div className="flex gap-1 items-center">
                 <Button variant="ghost" size="icon" onClick={handleShare}>
@@ -90,7 +95,7 @@ const Index = () => {
             </div>
 
             {/* ::::: Icon Row (USP+SignUp) ::::: */}
-            <div className="flex flex-nowrap overflow-auto gap-4 py-3 mb-3 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex flex-nowrap overflow-auto gap-5 py-3 mb-5 border-b border-gray-100 dark:border-gray-800">
               {!isSignedIn && (
                 <button 
                   className="flex flex-col items-center justify-center group focus:outline-none min-w-[70px]"
@@ -105,7 +110,7 @@ const Index = () => {
               )}
               {uspList.map((item, i) => (
                 <div key={item.label} className="flex flex-col items-center min-w-[70px]">
-                  <div className={`w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center mb-1 shadow border ${item.highlight ? 'border-violet-400' : 'border-gray-100 dark:border-gray-800'}`}>
+                  <div className="mb-1 flex items-center justify-center">
                     {item.icon}
                   </div>
                   <span className={`text-xs font-medium text-gray-700 dark:text-gray-200 text-center ${item.highlight ? "font-semibold text-violet-700 dark:text-violet-400" : ""}`}>
@@ -117,14 +122,14 @@ const Index = () => {
             {/* ::::: END Icon Row */}
 
             {/* Description */}
-            <p className="text-center text-gray-600 dark:text-gray-300 mb-3 mt-0 max-w-2xl mx-auto text-sm">
+            <p className="text-center text-gray-600 dark:text-gray-300 mb-5 mt-0 max-w-2xl mx-auto text-sm">
               We bring the truth about deals. No bullshit.
             </p>
             
             {/* Main Grid */}
             <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-4">
               <div className="order-2 md:order-1">
-                <div className="mb-2">
+                <div className="mb-4">
                   <CategoryFilter 
                     onSearch={setSearchQuery} 
                     onCategoryChange={setActiveCategory} 
@@ -152,3 +157,4 @@ const Index = () => {
 };
 
 export default Index;
+
