@@ -1,6 +1,4 @@
-
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Tag, Clock, Star, ThumbsUp, TrendingUp } from 'lucide-react';
 import {
   Carousel,
@@ -96,14 +94,13 @@ const getBadgeIcon = (type?: 'hot' | 'best' | 'trending') => {
 
 const LastUpdateOffers = () => {
   const isMobile = useIsMobile();
-  
+
   return (
-    <div className="mb-3 rounded-xl card-gradient shadow border border-app-green/30">
-      <div className="flex items-center gap-2 mb-3 px-3 pt-3">
+    <div className="mb-3 px-0">
+      <div className="flex items-center gap-2 mb-3 px-2 pt-2">
         <Tag className="h-5 w-5 text-blue-500" />
         <h2 className="text-xl font-bold">Latest Offers</h2>
       </div>
-      
       <Carousel
         opts={{
           align: "start",
@@ -112,37 +109,34 @@ const LastUpdateOffers = () => {
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-1 md:-ml-2 pb-2">
+        <CarouselContent className="pb-2">
           {offers.map((offer) => (
             <CarouselItem 
               key={offer.id} 
-              className="pl-1 md:pl-2 basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4"
+              className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
             >
-              <Card className="hover:shadow-lg transition-shadow h-full rounded-xl border-2 border-transparent bg-white/90 card-gradient">
-                <CardContent className="p-3">
-                  <div className="flex flex-col h-full">
-                    <div className={`${offer.color} text-white px-3 py-1 rounded-t-xl -mt-3 -mx-3 mb-2 flex justify-between items-center`}>
-                      <div className="font-bold text-sm">{offer.store}</div>
-                      {offer.badge && (
-                        <div className="flex items-center bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">
-                          {getBadgeIcon(offer.badgeType)}
-                          {offer.badge}
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="font-medium text-sm mb-2">{offer.title}</h3>
-                    <p className="text-xs text-gray-600 mb-2 flex-grow">{offer.description}</p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>Expires: {offer.expiry}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className={`flex flex-col h-full bg-gray-50/80 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-lg transition-shadow px-3 py-4`}>
+                <div className="flex justify-between items-center mb-1">
+                  <span className={`font-bold text-sm ${offer.color} bg-opacity-10 rounded px-2 py-0.5`}>
+                    {offer.store}
+                  </span>
+                  {offer.badge && (
+                    <span className="flex items-center bg-white/70 text-gray-700 text-xs px-2 py-0.5 rounded-full shadow-sm">
+                      {getBadgeIcon(offer.badgeType)}
+                      {offer.badge}
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-white">{offer.title}</h3>
+                <p className="text-xs text-gray-600 mb-2 flex-grow">{offer.description}</p>
+                <div className="flex items-center text-xs text-gray-500">
+                  <Clock className="h-3 w-3 mr-1" />
+                  <span>Expires: {offer.expiry}</span>
+                </div>
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        
         <CarouselPrevious className="left-0 lg:-left-6" />
         <CarouselNext className="right-0 lg:-right-6" />
       </Carousel>
