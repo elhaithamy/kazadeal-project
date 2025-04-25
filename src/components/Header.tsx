@@ -25,7 +25,7 @@ const Header = () => {
               className="flex flex-col items-center text-gray-700 whitespace-nowrap"
             >
               <img
-                src="https://via.placeholder.com/50" // Demo placeholder image
+                src="https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png" // Demo placeholder image
                 alt={store}
                 className="h-8 w-8 object-contain"
               />
