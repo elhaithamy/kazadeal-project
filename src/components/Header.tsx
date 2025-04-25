@@ -18,14 +18,14 @@ const Header = () => {
       </div>
       {/* Retailer Section */}
       <div className="flex overflow-x-auto gap-4 py-2 px-2 bg-white">
-        {['LuLu', 'Othaim', 'Carrefour', 'Danube', 'Panda', 'Tamimi', 'Test7', 'Test8', 'Test9'].map(
+        {['LuLu', 'Othaim', 'Carrefour', 'Danube', 'Panda', 'Tamimi', 'Retailer7', 'Retailer8', 'Retailer9'].map(
           (store, index) => (
             <div
               key={index}
               className="flex flex-col items-center text-gray-700 whitespace-nowrap"
             >
               <img
-                src={`/images/${store.toLowerCase()}.png`}
+                src="https://via.placeholder.com/50" // Demo placeholder image
                 alt={store}
                 className="h-8 w-8 object-contain"
               />
