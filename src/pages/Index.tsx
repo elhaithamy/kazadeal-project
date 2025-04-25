@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
@@ -9,42 +8,27 @@ import CategoryFilter from '@/components/CategoryFilter';
 import UserAccountPanel from '@/components/UserAccountPanel';
 import NotificationCenter from '@/components/NotificationCenter';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
-import { Share2, User, Star, TrendingUp, ThumbsUp, Award, Rocket, Gift, Store } from 'lucide-react';
+import { Share2, User, Bell, Tag, CircleArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NearbyStores from '@/components/NearbyStores';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
-// Added a custom icon for KazaDeal (Store)
 const uspList = [
   {
-    label: "KazaDeal",
-    icon: (
-      <div className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-violet-400 to-fuchsia-500 rounded-full shadow-sm">
-        <Store className="w-6 h-6 text-white" />
-      </div>
-    ),
-    highlight: true
+    label: "Smart Price Comparison",
+    description: "Uncover the best unit-value savings, not fake discounts",
+    icon: <Tag className="w-6 h-6 text-violet-500" />,
   },
   {
-    label: "Real Savings",
-    icon: <Star className="w-6 h-6 text-yellow-400" />
+    label: "Offer Alerts",
+    description: "Get notified when real deals hit the shelves",
+    icon: <Bell className="w-6 h-6 text-blue-500" />,
   },
   {
-    label: "Trend Watch",
-    icon: <TrendingUp className="w-6 h-6 text-green-400" />
-  },
-  {
-    label: "Verified Deals",
-    icon: <ThumbsUp className="w-6 h-6 text-blue-400" />
-  },
-  {
-    label: "Bonuses",
-    icon: <Gift className="w-6 h-6 text-pink-400" />
-  },
-  {
-    label: "Fastest Updates",
-    icon: <Rocket className="w-6 h-6 text-orange-400" />
+    label: "Personalized Insights",
+    description: "Tailored picks based on your shopping habits",
+    icon: <CircleArrowRight className="w-6 h-6 text-green-500" />,
   },
 ];
 
@@ -56,7 +40,7 @@ const Index = () => {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'KazaDeal - Price Comparison',
+        title: 'Price Comparison - KazaDeal',
         text: 'Check out these great deals!',
         url: window.location.href,
       })
@@ -80,7 +64,9 @@ const Index = () => {
           <div className="container mx-auto px-2">
             {/* Title/Top Bar */}
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">KazaDeal</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">
+                Price Comparison
+              </h1>
               <div className="flex gap-1 items-center">
                 <Button variant="ghost" size="icon" onClick={handleShare}>
                   <Share2 className="h-5 w-5" />
@@ -94,37 +80,38 @@ const Index = () => {
               </div>
             </div>
 
-            {/* ::::: Icon Row (USP+SignUp) ::::: */}
-            <div className="flex flex-nowrap overflow-auto gap-5 py-3 mb-5 border-b border-gray-100 dark:border-gray-800">
+            {/* ::::: USP Section ::::: */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 mb-5 border-b border-gray-100 dark:border-gray-800">
               {!isSignedIn && (
                 <button 
-                  className="flex flex-col items-center justify-center group focus:outline-none min-w-[70px]"
+                  className="flex flex-col items-center justify-center group focus:outline-none p-4 md:col-span-3 bg-gradient-to-r from-violet-50 to-violet-100 dark:from-violet-900/20 dark:to-violet-800/20 rounded-lg"
                   onClick={() => setIsSignedIn(true)}
-                  aria-label="Sign Up"
                 >
-                  <div className="w-12 h-12 rounded-full bg-app-green/90 flex items-center justify-center mb-1 shadow group-hover:scale-105 transition-transform">
-                    <User className="text-white w-7 h-7" />
+                  <div className="w-12 h-12 rounded-full bg-violet-500 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                    <User className="text-white w-6 h-6" />
                   </div>
-                  <span className="text-xs font-bold text-app-green group-hover:underline">Sign Up</span>
+                  <span className="font-bold text-violet-600 dark:text-violet-400 group-hover:underline">
+                    Sign Up for More Savings
+                  </span>
                 </button>
               )}
               {uspList.map((item, i) => (
-                <div key={item.label} className="flex flex-col items-center min-w-[70px]">
-                  <div className="mb-1 flex items-center justify-center">
+                <div 
+                  key={item.label} 
+                  className="flex flex-col items-center text-center p-4"
+                >
+                  <div className="mb-3 p-3 rounded-full bg-gray-50 dark:bg-gray-800">
                     {item.icon}
                   </div>
-                  <span className={`text-xs font-medium text-gray-700 dark:text-gray-200 text-center ${item.highlight ? "font-semibold text-violet-700 dark:text-violet-400" : ""}`}>
+                  <h3 className="font-bold text-sm mb-1 text-gray-800 dark:text-gray-200">
                     {item.label}
-                  </span>
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {item.description}
+                  </p>
                 </div>
               ))}
             </div>
-            {/* ::::: END Icon Row */}
-
-            {/* Description */}
-            <p className="text-center text-gray-600 dark:text-gray-300 mb-5 mt-0 max-w-2xl mx-auto text-sm">
-              We bring the truth about deals. No bullshit.
-            </p>
             
             {/* Main Grid */}
             <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-4">
@@ -157,4 +144,3 @@ const Index = () => {
 };
 
 export default Index;
-

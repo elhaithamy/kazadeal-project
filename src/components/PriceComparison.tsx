@@ -1,4 +1,3 @@
-
 import React, { useContext, useMemo, useState } from 'react';
 import { ShoppingBasket, Plus, Check } from 'lucide-react';
 import { products, Product } from '@/data/products';
@@ -41,7 +40,25 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [displayedItems, setDisplayedItems] = useState(15);
-  
+  const [quantities, setQuantities] = useState<Record<number, number>>({});
+
+  const getQuantity = (productId: number) => quantities[productId] || 1;
+
+  const handleQuantityChange = (productId: number, value: number) => {
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(1, value)
+    }));
+  };
+
+  const calculateTotalPrice = (basePrice: number, productId: number) => {
+    return basePrice * getQuantity(productId);
+  };
+
+  const calculateUnitPrice = (product: Product) => {
+    return `${product.prices.lulu.toFixed(2)} EGP/unit`;
+  };
+
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0.5,
     onChange: (inView) => {
@@ -199,6 +216,8 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     const lowestPrice = findLowestPrice(product.prices);
     const isSelected = selectedProducts.includes(product.id);
     const productTag = getProductTag(product.id);
+    const quantity = getQuantity(product.id);
+    const unitPrice = calculateUnitPrice(product);
     
     return (
       <Card className={`h-full ${isSelected ? 'border-app-green border-2' : ''}`}>
@@ -221,23 +240,34 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
               <div className="text-xs text-gray-500">Count: {product.count}</div>
             </div>
             
+            <div className="flex items-center justify-between mb-2">
+              <input
+                type="number"
+                value={quantity}
+                min="1"
+                onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
+                className="w-16 text-xs p-1 border rounded"
+              />
+              <span className="text-xs text-gray-500">{unitPrice}</span>
+            </div>
+            
             <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
               <div className="text-center p-1 bg-gray-50 rounded">
                 <div className="text-gray-500 text-[10px]">LuLu</div>
                 <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                  {product.prices.lulu}
+                  {calculateTotalPrice(product.prices.lulu, product.id)}
                 </div>
               </div>
               <div className="text-center p-1 bg-gray-50 rounded">
                 <div className="text-gray-500 text-[10px]">Panda</div>
                 <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                  {product.prices.panda}
+                  {calculateTotalPrice(product.prices.panda, product.id)}
                 </div>
               </div>
               <div className="text-center p-1 bg-gray-50 rounded">
                 <div className="text-gray-500 text-[10px]">Othaim</div>
                 <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                  {product.prices.othaim}
+                  {calculateTotalPrice(product.prices.othaim, product.id)}
                 </div>
               </div>
             </div>
@@ -284,9 +314,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
         {categories.map((category, index) => {
           const categoryProducts = productsByCategory[category];
           
-          // Insert Latest Offers after first category
           const showOffers = index === 1;
-          // Insert New Arrivals after second category
           const showArrivals = index === 2;
           
           return (
@@ -366,7 +394,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
           
           {renderCarouselProducts()}
           
-          {/* Load more trigger */}
           {currentProducts.length < filteredProducts.length && (
             <div 
               ref={loadMoreRef}
