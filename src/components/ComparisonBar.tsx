@@ -1,14 +1,17 @@
 
-import React from 'react';
-import { ShoppingCart } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 
 interface ComparisonBarProps {
   totals: {
@@ -122,45 +125,39 @@ const ComparisonBar: React.FC<ComparisonBarProps> = ({
 
   return (
     <>
-      {/* Desktop view - Fixed bar at bottom of page */}
-      <div className="hidden lg:block fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg">
-        <div className="max-w-4xl mx-auto p-4">
-          <ComparisonContent />
-        </div>
-      </div>
-
-      {/* Mobile view - Drawer with floating button */}
-      <div className="lg:hidden fixed bottom-20 right-4 z-40">
-        <Drawer>
-          <DrawerTrigger asChild>
+      {/* Floating cart icon that expands on click */}
+      <div className="fixed bottom-20 right-4 z-40">
+        <Sheet>
+          <SheetTrigger asChild>
             <Button
               size="icon"
-              className="h-16 w-auto px-4 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg"
+              className="h-14 w-14 rounded-full bg-app-green hover:bg-app-green/90 shadow-lg"
             >
               {selectedProducts.length > 0 ? (
-                <div className="flex items-center gap-2 text-xs">
-                  <ShoppingCart className="h-5 w-5" />
-                  <div className="flex flex-col items-start">
-                    <span className="font-bold whitespace-nowrap">
-                      {getLowestStoreDisplay().total} • {getLowestStoreDisplay().name}
-                    </span>
-                  </div>
+                <div className="relative">
+                  <ShoppingCart className="h-6 w-6" />
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    {selectedProducts.length}
+                  </span>
                 </div>
               ) : (
                 <ShoppingCart className="h-6 w-6" />
               )}
             </Button>
-          </DrawerTrigger>
-          <DrawerContent>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="rounded-t-xl">
+            <SheetHeader>
+              <SheetTitle>Shopping Cart</SheetTitle>
+              <SheetClose className="absolute right-4 top-4">
+                <X className="h-4 w-4" />
+              </SheetClose>
+            </SheetHeader>
             <div className="p-4 max-w-lg mx-auto">
               <ComparisonContent />
             </div>
-          </DrawerContent>
-        </Drawer>
+          </SheetContent>
+        </Sheet>
       </div>
-      
-      {/* Spacer for desktop fixed bar */}
-      <div className="hidden lg:block h-40"></div>
     </>
   );
 };

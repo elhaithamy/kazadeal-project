@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tag, Clock, Star, ThumbsUp, TrendingUp } from 'lucide-react';
 import {
@@ -102,7 +101,7 @@ const LastUpdateOffers = () => {
         <Tag className="h-5 w-5 text-blue-500" />
         <h2 className="text-xl font-bold">Latest Offers</h2>
       </div>
-      <div className="relative pb-8">
+      <div className="relative pb-12">
         <Carousel
           opts={{
             align: "start",
@@ -130,8 +129,8 @@ const LastUpdateOffers = () => {
                       </span>
                     )}
                   </div>
-                  <h3 className="font-medium text-xs mb-1 text-gray-900 dark:text-white">{offer.title}</h3>
-                  <p className="text-xs text-gray-500 mb-2">{offer.description}</p>
+                  <h3 className="font-medium text-xs mb-1 text-gray-900 dark:text-white tracking-wide leading-relaxed">{offer.title}</h3>
+                  <p className="text-xs text-gray-500 mb-2 leading-relaxed">{offer.description}</p>
                   <div className="flex items-center text-xs text-gray-500 mt-auto">
                     <Clock className="h-3 w-3 mr-1" />
                     <span className="font-medium">Expires: {offer.expiry}</span>
@@ -140,10 +139,9 @@ const LastUpdateOffers = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          {/* BUTTONS MOVED OUTSIDE THE ROW */}
-          <div className="flex w-full justify-center gap-2 absolute bottom-0 left-0 right-0 z-10">
-            <CarouselPrevious className="static left-0 right-auto translate-y-0 relative" />
-            <CarouselNext className="static left-auto right-0 translate-y-0 relative" />
+          <div className="flex w-full justify-between px-8 absolute bottom-0 left-0 right-0">
+            <CarouselPrevious className="static left-0 right-auto translate-y-0 relative h-8 w-8" />
+            <CarouselNext className="static left-auto right-0 translate-y-0 relative h-8 w-8" />
           </div>
         </Carousel>
       </div>

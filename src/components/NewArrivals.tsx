@@ -22,7 +22,7 @@ const NewArrivals = () => {
         <Sparkles className="h-5 w-5 text-yellow-500" />
         <h2 className="text-xl font-bold">New Arrivals</h2>
       </div>
-      <div className="relative pb-8">
+      <div className="relative pb-12">
         <Carousel
           opts={{
             align: "start",
@@ -48,7 +48,7 @@ const NewArrivals = () => {
                       <ProductTag type="new" />
                     </div>
                   </div>
-                  <h3 className="font-medium text-center text-xs mb-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                  <h3 className="font-medium text-center text-xs mb-1 line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
                     {product.name}
                   </h3>
                   <p className="text-xs text-gray-500 text-center mb-2">{product.category}</p>
@@ -60,9 +60,9 @@ const NewArrivals = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="flex w-full justify-between px-4 absolute bottom-0 left-0 right-0">
-            <CarouselPrevious className="static relative" />
-            <CarouselNext className="static relative" />
+          <div className="flex w-full justify-between px-8 absolute bottom-0 left-0 right-0">
+            <CarouselPrevious className="static relative bottom-0 left-0 -translate-y-0 h-8 w-8" />
+            <CarouselNext className="static relative bottom-0 right-0 -translate-y-0 h-8 w-8" />
           </div>
         </Carousel>
       </div>
