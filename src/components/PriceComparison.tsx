@@ -1,8 +1,8 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { ShoppingBasket, Plus, Check } from 'lucide-react';
+import { ShoppingBasket, Plus, Check, ChevronUp, Calendar } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 import { useToast } from '@/hooks/use-toast';
@@ -35,12 +35,23 @@ const getProductTag = (productId: number): TagType | null => {
   return null;
 };
 
+// Get today's date in a readable format
+const getLastUpdateDate = () => {
+  const today = new Date();
+  return today.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+
 const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComparisonProps) => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [displayedItems, setDisplayedItems] = useState(15);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const lastUpdateDate = getLastUpdateDate();
 
   const getQuantity = (productId: number) => quantities[productId] || 1;
 
@@ -49,6 +60,14 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
       ...prev,
       [productId]: Math.max(1, value)
     }));
+  };
+
+  const increaseQuantity = (productId: number) => {
+    handleQuantityChange(productId, getQuantity(productId) + 1);
+    toast({
+      title: "Item quantity updated",
+      description: "Product quantity has been increased",
+    });
   };
 
   const calculateTotalPrice = (basePrice: number, productId: number) => {
@@ -236,19 +255,29 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                   </div>
                 )}
               </div>
-              <h3 className="font-medium text-center text-xs line-clamp-2">{product.name}</h3>
+              <h3 className="font-medium text-center text-xs line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
+                {product.name}
+              </h3>
               <div className="text-xs text-gray-500">Count: {product.count}</div>
             </div>
             
-            <div className="flex items-center justify-between mb-2">
-              <input
-                type="number"
-                value={quantity}
-                min="1"
-                onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
-                className="w-16 text-xs p-1 border rounded"
-              />
-              <span className="text-xs text-gray-500">{unitPrice}</span>
+            <div className="flex items-center justify-between mb-2 relative">
+              <div className="flex items-center">
+                <input
+                  type="number"
+                  value={quantity}
+                  min="1"
+                  onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
+                  className="w-12 text-xs p-1 border rounded"
+                />
+                <button 
+                  onClick={() => increaseQuantity(product.id)}
+                  className="ml-1 bg-app-green text-white rounded-full w-5 h-5 flex items-center justify-center"
+                >
+                  <ChevronUp className="w-3 h-3" />
+                </button>
+              </div>
+              <span className="text-xs text-gray-500 font-semibold">{unitPrice}</span>
             </div>
             
             <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
@@ -370,25 +399,33 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     <div className="max-w-4xl mx-auto px-0 md:px-4 py-6">
       <Card className="mb-4 bg-white">
         <CardContent className="pt-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800">Price Comparison</h2>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">
-                {selectedProducts.length > 0 
-                  ? `${selectedProducts.length} products selected` 
-                  : filteredProducts.length === products.length 
-                    ? 'Showing all products'
-                    : `Showing ${filteredProducts.length} products`}
-              </span>
-              {selectedProducts.length > 0 && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => toggleProductSelection("clear")}
-                >
-                  Clear
-                </Button>
-              )}
+          <div className="flex flex-col mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800">Price Comparison</h2>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">
+                  {selectedProducts.length > 0 
+                    ? `${selectedProducts.length} products selected` 
+                    : filteredProducts.length === products.length 
+                      ? 'Showing all products'
+                      : `Showing ${filteredProducts.length} products`}
+                </span>
+                {selectedProducts.length > 0 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => toggleProductSelection("clear")}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            {/* Added last update date */}
+            <div className="flex items-center text-sm text-gray-500 mb-2">
+              <Calendar className="w-4 h-4 mr-1" />
+              <span>Last Updated: {lastUpdateDate}</span>
             </div>
           </div>
           

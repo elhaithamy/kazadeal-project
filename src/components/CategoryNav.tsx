@@ -11,10 +11,7 @@ import {
   Beer, 
   Bath, 
   Baby, 
-  Sparkles, 
-  ThumbsUp,
-  Star,
-  TrendingUp
+  Sparkles
 } from 'lucide-react';
 
 const categories = [
@@ -97,20 +94,39 @@ const CategoryNav = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-        {categories.map((category, index) => (
+      {/* Changed from horizontal scroll to 2-row grid layout */}
+      <div className="grid grid-cols-5 gap-3 mb-4">
+        {categories.slice(0, 5).map((category, index) => (
           <Link 
             key={index}
             to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
-            className="flex flex-col items-center space-y-1 hover-scale"
+            className="flex flex-col items-center space-y-2 hover-scale"
           >
-            <div className={`w-12 h-12 rounded-xl ${category.color} flex items-center justify-center text-white shadow-md overflow-hidden`}>
+            <div className={`w-16 h-16 rounded-xl ${category.color} flex items-center justify-center text-white shadow-md overflow-hidden`}>
               <div className="flex flex-col items-center">
                 {category.icon}
-                <span className="text-xs mt-0.5">{category.emoji}</span>
+                <span className="text-xs mt-1">{category.emoji}</span>
               </div>
             </div>
-            <span className="text-xs font-medium text-center text-gray-700">{category.name}</span>
+            <span className="text-xs font-medium text-center text-gray-700 line-clamp-2">{category.name}</span>
+          </Link>
+        ))}
+      </div>
+      
+      <div className="grid grid-cols-5 gap-3">
+        {categories.slice(5, 10).map((category, index) => (
+          <Link 
+            key={index + 5}
+            to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+            className="flex flex-col items-center space-y-2 hover-scale"
+          >
+            <div className={`w-16 h-16 rounded-xl ${category.color} flex items-center justify-center text-white shadow-md overflow-hidden`}>
+              <div className="flex flex-col items-center">
+                {category.icon}
+                <span className="text-xs mt-1">{category.emoji}</span>
+              </div>
+            </div>
+            <span className="text-xs font-medium text-center text-gray-700 line-clamp-2">{category.name}</span>
           </Link>
         ))}
       </div>

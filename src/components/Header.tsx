@@ -2,26 +2,73 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+const retailers = [
+  {
+    name: 'LuLu',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '25 Apr 2025'
+  },
+  {
+    name: 'Othaim',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '30 Apr 2025'
+  },
+  {
+    name: 'Carrefour',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '22 Apr 2025'
+  },
+  {
+    name: 'Danube',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '28 Apr 2025'
+  },
+  {
+    name: 'Panda',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '23 Apr 2025'
+  },
+  {
+    name: 'Tamimi',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '21 Apr 2025'
+  },
+  {
+    name: 'Retailer7',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '19 Apr 2025'
+  },
+  {
+    name: 'Retailer8',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '20 Apr 2025'
+  },
+  {
+    name: 'Retailer9',
+    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    offerDate: '18 Apr 2025'
+  }
+];
+
 const Header = () => {
   return (
     <header className="bg-white text-white">
-      {/* Retailer Section - Moved to the very top */}
-      <div className="flex overflow-x-auto gap-6 py-3 px-4 bg-white border-b border-gray-100">
-        {['LuLu', 'Othaim', 'Carrefour', 'Danube', 'Panda', 'Tamimi', 'Retailer7', 'Retailer8', 'Retailer9'].map(
-          (store, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 text-gray-700 whitespace-nowrap flex-shrink-0"
-            >
-              <img
-                src="https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png" // Demo placeholder image
-                alt={store}
-                className="h-6 w-6 object-contain"
-              />
-              <span className="text-xs font-medium">{store}</span>
-            </div>
-          )
-        )}
+      {/* Retailer Section - Made more organized with offer dates */}
+      <div className="flex overflow-x-auto gap-4 py-3 px-2 bg-white border-b border-gray-100">
+        {retailers.map((retailer, index) => (
+          <div
+            key={index}
+            className="flex flex-col items-center text-center gap-1 text-gray-700 whitespace-nowrap flex-shrink-0 min-w-[72px]"
+          >
+            <img
+              src={retailer.logo}
+              alt={retailer.name}
+              className="h-10 w-10 object-contain"
+            />
+            <span className="text-xs font-medium">{retailer.name}</span>
+            <span className="text-[10px] text-gray-500">{retailer.offerDate}</span>
+          </div>
+        ))}
       </div>
       
       {/* App Brand Section */}

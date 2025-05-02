@@ -9,11 +9,13 @@ import CategoryFilter from '@/components/CategoryFilter';
 import UserAccountPanel from '@/components/UserAccountPanel';
 import NotificationCenter from '@/components/NotificationCenter';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
-import { Share2, User, Bell, Tag, CircleArrowRight } from 'lucide-react';
+import { Share2, User, Bell, Tag, CircleArrowRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NearbyStores from '@/components/NearbyStores';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
+import CategoryNav from '@/components/CategoryNav';
 
 const uspList = [
   {
@@ -61,10 +63,20 @@ const Index = () => {
     <ProductSelectionProvider>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
         <Header />
-        <main className="flex-1 mb-16 pb-3">
+        <main className="flex-1 pb-3">
           <div className="container mx-auto px-2">
             {/* Title/Top Bar */}
-            <div className="flex justify-end items-center mb-4 mt-4">
+            <div className="flex justify-between items-center mb-4 mt-4">
+              <div className="flex gap-2">
+                <Link to="/leaflets">
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <span className="hidden sm:inline">Retailer Leaflets</span>
+                    <span className="sm:hidden">Leaflets</span>
+                  </Button>
+                </Link>
+              </div>
+              
               <div className="flex gap-1 items-center">
                 <Button variant="ghost" size="icon" onClick={handleShare}>
                   <Share2 className="h-5 w-5" />
@@ -76,6 +88,11 @@ const Index = () => {
                 </Avatar>
                 <ThemeToggle />
               </div>
+            </div>
+
+            {/* Category Navigation - Changed from slider to grid */}
+            <div className="mb-6">
+              <CategoryNav />
             </div>
 
             {/* ::::: USP Section ::::: */}
@@ -98,17 +115,22 @@ const Index = () => {
               ))}
               
               {!isSignedIn && (
-                <button 
-                  className="flex flex-col items-center justify-center group focus:outline-none p-4 md:col-span-3 bg-gradient-to-r from-violet-50 to-violet-100 dark:from-violet-900/20 dark:to-violet-800/20 rounded-lg mt-2"
-                  onClick={() => setIsSignedIn(true)}
-                >
+                <div className="flex flex-col items-center justify-center group p-4 md:col-span-3 bg-gradient-to-r from-violet-50 to-violet-100 dark:from-violet-900/20 dark:to-violet-800/20 rounded-lg mt-2">
                   <div className="w-12 h-12 rounded-full bg-violet-500 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                     <User className="text-white w-6 h-6" />
                   </div>
-                  <span className="font-bold text-violet-600 dark:text-violet-400 group-hover:underline">
+                  <span className="font-bold text-violet-600 dark:text-violet-400 mb-3">
                     Sign Up for More Savings
                   </span>
-                </button>
+                  
+                  {/* Added CTA button that matches search bar color */}
+                  <Button 
+                    className="bg-app-green hover:bg-app-green/90"
+                    onClick={() => setIsSignedIn(true)}
+                  >
+                    Create Account
+                  </Button>
+                </div>
               )}
             </div>
             
@@ -136,7 +158,11 @@ const Index = () => {
             </div>
           </div>
         </main>
-        <BottomNav />
+        
+        {/* Fixed bottom nav without sticky behavior */}
+        <div className="pb-16 md:pb-0">
+          <BottomNav />
+        </div>
       </div>
     </ProductSelectionProvider>
   );

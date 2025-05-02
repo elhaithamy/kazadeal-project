@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tag, Clock, Star, ThumbsUp, TrendingUp } from 'lucide-react';
 import {
@@ -8,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from '@/hooks/use-mobile';
+import ProductTag from '@/components/ProductTag';
 
 interface OfferItem {
   id: number;
@@ -18,6 +20,7 @@ interface OfferItem {
   color: string;
   badge?: string;
   badgeType?: 'hot' | 'best' | 'trending';
+  image: string;
 }
 
 const offers: OfferItem[] = [
@@ -30,6 +33,7 @@ const offers: OfferItem[] = [
     color: 'bg-app-green',
     badge: 'Best Deal',
     badgeType: 'best',
+    image: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png'
   },
   {
     id: 2,
@@ -40,6 +44,7 @@ const offers: OfferItem[] = [
     color: 'bg-red-600',
     badge: 'Hot Deal',
     badgeType: 'hot',
+    image: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png'
   },
   {
     id: 3,
@@ -50,6 +55,7 @@ const offers: OfferItem[] = [
     color: 'bg-blue-600',
     badge: 'Trending',
     badgeType: 'trending',
+    image: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png'
   },
   {
     id: 4,
@@ -58,6 +64,7 @@ const offers: OfferItem[] = [
     expiry: '28 Apr 2025',
     description: 'Cleaning supplies and organization items',
     color: 'bg-yellow-500',
+    image: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png'
   },
   {
     id: 5,
@@ -68,6 +75,7 @@ const offers: OfferItem[] = [
     color: 'bg-red-500',
     badge: 'Hot Deal',
     badgeType: 'hot',
+    image: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png'
   },
   {
     id: 6,
@@ -76,25 +84,14 @@ const offers: OfferItem[] = [
     expiry: '29 Apr 2025',
     description: 'Shampoo, soap, and personal hygiene products',
     color: 'bg-gray-700',
+    image: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png'
   },
 ];
-
-const getBadgeIcon = (type?: 'hot' | 'best' | 'trending') => {
-  switch (type) {
-    case 'hot':
-      return <Star className="h-3 w-3 mr-1 text-red-500" />;
-    case 'best':
-      return <ThumbsUp className="h-3 w-3 mr-1 text-app-green" />;
-    case 'trending':
-      return <TrendingUp className="h-3 w-3 mr-1 text-blue-500" />;
-    default:
-      return null;
-  }
-};
 
 const LastUpdateOffers = () => {
   const isMobile = useIsMobile();
 
+  // Modified to match NewArrivals style
   return (
     <div>
       <div className="flex items-center gap-2 mb-3 px-2 pt-2">
@@ -116,32 +113,34 @@ const LastUpdateOffers = () => {
                 key={offer.id} 
                 className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
               >
-                {/* Frameless/soft row - matches table */}
-                <div className="flex flex-col py-3 px-1 hover-scale items-start">
-                  <div className="flex justify-between w-full mb-1 gap-2 items-center">
-                    <span className={`font-bold text-xs ${offer.color} bg-opacity-10 rounded-full px-2 py-0.5`}>
-                      {offer.store}
-                    </span>
+                <div className="flex flex-col items-center py-3 px-1 hover-scale">
+                  <div className="relative w-12 h-12 mb-2">
+                    <img 
+                      src={offer.image} 
+                      alt={offer.title} 
+                      className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm bg-white"
+                    />
                     {offer.badge && (
-                      <span className="flex items-center bg-white/90 text-xs px-2 py-0.5 rounded-full shadow-sm">
-                        {getBadgeIcon(offer.badgeType)}
-                        <span className="font-semibold">{offer.badge}</span>
-                      </span>
+                      <div className="absolute -top-2 -right-2">
+                        <ProductTag type={offer.badgeType === 'hot' ? 'hot-deal' : (offer.badgeType === 'best' ? 'bestseller' : 'bulky')} />
+                      </div>
                     )}
                   </div>
-                  <h3 className="font-medium text-xs mb-1 text-gray-900 dark:text-white tracking-wide leading-relaxed">{offer.title}</h3>
-                  <p className="text-xs text-gray-500 mb-2 leading-relaxed">{offer.description}</p>
-                  <div className="flex items-center text-xs text-gray-500 mt-auto">
-                    <Clock className="h-3 w-3 mr-1" />
-                    <span className="font-medium">Expires: {offer.expiry}</span>
+                  <h3 className="font-medium text-center text-xs mb-1 line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
+                    {offer.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 text-center mb-2">{offer.store}</p>
+                  <div className="mt-auto text-xs flex items-center">
+                    <Clock className="h-3 w-3 mr-1 text-gray-500" />
+                    <span className="font-medium text-gray-700">Expires: {offer.expiry}</span>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
           <div className="flex w-full justify-between px-8 absolute bottom-0 left-0 right-0">
-            <CarouselPrevious className="static left-0 right-auto translate-y-0 relative h-8 w-8" />
-            <CarouselNext className="static left-auto right-0 translate-y-0 relative h-8 w-8" />
+            <CarouselPrevious className="static relative bottom-0 left-0 -translate-y-0 h-8 w-8" />
+            <CarouselNext className="static relative bottom-0 right-0 -translate-y-0 h-8 w-8" />
           </div>
         </Carousel>
       </div>
