@@ -90,7 +90,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Category Navigation - Changed from slider to grid */}
+            {/* Category Navigation - Using the grid-based CategoryNav component */}
             <div className="mb-6">
               <CategoryNav />
             </div>
@@ -159,10 +159,11 @@ const Index = () => {
           </div>
         </main>
         
-        {/* Fixed bottom nav without sticky behavior */}
+        {/* Fixed bottom nav spacing */}
         <div className="pb-16 md:pb-0">
-          <BottomNav />
+          {/* Bottom navigation */}
         </div>
+        <BottomNav />
       </div>
     </ProductSelectionProvider>
   );
