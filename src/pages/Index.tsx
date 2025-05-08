@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
@@ -13,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import NearbyStores from '@/components/NearbyStores';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
-import CategoryNav from '@/components/CategoryNav';
 
 const uspList = [
   {
@@ -88,12 +88,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Category Navigation - Using the grid-based CategoryNav component */}
-            <div className="mb-3">
-              <CategoryNav />
-            </div>
-
-            {/* Main Grid - Adjusted for more pricing table visibility */}
+            {/* Main Grid - Adjusted for more visibility of pricing table */}
             <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">
               <div className="order-2 md:order-1">
                 <div className="mb-3">
@@ -109,25 +104,16 @@ const Index = () => {
               </div>
               <div className="order-1 md:order-2">
                 <div className="md:sticky md:top-4 space-y-3">
-                  {!isSignedIn && (
-                    <div className="flex flex-col items-center justify-center group p-3 bg-gradient-to-r from-violet-50 to-violet-100 dark:from-violet-900/20 dark:to-violet-800/20 rounded-lg">
-                      <div className="w-10 h-10 rounded-full bg-violet-500 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-                        <User className="text-white w-5 h-5" />
-                      </div>
-                      <span className="font-bold text-violet-600 dark:text-violet-400 mb-2 text-sm">
-                        Sign Up for More Savings
-                      </span>
-                      <Button 
-                        className="bg-app-green hover:bg-app-green/90 text-sm py-1 px-3 h-8"
-                        onClick={() => setIsSignedIn(true)}
-                      >
-                        Create Account
-                      </Button>
+                  {/* Combined User Account Panel */}
+                  <UserAccountPanel />
+                  
+                  {/* Alerts and Nearby stores in a horizontal strip */}
+                  {isSignedIn && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <NotificationCenter />
+                      <NearbyStores />
                     </div>
                   )}
-                  <UserAccountPanel />
-                  <NotificationCenter />
-                  <NearbyStores />
                 </div>
               </div>
             </div>

@@ -13,19 +13,32 @@ const UserAccountPanel = () => {
   
   if (!isLoggedIn && !showLoginForm) {
     return (
-      <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <div className="mb-3 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-medium">Save your lists and get alerts</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Sign in to track your favorite products</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Track your favorite products</p>
           </div>
-          <Button 
-            onClick={() => setShowLoginForm(true)}
-            className="bg-app-green hover:bg-app-green/90"
-          >
-            <User className="mr-2 h-4 w-4" />
-            Sign In
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => setShowLoginForm(true)}
+              className="bg-app-green hover:bg-app-green/90"
+              size="sm"
+            >
+              <User className="mr-1 h-4 w-4" />
+              Sign In
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setIsLoggedIn(true);
+                setShowLoginForm(false);
+              }}
+              size="sm"
+            >
+              Sign Up
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -33,7 +46,7 @@ const UserAccountPanel = () => {
   
   if (showLoginForm) {
     return (
-      <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <div className="mb-3 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
         <h3 className="font-medium mb-3">Sign In</h3>
         <form className="space-y-3">
           <div>
@@ -74,7 +87,7 @@ const UserAccountPanel = () => {
   }
   
   return (
-    <div className="mb-6">
+    <div className="mb-3">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-medium">Your Saved Lists</h3>

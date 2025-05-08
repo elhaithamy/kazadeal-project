@@ -13,8 +13,8 @@ const NotificationCenter = () => {
   ]);
   
   return (
-    <div className="mb-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+    <div className="h-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 h-full">
         <div 
           className="flex items-center justify-between cursor-pointer" 
           onClick={() => setShowNotifications(!showNotifications)}
@@ -34,7 +34,7 @@ const NotificationCenter = () => {
         </div>
         
         {showNotifications && (
-          <div className="mt-4 space-y-3">
+          <div className="mt-4 space-y-3 max-h-52 overflow-y-auto">
             {notifications.length > 0 ? (
               notifications.map(notification => (
                 <div key={notification.id} className="bg-green-50 dark:bg-green-900/20 p-3 rounded">
@@ -57,12 +57,6 @@ const NotificationCenter = () => {
                 <p>No price alerts yet</p>
               </div>
             )}
-            
-            <div className="pt-2">
-              <Button variant="outline" className="w-full">
-                Manage Alerts
-              </Button>
-            </div>
           </div>
         )}
       </div>

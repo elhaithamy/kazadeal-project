@@ -14,40 +14,38 @@ const NearbyStores = () => {
   const [showStores, setShowStores] = useState(false);
   
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
-      <div 
-        className="flex items-center justify-between cursor-pointer"
-        onClick={() => setShowStores(!showStores)}
-      >
-        <div className="flex items-center">
-          <MapPin className="h-5 w-5 mr-2 text-app-green" />
-          <h3 className="font-medium">Nearby Stores</h3>
+    <div className="h-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 h-full">
+        <div 
+          className="flex items-center justify-between cursor-pointer"
+          onClick={() => setShowStores(!showStores)}
+        >
+          <div className="flex items-center">
+            <MapPin className="h-5 w-5 mr-2 text-app-green" />
+            <h3 className="font-medium">Nearby Stores</h3>
+          </div>
+          {showStores ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
         </div>
-        {showStores ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+        
+        {showStores && (
+          <div className="mt-4 space-y-3 max-h-52 overflow-y-auto">
+            {storeLocations.map(store => (
+              <div key={store.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                <div>
+                  <p className="font-medium">{store.name}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{store.address}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">{store.distance}</span>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-app-green">
+                    <Navigation className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      
-      {showStores && (
-        <div className="mt-4 space-y-3">
-          {storeLocations.map(store => (
-            <div key={store.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded">
-              <div>
-                <p className="font-medium">{store.name}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{store.address}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm">{store.distance}</span>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-app-green">
-                  <Navigation className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-          
-          <Button className="w-full bg-app-green hover:bg-app-green/90 mt-2">
-            Show All Stores
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
