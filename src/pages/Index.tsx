@@ -13,7 +13,6 @@ import { Share2, User, Bell, Tag, CircleArrowRight, FileText } from 'lucide-reac
 import { Button } from '@/components/ui/button';
 import NearbyStores from '@/components/NearbyStores';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import CategoryNav from '@/components/CategoryNav';
 
@@ -65,8 +64,8 @@ const Index = () => {
         <Header />
         <main className="flex-1 pb-3">
           <div className="container mx-auto px-2">
-            {/* Title/Top Bar */}
-            <div className="flex justify-between items-center mb-4 mt-4">
+            {/* Title/Top Bar - Moved inside container to reduce spacing */}
+            <div className="flex justify-between items-center mb-3 mt-2">
               <div className="flex gap-2">
                 <Link to="/leaflets">
                   <Button variant="outline" className="flex items-center gap-2">
@@ -91,53 +90,34 @@ const Index = () => {
             </div>
 
             {/* Category Navigation - Using the grid-based CategoryNav component */}
-            <div className="mb-6">
+            <div className="mb-3">
               <CategoryNav />
             </div>
 
-            {/* ::::: USP Section ::::: */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6 mb-6 border-b border-gray-100 dark:border-gray-800">
+            {/* ::::: USP Section ::::: - Condensed layout */}
+            <div className="grid grid-cols-3 gap-2 py-3 mb-3 border-b border-gray-100 dark:border-gray-800">
               {uspList.map((item, i) => (
                 <div 
                   key={item.label} 
-                  className="flex flex-col items-center text-center p-4"
+                  className="flex flex-col items-center text-center p-2"
                 >
-                  <div className="mb-3 p-3 rounded-full bg-gray-50 dark:bg-gray-800">
+                  <div className="mb-2 p-2 rounded-full bg-gray-50 dark:bg-gray-800">
                     {item.icon}
                   </div>
-                  <h3 className="font-bold text-sm mb-1 text-gray-800 dark:text-gray-200">
+                  <h3 className="font-bold text-xs mb-1 text-gray-800 dark:text-gray-200">
                     {item.label}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
                     {item.description}
                   </p>
                 </div>
               ))}
-              
-              {!isSignedIn && (
-                <div className="flex flex-col items-center justify-center group p-4 md:col-span-3 bg-gradient-to-r from-violet-50 to-violet-100 dark:from-violet-900/20 dark:to-violet-800/20 rounded-lg mt-2">
-                  <div className="w-12 h-12 rounded-full bg-violet-500 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-                    <User className="text-white w-6 h-6" />
-                  </div>
-                  <span className="font-bold text-violet-600 dark:text-violet-400 mb-3">
-                    Sign Up for More Savings
-                  </span>
-                  
-                  {/* Added CTA button that matches search bar color */}
-                  <Button 
-                    className="bg-app-green hover:bg-app-green/90"
-                    onClick={() => setIsSignedIn(true)}
-                  >
-                    Create Account
-                  </Button>
-                </div>
-              )}
             </div>
             
-            {/* Main Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-4">
+            {/* Main Grid - Adjusted for more pricing table visibility */}
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">
               <div className="order-2 md:order-1">
-                <div className="mb-4">
+                <div className="mb-3">
                   <CategoryFilter 
                     onSearch={setSearchQuery} 
                     onCategoryChange={setActiveCategory} 
@@ -149,7 +129,23 @@ const Index = () => {
                 />
               </div>
               <div className="order-1 md:order-2">
-                <div className="md:sticky md:top-4 space-y-4">
+                <div className="md:sticky md:top-4 space-y-3">
+                  {!isSignedIn && (
+                    <div className="flex flex-col items-center justify-center group p-3 bg-gradient-to-r from-violet-50 to-violet-100 dark:from-violet-900/20 dark:to-violet-800/20 rounded-lg">
+                      <div className="w-10 h-10 rounded-full bg-violet-500 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                        <User className="text-white w-5 h-5" />
+                      </div>
+                      <span className="font-bold text-violet-600 dark:text-violet-400 mb-2 text-sm">
+                        Sign Up for More Savings
+                      </span>
+                      <Button 
+                        className="bg-app-green hover:bg-app-green/90 text-sm py-1 px-3 h-8"
+                        onClick={() => setIsSignedIn(true)}
+                      >
+                        Create Account
+                      </Button>
+                    </div>
+                  )}
                   <UserAccountPanel />
                   <NotificationCenter />
                   <NearbyStores />
