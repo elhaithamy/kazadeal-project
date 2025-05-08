@@ -80,21 +80,6 @@ const categories = [
 const CategoryNav = () => {
   return (
     <div className="px-2 py-1">
-      <div className="relative mb-3">
-        <input
-          type="text"
-          placeholder="Search for a product"
-          className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-app-green focus:border-transparent"
-        />
-        <div className="absolute left-3 top-2.5 text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </div>
-      </div>
-      
-      {/* Changed from 5 columns to 5 columns with smaller icons */}
       <div className="grid grid-cols-5 gap-2 mb-2">
         {categories.slice(0, 5).map((category, index) => (
           <Link 

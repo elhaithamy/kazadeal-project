@@ -47,7 +47,7 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
           className="rounded-lg p-2 w-full text-center shadow-sm" 
           style={{ backgroundColor: storeColor }}
         >
-          <span className="text-white font-bold text-base">{value.toFixed(2)}</span>
+          <span className="text-white font-bold text-sm md:text-base">{value.toFixed(2)}</span>
         </div>
         {store === lowestTotalStore && (
           <Badge className="mt-1 text-[10px] bg-white text-green-700">Best Price</Badge>

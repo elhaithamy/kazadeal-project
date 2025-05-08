@@ -12,6 +12,7 @@ import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
 import ComparisonBar from '@/components/ComparisonBar';
 import { useInView } from 'react-intersection-observer';
+import CategoryNav from '@/components/CategoryNav';
 
 interface PriceComparisonProps {
   searchQuery?: string;
@@ -283,20 +284,20 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
             <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
               <div className="text-center p-1 bg-gray-50 rounded">
                 <div className="text-gray-500 text-[10px]">LuLu</div>
-                <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                  {calculateTotalPrice(product.prices.lulu, product.id)}
+                <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''} text-[11px] md:text-xs truncate`}>
+                  {calculateTotalPrice(product.prices.lulu, product.id).toFixed(2)}
                 </div>
               </div>
               <div className="text-center p-1 bg-gray-50 rounded">
                 <div className="text-gray-500 text-[10px]">Panda</div>
-                <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                  {calculateTotalPrice(product.prices.panda, product.id)}
+                <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''} text-[11px] md:text-xs truncate`}>
+                  {calculateTotalPrice(product.prices.panda, product.id).toFixed(2)}
                 </div>
               </div>
               <div className="text-center p-1 bg-gray-50 rounded">
                 <div className="text-gray-500 text-[10px]">Othaim</div>
-                <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''}`}>
-                  {calculateTotalPrice(product.prices.othaim, product.id)}
+                <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''} text-[11px] md:text-xs truncate`}>
+                  {calculateTotalPrice(product.prices.othaim, product.id).toFixed(2)}
                 </div>
               </div>
             </div>
@@ -340,6 +341,12 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     
     return (
       <div className="space-y-6">
+        {/* Add CategoryNav at the top of product categories */}
+        <div className="mb-6">
+          <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Categories</h3>
+          <CategoryNav />
+        </div>
+        
         {categories.map((category, index) => {
           const categoryProducts = productsByCategory[category];
           
