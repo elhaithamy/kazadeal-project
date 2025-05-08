@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,10 +14,6 @@ const CategoryFilter = ({ onSearch, onCategoryChange }: CategoryFilterProps) => 
   const [searchValue, setSearchValue] = useState("");
   const isMobile = useIsMobile();
   
-  useEffect(() => {
-    // Set initial category onMount is not needed since we removed the first categories section
-  }, []);
-
   const handleSearch = () => {
     onSearch(searchValue);
   };

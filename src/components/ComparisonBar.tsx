@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface ComparisonBarProps {
   totals: {
@@ -27,32 +28,30 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
     return null;
   }
 
-  const formatStoreTotal = (store: string, value: number) => {
-    let bgColorClass = '';
-    let textColorClass = '';
-    
-    if (priceRankings[store]) {
-      switch (priceRankings[store]) {
-        case 'lowest':
-          bgColorClass = 'bg-green-500';
-          textColorClass = 'text-white font-bold';
-          break;
-        case 'medium':
-          bgColorClass = 'bg-yellow-500';
-          textColorClass = 'text-white font-bold';
-          break;
-        case 'highest':
-          bgColorClass = 'bg-red-500';
-          textColorClass = 'text-white font-bold';
-          break;
-      }
-    }
+  // Color palette for retailers
+  const retailerColors = {
+    lulu: '#0EA5E9', // Ocean Blue
+    othaim: '#9b87f5', // Primary Purple
+    carrefour: '#F97316', // Bright Orange
+    danube: '#1EAEDB', // Bright Blue
+    panda: '#7E69AB', // Secondary Purple
+    tamimi: '#6E59A5', // Tertiary Purple
+  };
 
+  const formatStoreTotal = (store: string, value: number) => {
+    const storeColor = retailerColors[store as keyof typeof retailerColors] || '#6E59A5';
+    
     return (
-      <div className={`flex flex-col items-center p-2 rounded-lg ${bgColorClass} shadow-md`}>
-        <span className="text-xs text-white font-medium capitalize">{store}</span>
-        <span className={`font-bold ${textColorClass} text-base`}>{value.toFixed(2)}</span>
-        {store === lowestTotalStore && <Badge className="mt-1 text-[10px] bg-white text-green-700">Best Price</Badge>}
+      <div className="flex flex-col items-center">
+        <div 
+          className="rounded-lg p-2 w-full text-center shadow-sm" 
+          style={{ backgroundColor: storeColor }}
+        >
+          <span className="text-white font-bold text-base">{value.toFixed(2)}</span>
+        </div>
+        {store === lowestTotalStore && (
+          <Badge className="mt-1 text-[10px] bg-white text-green-700">Best Price</Badge>
+        )}
       </div>
     );
   };
@@ -80,7 +79,9 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
               ))}
             </div>
             
-            <Button size="sm" className="h-10 bg-app-green hover:bg-app-green/90">View Basket</Button>
+            <Link to="/basket">
+              <Button size="sm" className="h-10 bg-app-green hover:bg-app-green/90">View Basket</Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

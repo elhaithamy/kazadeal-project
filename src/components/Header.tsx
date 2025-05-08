@@ -53,18 +53,18 @@ const retailers = [
 const Header = () => {
   return (
     <header className="bg-white text-white">
-      {/* App Brand Section - Moved to top */}
+      {/* App Brand Section - Making logo clickable */}
       <div className="flex justify-center items-center py-2 bg-app-green relative">
         <div className="absolute left-4">
           <Link to="/" className="flex items-center gap-1">
             <span className="sr-only">Home</span>
           </Link>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center shadow-md">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center shadow-md cursor-pointer hover:opacity-90 transition-opacity">
             <span className="font-bold text-lg tracking-tight text-gray-800">KazaDeal</span>
           </div>
-        </div>
+        </Link>
       </div>
       
       {/* Retailer Section - Made more organized with offer dates */}
