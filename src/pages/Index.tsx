@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
@@ -94,26 +93,6 @@ const Index = () => {
               <CategoryNav />
             </div>
 
-            {/* ::::: USP Section ::::: - Condensed layout */}
-            <div className="grid grid-cols-3 gap-2 py-3 mb-3 border-b border-gray-100 dark:border-gray-800">
-              {uspList.map((item, i) => (
-                <div 
-                  key={item.label} 
-                  className="flex flex-col items-center text-center p-2"
-                >
-                  <div className="mb-2 p-2 rounded-full bg-gray-50 dark:bg-gray-800">
-                    {item.icon}
-                  </div>
-                  <h3 className="font-bold text-xs mb-1 text-gray-800 dark:text-gray-200">
-                    {item.label}
-                  </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                    {item.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-            
             {/* Main Grid - Adjusted for more pricing table visibility */}
             <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4">
               <div className="order-2 md:order-1">

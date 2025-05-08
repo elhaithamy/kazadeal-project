@@ -85,11 +85,11 @@ const Header = () => {
         ))}
       </div>
       
-      {/* Promotional Banner - Reduced height for visibility */}
-      <div className="bg-gradient-to-r from-app-green/90 to-app-green h-36 flex items-center justify-center">
-        <div className="text-center text-white p-4">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Save on Every Purchase</h1>
-          <p className="text-base md:text-lg opacity-90 max-w-lg mx-auto">
+      {/* Promotional Banner - Reduced height significantly for better visibility of price table */}
+      <div className="bg-gradient-to-r from-app-green/90 to-app-green h-20 flex items-center justify-center">
+        <div className="text-center text-white p-2">
+          <h1 className="text-xl font-bold">Save on Every Purchase</h1>
+          <p className="text-sm opacity-90">
             Compare prices across multiple stores and find the best deals instantly
           </p>
         </div>

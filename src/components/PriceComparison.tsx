@@ -396,7 +396,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-0 md:px-4 py-6">
+    <div className="max-w-4xl mx-auto px-0 md:px-4 py-2">
       <Card className="mb-4 bg-white">
         <CardContent className="pt-6">
           <div className="flex flex-col mb-4">

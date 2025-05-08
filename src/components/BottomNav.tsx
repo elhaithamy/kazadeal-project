@@ -13,7 +13,12 @@ const BottomNav = () => {
         </Link>
         
         <Link to="/leaflets" className="flex flex-col items-center text-gray-500">
-          <FileText className="h-6 w-6" />
+          <div className="relative">
+            <FileText className="h-6 w-6" />
+            <span className="absolute -top-1 -right-1 text-[8px] bg-app-green text-white rounded-full w-3 h-3 flex items-center justify-center">
+              PDF
+            </span>
+          </div>
           <span className="text-xs mt-1">Leaflets</span>
         </Link>
         

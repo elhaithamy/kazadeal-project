@@ -34,33 +34,33 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
     if (priceRankings[store]) {
       switch (priceRankings[store]) {
         case 'lowest':
-          bgColorClass = 'bg-app-green/20';
-          textColorClass = 'text-app-green font-bold';
+          bgColorClass = 'bg-green-500';
+          textColorClass = 'text-white font-bold';
           break;
         case 'medium':
-          bgColorClass = 'bg-yellow-400/20';
-          textColorClass = 'text-yellow-600 font-bold';
+          bgColorClass = 'bg-yellow-500';
+          textColorClass = 'text-white font-bold';
           break;
         case 'highest':
-          bgColorClass = 'bg-red-500/20';
-          textColorClass = 'text-red-600 font-bold';
+          bgColorClass = 'bg-red-500';
+          textColorClass = 'text-white font-bold';
           break;
       }
     }
 
     return (
-      <div className={`flex flex-col items-center p-2 rounded-lg ${bgColorClass}`}>
-        <span className="text-xs text-gray-700 font-medium capitalize">{store}</span>
+      <div className={`flex flex-col items-center p-2 rounded-lg ${bgColorClass} shadow-md`}>
+        <span className="text-xs text-white font-medium capitalize">{store}</span>
         <span className={`font-bold ${textColorClass} text-base`}>{value.toFixed(2)}</span>
-        {store === lowestTotalStore && <Badge className="bg-app-green mt-1 text-[10px]">Best Price</Badge>}
+        {store === lowestTotalStore && <Badge className="mt-1 text-[10px] bg-white text-green-700">Best Price</Badge>}
       </div>
     );
   };
 
   return (
-    <div className={`w-full bottom-16 left-0 z-30 ${isMobile ? 'fixed' : ''}`}>
-      <Card className="rounded-lg shadow-lg border-t md:border">
-        <CardContent className="p-3 md:p-4">
+    <div className={`w-full ${isMobile ? 'fixed bottom-16 left-0 z-30' : 'mb-4'}`}>
+      <Card className="rounded-lg shadow-lg border-t md:border border-gray-300">
+        <CardContent className="p-3 md:p-4 bg-gray-50">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <div className="bg-app-green text-white p-2 rounded-full">
