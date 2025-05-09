@@ -1,5 +1,6 @@
+
 import React, { useContext, useMemo, useState } from 'react';
-import { ShoppingBasket, Plus, Check, ChevronUp, Calendar } from 'lucide-react';
+import { ShoppingBasket, Plus, Check, ChevronUp, Calendar, Ban } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -76,7 +77,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
   };
 
   const calculateUnitPrice = (product: Product) => {
-    return `${product.prices.lulu.toFixed(2)} EGP/unit`;
+    return `${product.prices.lulu.toFixed(2)} /unit`;
   };
 
   const { ref: loadMoreRef, inView } = useInView({
@@ -145,20 +146,20 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     };
 
     const productsToCalculate = selectedProducts.length > 0 ? 
-      filteredProducts.filter(p => selectedProducts.includes(p.id)) : 
-      filteredProducts;
+      filteredProducts.filter(p => selectedProducts.includes(p.id) && p.isAvailable !== false) : 
+      filteredProducts.filter(p => p.isAvailable !== false);
 
     productsToCalculate.forEach(product => {
-      calculatedTotals.lulu += product.prices.lulu;
-      calculatedTotals.othaim += product.prices.othaim;
-      calculatedTotals.carrefour += product.prices.carrefour;
-      calculatedTotals.danube += product.prices.danube;
-      calculatedTotals.panda += product.prices.panda;
-      calculatedTotals.tamimi += product.prices.tamimi;
+      calculatedTotals.lulu += product.prices.lulu * getQuantity(product.id);
+      calculatedTotals.othaim += product.prices.othaim * getQuantity(product.id);
+      calculatedTotals.carrefour += product.prices.carrefour * getQuantity(product.id);
+      calculatedTotals.danube += product.prices.danube * getQuantity(product.id);
+      calculatedTotals.panda += product.prices.panda * getQuantity(product.id);
+      calculatedTotals.tamimi += product.prices.tamimi * getQuantity(product.id);
     });
 
     return calculatedTotals;
-  }, [filteredProducts, selectedProducts]);
+  }, [filteredProducts, selectedProducts, quantities]);
 
   const findLowestPrice = (prices: Record<string, number>) => {
     return Math.min(...Object.values(prices));
@@ -199,6 +200,14 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
   const lowestTotalStore = useMemo(() => findLowestTotal(), [calculateTotals]);
 
   const handleSelectProduct = (product: Product) => {
+    if (product.isAvailable === false) {
+      toast({
+        title: "Product unavailable",
+        description: "This product is currently out of stock",
+        variant: "destructive"
+      });
+      return;
+    }
     toggleProductSelection(product.id);
   };
 
@@ -238,9 +247,10 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     const productTag = getProductTag(product.id);
     const quantity = getQuantity(product.id);
     const unitPrice = calculateUnitPrice(product);
+    const isAvailable = product.isAvailable !== false;
     
     return (
-      <Card className={`h-full ${isSelected ? 'border-app-green border-2' : ''}`}>
+      <Card className={`h-full ${isSelected ? 'border-app-green border-2' : ''} ${!isAvailable ? 'opacity-60' : ''}`}>
         <CardContent className="p-2 h-full">
           <div className="flex flex-col h-full">
             <div className="flex flex-col items-center mb-2 relative">
@@ -248,11 +258,16 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                 <img 
                   src={product.image} 
                   alt={product.name} 
-                  className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm"
+                  className={`w-full h-full object-cover rounded-full border border-gray-200 shadow-sm ${!isAvailable ? 'grayscale' : ''}`}
                 />
                 {productTag && (
                   <div className="absolute -top-2 -right-2">
                     <ProductTag type={productTag} />
+                  </div>
+                )}
+                {!isAvailable && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-red-500 text-white text-[8px] px-1 rounded font-bold">OUT OF STOCK</span>
                   </div>
                 )}
               </div>
@@ -268,12 +283,14 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                   type="number"
                   value={quantity}
                   min="1"
+                  disabled={!isAvailable}
                   onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
                   className="w-12 text-xs p-1 border rounded"
                 />
                 <button 
                   onClick={() => increaseQuantity(product.id)}
-                  className="ml-1 bg-app-green text-white rounded-full w-5 h-5 flex items-center justify-center"
+                  disabled={!isAvailable}
+                  className={`ml-1 ${isAvailable ? 'bg-app-green' : 'bg-gray-400'} text-white rounded-full w-5 h-5 flex items-center justify-center`}
                 >
                   <ChevronUp className="w-3 h-3" />
                 </button>
@@ -306,11 +323,18 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
               <Button
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
-                className={`w-full text-xs py-1 h-7 ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""}`}
+                disabled={!isAvailable}
+                className={`w-full text-xs py-1 h-7 ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""} ${!isAvailable ? 'bg-gray-300 cursor-not-allowed opacity-70' : ''}`}
                 onClick={() => handleSelectProduct(product)}
               >
-                {isSelected ? <Check className="w-3 h-3 mr-1" /> : <Plus className="w-3 h-3 mr-1" />}
-                {isSelected ? 'Selected' : 'Compare'}
+                {!isAvailable ? (
+                  <Ban className="w-3 h-3 mr-1" />
+                ) : isSelected ? (
+                  <Check className="w-3 h-3 mr-1" />
+                ) : (
+                  <Plus className="w-3 h-3 mr-1" />
+                )}
+                {!isAvailable ? 'Unavailable' : isSelected ? 'Selected' : 'Compare'}
               </Button>
             </div>
           </div>
@@ -320,84 +344,83 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
   };
 
   const renderCarouselProducts = () => {
-    if (activeCategory !== 'All') {
-      const categoryProducts = filteredProducts.filter(
-        product => product.category?.toLowerCase() === activeCategory.toLowerCase()
-      );
-      
-      return (
-        <div className="mb-6">
-          <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{activeCategory}</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {categoryProducts.slice(0, displayedItems).map((product) => (
-              <div key={product.id} className="mb-0">
-                {renderProductItem(product)}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    
+    // Show products for the selected category or all categories
     return (
       <div className="space-y-6">
-        {/* Add CategoryNav at the top of product categories */}
+        {/* CategoryNav at the top */}
         <div className="mb-6">
           <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Categories</h3>
           <CategoryNav />
         </div>
         
-        {categories.map((category, index) => {
-          const categoryProducts = productsByCategory[category];
-          
-          const showOffers = index === 1;
-          const showArrivals = index === 2;
-          
-          return (
-            <React.Fragment key={category}>
-              <div className="mb-6">
-                <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {categoryProducts.slice(0, displayedItems).map((product) => (
-                    <div key={product.id}>
-                      {renderProductItem(product)}
-                    </div>
-                  ))}
+        {activeCategory !== 'All' ? (
+          <div className="mb-6">
+            <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{activeCategory}</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {filteredProducts
+                .filter(product => product.category?.toLowerCase() === activeCategory.toLowerCase())
+                .slice(0, displayedItems)
+                .map((product) => (
+                  <div key={product.id} className="mb-0">
+                    {renderProductItem(product)}
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        ) : (
+          categories.map((category, index) => {
+            const categoryProducts = productsByCategory[category];
+            
+            const showOffers = index === 1;
+            const showArrivals = index === 2;
+            
+            return (
+              <React.Fragment key={category}>
+                <div className="mb-6">
+                  <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">{category}</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {categoryProducts.slice(0, displayedItems).map((product) => (
+                      <div key={product.id}>
+                        {renderProductItem(product)}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {showOffers && (
-                <div
-                  ref={offersRef}
-                  className={`transition-opacity duration-500 ${
-                    offersInView ? 'opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  <Card className="mb-4 bg-white">
-                    <CardContent className="pt-6">
-                      <LastUpdateOffers />
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+                {showOffers && (
+                  <div
+                    ref={offersRef}
+                    className={`transition-opacity duration-500 ${
+                      offersInView ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  >
+                    <Card className="mb-4 bg-white">
+                      <CardContent className="pt-6">
+                        <LastUpdateOffers />
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
 
-              {showArrivals && (
-                <div
-                  ref={arrivalsRef}
-                  className={`transition-opacity duration-500 ${
-                    arrivalsInView ? 'opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  <Card className="mb-4 bg-white">
-                    <CardContent className="pt-6">
-                      <NewArrivals />
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
+                {showArrivals && (
+                  <div
+                    ref={arrivalsRef}
+                    className={`transition-opacity duration-500 ${
+                      arrivalsInView ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  >
+                    <Card className="mb-4 bg-white">
+                      <CardContent className="pt-6">
+                        <NewArrivals />
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })
+        )}
       </div>
     );
   };
@@ -429,7 +452,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
               </div>
             </div>
             
-            {/* Added last update date */}
+            {/* Last update date */}
             <div className="flex items-center text-sm text-gray-500 mb-2">
               <Calendar className="w-4 h-4 mr-1" />
               <span>Last Updated: {lastUpdateDate}</span>

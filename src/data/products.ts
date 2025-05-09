@@ -15,9 +15,10 @@ export interface Product {
     panda: number;
     tamimi: number;
   };
+  isAvailable?: boolean; // Added to handle out of stock products
 }
 
-// Export the products data
+// Export the products data with some marked as unavailable
 export const products: Product[] = [
   {
     id: 1,
@@ -42,6 +43,7 @@ export const products: Product[] = [
     count: 1,
     category: "Dairy & Eggs",
     addedDate: new Date("2024-03-10"),
+    isAvailable: false, // Out of stock
     prices: {
       lulu: 22,
       othaim: 22,
@@ -428,4 +430,3 @@ export const getNewArrivals = (count: number = 5): Product[] => {
     .sort((a, b) => b.addedDate.getTime() - a.addedDate.getTime())
     .slice(0, count);
 };
-
