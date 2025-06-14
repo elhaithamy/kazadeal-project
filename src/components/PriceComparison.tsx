@@ -1,4 +1,3 @@
-
 import React, { useContext, useMemo, useState } from 'react';
 import { ShoppingBasket, Plus, Check, ChevronUp, Calendar, Ban } from 'lucide-react';
 import { products, Product } from '@/data/products';
@@ -250,15 +249,15 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
     const isAvailable = product.isAvailable !== false;
     
     return (
-      <Card className={`h-full ${isSelected ? 'border-app-green border-2' : ''} ${!isAvailable ? 'opacity-60' : ''}`}>
+      <Card className={`h-full rounded-2xl ${isSelected ? 'border-app-green border-2 scale-105 ring-2 ring-app-highlight/80' : ''} ${!isAvailable ? 'opacity-30 blur-[1px] saturate-50 pointer-events-none' : ''} font-spacegrotesk shadow-xl animate-fade-in duration-100`}>
         <CardContent className="p-2 h-full">
           <div className="flex flex-col h-full">
             <div className="flex flex-col items-center mb-2 relative">
-              <div className="w-12 h-12 mb-1 relative">
+              <div className="w-14 h-14 mb-1 relative bg-app-green/5 rounded-full flex items-center justify-center">
                 <img 
                   src={product.image} 
                   alt={product.name} 
-                  className={`w-full h-full object-cover rounded-full border border-gray-200 shadow-sm ${!isAvailable ? 'grayscale' : ''}`}
+                  className={`w-12 h-12 object-cover rounded-full border-2 border-app-highlight/40 shadow bg-white`}
                 />
                 {productTag && (
                   <div className="absolute -top-2 -right-2">
@@ -267,11 +266,11 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                 )}
                 {!isAvailable && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-red-500 text-white text-[8px] px-1 rounded font-bold">OUT OF STOCK</span>
+                    <span className="bg-red-600/70 text-white text-[9px] px-1 rounded font-extrabold shadow">OUT 🚫</span>
                   </div>
                 )}
               </div>
-              <h3 className="font-medium text-center text-xs line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
+              <h3 className="font-extrabold text-center text-xs line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
                 {product.name}
               </h3>
               <div className="text-xs text-gray-500">Count: {product.count}</div>
@@ -285,35 +284,35 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                   min="1"
                   disabled={!isAvailable}
                   onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
-                  className="w-12 text-xs p-1 border rounded"
+                  className="w-12 text-xs p-1 border rounded font-bold"
                 />
                 <button 
                   onClick={() => increaseQuantity(product.id)}
                   disabled={!isAvailable}
-                  className={`ml-1 ${isAvailable ? 'bg-app-green' : 'bg-gray-400'} text-white rounded-full w-5 h-5 flex items-center justify-center`}
+                  className={`ml-1 ${isAvailable ? 'bg-app-green hover:scale-110' : 'bg-gray-400'} text-white rounded-full w-5 h-5 flex items-center justify-center shadow`}
                 >
                   <ChevronUp className="w-3 h-3" />
                 </button>
               </div>
-              <span className="text-xs text-gray-500 font-semibold">{unitPrice}</span>
+              <span className="text-xs text-app-green font-black">{unitPrice}</span>
             </div>
             
-            <div className="grid grid-cols-3 gap-1 mb-2 text-xs">
-              <div className="text-center p-1 bg-gray-50 rounded">
+            <div className="grid grid-cols-3 gap-1 mb-2 text-xs font-semibold">
+              <div className="text-center p-1 bg-gradient-to-br from-app-green/20 to-white/80 rounded-lg">
                 <div className="text-gray-500 text-[10px]">LuLu</div>
-                <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-bold' : ''} text-[11px] md:text-xs truncate`}>
+                <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-extrabold' : ''} text-[11px] md:text-xs truncate`}>
                   {calculateTotalPrice(product.prices.lulu, product.id).toFixed(2)}
                 </div>
               </div>
-              <div className="text-center p-1 bg-gray-50 rounded">
+              <div className="text-center p-1 bg-gradient-to-br from-app-green/20 to-white/80 rounded-lg">
                 <div className="text-gray-500 text-[10px]">Panda</div>
-                <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-bold' : ''} text-[11px] md:text-xs truncate`}>
+                <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-extrabold' : ''} text-[11px] md:text-xs truncate`}>
                   {calculateTotalPrice(product.prices.panda, product.id).toFixed(2)}
                 </div>
               </div>
-              <div className="text-center p-1 bg-gray-50 rounded">
+              <div className="text-center p-1 bg-gradient-to-br from-app-green/20 to-white/80 rounded-lg">
                 <div className="text-gray-500 text-[10px]">Othaim</div>
-                <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-bold' : ''} text-[11px] md:text-xs truncate`}>
+                <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-extrabold' : ''} text-[11px] md:text-xs truncate`}>
                   {calculateTotalPrice(product.prices.othaim, product.id).toFixed(2)}
                 </div>
               </div>
@@ -324,7 +323,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
                 disabled={!isAvailable}
-                className={`w-full text-xs py-1 h-7 ${isSelected ? "bg-app-green hover:bg-app-green-dark" : ""} ${!isAvailable ? 'bg-gray-300 cursor-not-allowed opacity-70' : ''}`}
+                className={`w-full text-xs py-1 h-8 rounded-full ${isSelected ? "bg-gradient-to-r from-app-green to-app-highlight font-bold shadow-lg" : ""} ${!isAvailable ? 'bg-gray-300 cursor-not-allowed opacity-70' : ''} transition-all duration-100`}
                 onClick={() => handleSelectProduct(product)}
               >
                 {!isAvailable ? (
@@ -334,7 +333,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All' }: PriceComp
                 ) : (
                   <Plus className="w-3 h-3 mr-1" />
                 )}
-                {!isAvailable ? 'Unavailable' : isSelected ? 'Selected' : 'Compare'}
+                {!isAvailable ? 'Unavailable' : isSelected ? 'Selected 🎉' : 'Add to Compare'}
               </Button>
             </div>
           </div>

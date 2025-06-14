@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
@@ -53,16 +52,18 @@ const retailers = [
 
 const Header = () => {
   return (
-    <header className="bg-white text-white">
-      {/* App Brand Section with new Logo component */}
-      <div className="flex justify-center items-center py-2 bg-app-green relative">
+    <header className="bg-white font-spacegrotesk text-white">
+      <div className="flex justify-center items-center py-2 bg-gradient-to-tr from-app-green to-app-highlight relative">
         <div className="absolute left-4">
           <Logo size="sm" showText={false} />
         </div>
         <Logo size="md" />
       </div>
       
-      {/* Retailer Section - Made more organized with offer dates */}
+      <div className="flex justify-center items-center py-1 bg-app-green/10 text-app-green text-center text-base font-bold">
+        Hey 👋 Ready to bag the best deals? <span className='ml-2 animate-wiggle'>💸</span>
+      </div>
+
       <div className="flex overflow-x-auto gap-4 py-2 px-2 bg-white border-b border-gray-100">
         {retailers.map((retailer, index) => (
           <div
@@ -72,20 +73,18 @@ const Header = () => {
             <img
               src={retailer.logo}
               alt={retailer.name}
-              className="h-10 w-10 object-contain"
+              className="h-10 w-10 object-contain bg-gradient-to-br from-app-green/30 to-app-green/5 rounded-xl"
             />
-            <span className="text-xs font-medium">{retailer.name}</span>
+            <span className="text-xs font-semibold">{retailer.name}</span>
             <span className="text-[10px] text-gray-500">{retailer.offerDate}</span>
           </div>
         ))}
       </div>
-      
-      {/* Promotional Banner - Reduced height significantly for better visibility of price table */}
-      <div className="bg-gradient-to-r from-app-green/90 to-app-green h-20 flex items-center justify-center">
+      <div className="bg-gradient-to-r from-app-green/90 to-app-green h-20 flex items-center justify-center rounded-b-2xl shadow-md">
         <div className="text-center text-white p-2">
-          <h1 className="text-xl font-bold">Save on Every Purchase</h1>
+          <h1 className="text-xl font-black font-spacegrotesk">Save on Every Purchase ✨</h1>
           <p className="text-sm opacity-90">
-            Compare prices across multiple stores and find the best deals instantly
+            Compare prices across stores & flex on overpriced groceries!
           </p>
         </div>
       </div>
