@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBasket, Search, Settings, FileText, Home, Save } from 'lucide-react';
+import { ShoppingBasket, Settings, FileText, Home, Save } from 'lucide-react';
 
 const BottomNav = () => {
   return (
@@ -27,9 +27,9 @@ const BottomNav = () => {
           <span className="text-xs mt-1">Leaflets</span>
         </Link>
         
-        <Link to="/search" className="flex flex-col items-center text-gray-500">
-          <Search className="h-6 w-6" />
-          <span className="text-xs mt-1">Search</span>
+        <Link to="/basket" className="flex flex-col items-center text-gray-500">
+          <ShoppingBasket className="h-6 w-6" />
+          <span className="text-xs mt-1">Basket</span>
         </Link>
         
         <Link to="/settings" className="flex flex-col items-center text-gray-500">
