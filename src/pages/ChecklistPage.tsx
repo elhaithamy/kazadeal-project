@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useContext } from 'react';
-import { ArrowLeft, Trash2, Calendar, ShoppingCart, ChevronDown, ChevronUp, Share2, Copy } from 'lucide-react';
+import { ArrowLeft, Trash2, Calendar, ShoppingCart, ChevronDown, ChevronUp, Share2, Copy, Pin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
@@ -156,7 +156,7 @@ const ChecklistPage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <Header />
       
       <div className="bg-white shadow-sm mb-4">
@@ -168,7 +168,7 @@ const ChecklistPage = () => {
         </div>
       </div>
       
-      <main className="flex-1 mb-16 px-4 max-w-4xl mx-auto w-full">
+      <main className="flex-1 mb-16 px-4 max-w-7xl mx-auto w-full">
         {savedLists.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <p className="mb-4">You don't have any saved lists yet</p>
@@ -180,71 +180,46 @@ const ChecklistPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
             {savedLists.map(list => {
               const listItems = getListItems(list.items);
-              const previewItems = listItems.slice(0, 5);
+              const previewItems = listItems.slice(0, 4);
               const isExpanded = expandedLists.has(list.id);
-              const hasMoreItems = listItems.length > 5;
+              const hasMoreItems = listItems.length > 4;
               
               return (
-                <Card key={list.id} className="shadow-sm">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h2 className="font-medium text-lg">{list.name}</h2>
-                        <div className="flex items-center text-sm text-gray-500 mb-2">
-                          <Calendar className="h-4 w-4 mr-1" />
+                <div key={list.id} className="relative">
+                  {/* Pin */}
+                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                    <Pin className="h-6 w-6 text-red-500 fill-red-500 rotate-45" />
+                  </div>
+                  
+                  {/* Card with shadow and slight rotation for natural look */}
+                  <Card className="transform rotate-1 hover:rotate-0 transition-transform duration-300 shadow-lg hover:shadow-xl bg-yellow-50 border-yellow-200 min-h-[300px]">
+                    <CardContent className="p-4 pt-6">
+                      {/* Header */}
+                      <div className="mb-4">
+                        <h2 className="font-bold text-lg text-gray-800 mb-1">{list.name}</h2>
+                        <div className="flex items-center text-sm text-gray-600 mb-2">
+                          <Calendar className="h-3 w-3 mr-1" />
                           <span>{formatDate(list.date)}</span>
-                          <span className="ml-3">{list.items.length} items</span>
+                          <span className="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">
+                            {list.items.length} items
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          size="sm" 
-                          className="bg-app-green hover:bg-app-green/90"
-                          onClick={() => handleCheckListPrices(list.items)}
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-1" />
-                          Check List Prices
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleShareList(list)}
-                        >
-                          <Share2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleCopyList(list)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleDeleteList(list.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Items Preview */}
-                    <div className="space-y-2">
-                      <div className="space-y-2">
+                      
+                      {/* Items Preview */}
+                      <div className="space-y-2 mb-4 flex-1">
                         {previewItems.map(product => (
-                          <div key={product?.id} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-b-0">
+                          <div key={product?.id} className="flex items-center gap-2">
                             <img 
                               src={product?.image} 
                               alt={product?.name}
-                              className="w-12 h-12 object-cover rounded"
+                              className="w-8 h-8 object-cover rounded border"
                             />
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">{product?.name}</p>
-                              <p className="text-xs text-gray-500">{product?.category}</p>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm text-gray-800 truncate">{product?.name}</p>
                             </div>
                           </div>
                         ))}
@@ -252,17 +227,16 @@ const ChecklistPage = () => {
 
                       {/* Expanded Items */}
                       {isExpanded && hasMoreItems && (
-                        <div className="space-y-2 mt-3 pt-3 border-t border-gray-200">
-                          {listItems.slice(5).map(product => (
-                            <div key={product?.id} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-b-0">
+                        <div className="space-y-2 mb-4 pb-3 border-t border-yellow-300 pt-3">
+                          {listItems.slice(4).map(product => (
+                            <div key={product?.id} className="flex items-center gap-2">
                               <img 
                                 src={product?.image} 
                                 alt={product?.name}
-                                className="w-12 h-12 object-cover rounded"
+                                className="w-8 h-8 object-cover rounded border"
                               />
-                              <div className="flex-1">
-                                <p className="font-medium text-sm">{product?.name}</p>
-                                <p className="text-xs text-gray-500">{product?.category}</p>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm text-gray-800 truncate">{product?.name}</p>
                               </div>
                             </div>
                           ))}
@@ -275,24 +249,63 @@ const ChecklistPage = () => {
                           variant="outline" 
                           size="sm" 
                           onClick={() => toggleExpandList(list.id)}
-                          className="w-full mt-3"
+                          className="w-full mb-3 border-yellow-300 hover:bg-yellow-100"
                         >
                           {isExpanded ? (
                             <>
-                              <ChevronUp className="h-4 w-4 mr-1" />
+                              <ChevronUp className="h-3 w-3 mr-1" />
                               Show Less
                             </>
                           ) : (
                             <>
-                              <ChevronDown className="h-4 w-4 mr-1" />
-                              Show All Items ({listItems.length - 5} more)
+                              <ChevronDown className="h-3 w-3 mr-1" />
+                              Show All ({listItems.length - 4} more)
                             </>
                           )}
                         </Button>
                       )}
-                    </div>
-                  </CardContent>
-                </Card>
+
+                      {/* Action Buttons */}
+                      <div className="space-y-2">
+                        <Button 
+                          size="sm" 
+                          className="w-full bg-app-green hover:bg-app-green/90 text-white"
+                          onClick={() => handleCheckListPrices(list.items)}
+                        >
+                          <ShoppingCart className="h-3 w-3 mr-1" />
+                          Check List Prices
+                        </Button>
+                        
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="flex-1 border-yellow-300 hover:bg-yellow-100"
+                            onClick={() => handleShareList(list)}
+                          >
+                            <Share2 className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="flex-1 border-yellow-300 hover:bg-yellow-100"
+                            onClick={() => handleCopyList(list)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="flex-1 border-red-300 hover:bg-red-50 text-red-600"
+                            onClick={() => handleDeleteList(list.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               );
             })}
           </div>
