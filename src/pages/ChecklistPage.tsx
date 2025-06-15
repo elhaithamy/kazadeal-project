@@ -1,11 +1,11 @@
-
 import React, { useState, useEffect, useContext } from 'react';
-import { ArrowLeft, Trash2, Calendar, ShoppingCart, ChevronDown, ChevronUp, Share2, Copy, Pin } from 'lucide-react';
+import { ArrowLeft, Trash2, Calendar, ShoppingCart, ChevronDown, ChevronUp, Share2, Copy, Pin, Edit, MoreVertical } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 import { products } from '@/data/products';
@@ -143,6 +143,13 @@ const ChecklistPage = () => {
     }
   };
 
+  const handleEditList = (list: SavedList) => {
+    toast({
+      title: 'Edit list',
+      description: `Editing ${list.name} - feature coming soon!`
+    });
+  };
+
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -194,16 +201,33 @@ const ChecklistPage = () => {
                     <Pin className="h-6 w-6 text-red-500 fill-red-500 rotate-45" />
                   </div>
                   
+                  {/* Three dots menu in top right corner */}
+                  <div className="absolute top-2 right-2 z-20">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleDeleteList(list.id)} className="text-red-600">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete List
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  
                   {/* Card with shadow and slight rotation for natural look */}
                   <Card className="transform rotate-1 hover:rotate-0 transition-transform duration-300 shadow-lg hover:shadow-xl bg-yellow-50 border-yellow-200 min-h-[300px]">
                     <CardContent className="p-4 pt-6">
                       {/* Header */}
                       <div className="mb-4">
-                        <h2 className="font-bold text-lg text-gray-800 mb-1">{list.name}</h2>
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
+                        <h2 className="font-bold text-lg text-gray-900 mb-1">{list.name}</h2>
+                        <div className="flex items-center text-sm text-gray-700 mb-2">
                           <Calendar className="h-3 w-3 mr-1" />
-                          <span>{formatDate(list.date)}</span>
-                          <span className="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">
+                          <span className="font-medium">{formatDate(list.date)}</span>
+                          <span className="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">
                             {list.items.length} items
                           </span>
                         </div>
@@ -219,7 +243,7 @@ const ChecklistPage = () => {
                               className="w-8 h-8 object-cover rounded border"
                             />
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm text-gray-800 truncate">{product?.name}</p>
+                              <p className="font-semibold text-sm text-gray-900 truncate">{product?.name}</p>
                             </div>
                           </div>
                         ))}
@@ -236,7 +260,7 @@ const ChecklistPage = () => {
                                 className="w-8 h-8 object-cover rounded border"
                               />
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm text-gray-800 truncate">{product?.name}</p>
+                                <p className="font-semibold text-sm text-gray-900 truncate">{product?.name}</p>
                               </div>
                             </div>
                           ))}
@@ -249,7 +273,7 @@ const ChecklistPage = () => {
                           variant="outline" 
                           size="sm" 
                           onClick={() => toggleExpandList(list.id)}
-                          className="w-full mb-3 border-yellow-300 hover:bg-yellow-100"
+                          className="w-full mb-3 border-yellow-400 hover:bg-yellow-100 font-medium text-gray-800"
                         >
                           {isExpanded ? (
                             <>
@@ -269,7 +293,7 @@ const ChecklistPage = () => {
                       <div className="space-y-2">
                         <Button 
                           size="sm" 
-                          className="w-full bg-app-green hover:bg-app-green/90 text-white"
+                          className="w-full bg-app-green hover:bg-app-green/90 text-white font-semibold"
                           onClick={() => handleCheckListPrices(list.items)}
                         >
                           <ShoppingCart className="h-3 w-3 mr-1" />
@@ -280,7 +304,15 @@ const ChecklistPage = () => {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            className="flex-1 border-yellow-300 hover:bg-yellow-100"
+                            className="flex-1 border-yellow-400 hover:bg-yellow-100 font-medium text-gray-800"
+                            onClick={() => handleEditList(list)}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="flex-1 border-yellow-400 hover:bg-yellow-100 font-medium text-gray-800"
                             onClick={() => handleShareList(list)}
                           >
                             <Share2 className="h-3 w-3" />
@@ -288,18 +320,10 @@ const ChecklistPage = () => {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            className="flex-1 border-yellow-300 hover:bg-yellow-100"
+                            className="flex-1 border-yellow-400 hover:bg-yellow-100 font-medium text-gray-800"
                             onClick={() => handleCopyList(list)}
                           >
                             <Copy className="h-3 w-3" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="flex-1 border-red-300 hover:bg-red-50 text-red-600"
-                            onClick={() => handleDeleteList(list.id)}
-                          >
-                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
