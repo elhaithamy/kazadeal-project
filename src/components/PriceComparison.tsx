@@ -350,32 +350,23 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
             </div>
           </div>
 
-          <div className="flex flex-col mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">
-                  {selectedProducts.length > 0 
-                    ? `${selectedProducts.length} products selected` 
-                    : filteredProducts.length === products.length 
-                      ? 'Showing all products'
-                      : `Showing ${filteredProducts.length} products`}
-                </span>
-                {selectedProducts.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => toggleProductSelection("clear")}
-                  >
-                    Clear All
-                  </Button>
-                )}
+          <div className="flex flex-col mb-2">
+            {selectedProducts.length > 0 && (
+              <div className="flex justify-end mb-3">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => toggleProductSelection("clear")}
+                >
+                  Clear All
+                </Button>
               </div>
-            </div>
+            )}
           </div>
           
           {/* Categories */}
-          <div className="mb-6">
-            <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Categories</h3>
+          <div className="mb-3">
+            <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Categories</h3>
             <CategoryNav />
           </div>
 
