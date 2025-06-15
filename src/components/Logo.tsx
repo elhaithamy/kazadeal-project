@@ -13,22 +13,22 @@ const fontSize: Record<string, string> = {
 };
 
 const iconSize: Record<string, string> = {
-  sm: 'text-3xl',
-  md: 'text-5xl',
-  lg: 'text-6xl'
+  sm: 'text-2xl',
+  md: 'text-4xl',
+  lg: 'text-5xl'
 };
 
-// A playful basket-emoji logo for Gen-Z vibe
+// Tank emoji for deals website
 const Logo: React.FC<LogoProps> = ({ size = 'md', showText = true }) => {
   return (
     <div className="flex items-center gap-2 font-spacegrotesk select-none">
       <span 
         className={`${iconSize[size]} drop-shadow-md bg-gradient-to-br from-app-green to-app-highlight rounded-full px-2 py-1 animate-bounce`}
-        aria-label="KazaDeal Logo"
-      >🧺</span>
+        aria-label="Deals Tank Logo"
+      >🚀</span>
       {showText && (
         <span className={`font-extrabold ${fontSize[size]} tracking-tight from-app-green to-app-highlight bg-gradient-to-r text-transparent bg-clip-text`}>
-          KazaDeal
+          Deals Tank
         </span>
       )}
     </div>

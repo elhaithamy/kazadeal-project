@@ -1,52 +1,38 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
 const retailers = [
   {
-    name: 'LuLu',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    name: 'Carrefour Egypt',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Carrefour_logo.svg/200px-Carrefour_logo.svg.png',
     offerDate: '25 Apr 2025'
   },
   {
-    name: 'Othaim',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    name: 'Beit El Gomla',
+    logo: 'https://pbs.twimg.com/profile_images/1364549142055309315/4mTBrKdz_400x400.jpg',
     offerDate: '30 Apr 2025'
   },
   {
-    name: 'Carrefour',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    name: 'Spinneys',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Spinneys_logo.svg/200px-Spinneys_logo.svg.png',
     offerDate: '22 Apr 2025'
   },
   {
-    name: 'Danube',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    name: 'Panda',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Panda_Retail_Company_logo.svg/200px-Panda_Retail_Company_logo.svg.png',
     offerDate: '28 Apr 2025'
   },
   {
-    name: 'Panda',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    name: 'Fathallah Market',
+    logo: 'https://via.placeholder.com/100x100/4CAF50/FFFFFF?text=FM',
     offerDate: '23 Apr 2025'
   },
   {
-    name: 'Tamimi',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
+    name: 'Zahran Market',
+    logo: 'https://via.placeholder.com/100x100/FF5722/FFFFFF?text=ZM',
     offerDate: '21 Apr 2025'
-  },
-  {
-    name: 'Retailer7',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
-    offerDate: '19 Apr 2025'
-  },
-  {
-    name: 'Retailer8',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
-    offerDate: '20 Apr 2025'
-  },
-  {
-    name: 'Retailer9',
-    logo: 'https://shop.sage.co.za/wp-content/uploads/2017/09/green-shopping-cart-icon-5-1.png',
-    offerDate: '18 Apr 2025'
   }
 ];
 
@@ -61,7 +47,7 @@ const Header = () => {
       </div>
       
       <div className="flex justify-center items-center py-1 bg-app-green/10 text-app-green text-center text-base font-bold">
-        Hey 👋 Ready to bag the best deals? <span className='ml-2 animate-wiggle'>💸</span>
+        Hey 👋 Ready to find the best deals? <span className='ml-2 animate-wiggle'>💸</span>
       </div>
 
       <div className="flex overflow-x-auto gap-4 py-2 px-2 bg-white border-b border-gray-100">
@@ -82,9 +68,9 @@ const Header = () => {
       </div>
       <div className="bg-gradient-to-r from-app-green/90 to-app-green h-20 flex items-center justify-center rounded-b-2xl shadow-md">
         <div className="text-center text-white p-2">
-          <h1 className="text-xl font-black font-spacegrotesk">Save on Every Purchase ✨</h1>
+          <h1 className="text-xl font-black font-spacegrotesk">Find the Best Deals ✨</h1>
           <p className="text-sm opacity-90">
-            Compare prices across stores & flex on overpriced groceries!
+            Compare prices across stores & save on every purchase!
           </p>
         </div>
       </div>

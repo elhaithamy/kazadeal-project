@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { getNewArrivals } from '@/data/products';
-import { Sparkles, Star } from 'lucide-react';
+import { Sparkles, Star, Zap, Crown } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -10,11 +10,40 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from '@/hooks/use-mobile';
-import ProductTag from '@/components/ProductTag';
 
 const NewArrivals = () => {
-  const newArrivals = getNewArrivals(8);
+  const newArrivals = getNewArrivals(12);
   const isMobile = useIsMobile();
+
+  const getStatusBadge = (index: number) => {
+    const statusType = index % 3;
+    switch (statusType) {
+      case 0:
+        return {
+          text: "New Arrival",
+          icon: <Star className="h-3 w-3 mr-1" />,
+          color: "bg-gradient-to-r from-green-500 to-green-400 text-white"
+        };
+      case 1:
+        return {
+          text: "New Offer",
+          icon: <Zap className="h-3 w-3 mr-1" />,
+          color: "bg-gradient-to-r from-orange-500 to-orange-400 text-white"
+        };
+      case 2:
+        return {
+          text: "Exclusive Deal",
+          icon: <Crown className="h-3 w-3 mr-1" />,
+          color: "bg-gradient-to-r from-purple-500 to-purple-400 text-white"
+        };
+      default:
+        return {
+          text: "New Arrival",
+          icon: <Star className="h-3 w-3 mr-1" />,
+          color: "bg-gradient-to-r from-green-500 to-green-400 text-white"
+        };
+    }
+  };
 
   return (
     <div>
@@ -32,33 +61,33 @@ const NewArrivals = () => {
           className="w-full"
         >
           <CarouselContent className="pb-1">
-            {newArrivals.map((product) => (
-              <CarouselItem 
-                key={product.id} 
-                className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
-              >
-                <div className="flex flex-col items-center py-3 px-1 hover-scale">
-                  <div className="relative w-12 h-12 mb-2">
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm bg-white"
-                    />
-                    <div className="absolute -top-2 -right-2">
-                      <ProductTag type="new" />
+            {newArrivals.map((product, index) => {
+              const statusBadge = getStatusBadge(index);
+              return (
+                <CarouselItem 
+                  key={product.id} 
+                  className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
+                >
+                  <div className="flex flex-col items-center py-3 px-1 hover-scale">
+                    <div className="relative w-12 h-12 mb-2">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm bg-white"
+                      />
+                    </div>
+                    <h3 className="font-medium text-center text-xs mb-1 line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 text-center mb-2">{product.category}</p>
+                    <div className={`mt-auto text-[10px] px-2 py-1 rounded-full flex items-center ${statusBadge.color}`}>
+                      {statusBadge.icon}
+                      {statusBadge.text}
                     </div>
                   </div>
-                  <h3 className="font-medium text-center text-xs mb-1 line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 text-center mb-2">{product.category}</p>
-                  <div className="mt-auto text-xs text-app-green font-bold bg-app-green/10 px-2 py-0.5 rounded-full flex items-center">
-                    <Star className="h-3 w-3 mr-1 text-app-green" />
-                    NEW IN STORES
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
+                </CarouselItem>
+              );
+            })}
           </CarouselContent>
           <div className="flex w-full justify-between px-8 absolute bottom-0 left-0 right-0">
             <CarouselPrevious className="static relative bottom-0 left-0 -translate-y-0 h-8 w-8" />
