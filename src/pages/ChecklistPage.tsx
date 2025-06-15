@@ -151,31 +151,8 @@ const ChecklistPage = () => {
     });
   };
 
-  const findBestStore = (totalPrices: SavedList['totalPrices']) => {
-    let lowestPrice = Infinity;
-    let bestStore = '';
-
-    Object.entries(totalPrices).forEach(([store, price]) => {
-      if (price < lowestPrice) {
-        lowestPrice = price;
-        bestStore = store;
-      }
-    });
-
-    return { store: bestStore, price: lowestPrice };
-  };
-
   const getListItems = (itemIds: number[]) => {
     return itemIds.map(id => products.find(p => p.id === id)).filter(Boolean);
-  };
-
-  const storeInfo = {
-    lulu: { name: 'LuLu Hypermarket', color: 'bg-blue-500' },
-    othaim: { name: 'Othaim Markets', color: 'bg-purple-500' },
-    carrefour: { name: 'Carrefour', color: 'bg-orange-500' },
-    danube: { name: 'Danube', color: 'bg-blue-600' },
-    panda: { name: 'Panda', color: 'bg-green-500' },
-    tamimi: { name: 'Tamimi Markets', color: 'bg-indigo-500' }
   };
 
   return (
@@ -203,35 +180,12 @@ const ChecklistPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Best Deals Section */}
-            <Card className="border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
-              <CardContent className="p-4">
-                <h2 className="text-lg font-bold text-green-800 mb-4">Best Deals from Your Lists</h2>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                  {Object.entries(storeInfo).map(([store, info]) => {
-                    const totalSavings = savedLists.reduce((sum, list) => {
-                      const bestDeal = findBestStore(list.totalPrices);
-                      return sum + (bestDeal.store === store ? list.totalPrices[store as keyof typeof list.totalPrices] : 0);
-                    }, 0);
-                    
-                    return (
-                      <div key={store} className={`${info.color} text-white p-3 rounded-lg text-center`}>
-                        <div className="text-xs font-medium">{info.name}</div>
-                        <div className="text-sm font-bold">SAR {totalSavings.toFixed(0)}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Saved Lists */}
+          <div className="space-y-4">
             {savedLists.map(list => {
               const listItems = getListItems(list.items);
-              const previewItems = listItems.slice(0, 4);
+              const previewItems = listItems.slice(0, 5);
               const isExpanded = expandedLists.has(list.id);
-              const hasMoreItems = listItems.length > 4;
+              const hasMoreItems = listItems.length > 5;
               
               return (
                 <Card key={list.id} className="shadow-sm">
@@ -243,9 +197,6 @@ const ChecklistPage = () => {
                           <Calendar className="h-4 w-4 mr-1" />
                           <span>{formatDate(list.date)}</span>
                           <span className="ml-3">{list.items.length} items</span>
-                        </div>
-                        <div className="text-sm text-green-600 font-medium">
-                          Best at {findBestStore(list.totalPrices).store}: SAR {findBestStore(list.totalPrices).price.toFixed(2)}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -283,33 +234,36 @@ const ChecklistPage = () => {
                     
                     {/* Items Preview */}
                     <div className="space-y-2">
-                      <h3 className="font-medium text-sm text-gray-700">Items in this list:</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="space-y-2">
                         {previewItems.map(product => (
-                          <div key={product?.id} className="bg-gray-50 p-3 rounded-lg">
+                          <div key={product?.id} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-b-0">
                             <img 
                               src={product?.image} 
                               alt={product?.name}
-                              className="w-full h-16 object-cover rounded mb-2"
+                              className="w-12 h-12 object-cover rounded"
                             />
-                            <p className="text-xs font-medium truncate">{product?.name}</p>
-                            <p className="text-xs text-gray-500">{product?.category}</p>
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{product?.name}</p>
+                              <p className="text-xs text-gray-500">{product?.category}</p>
+                            </div>
                           </div>
                         ))}
                       </div>
 
                       {/* Expanded Items */}
                       {isExpanded && hasMoreItems && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                          {listItems.slice(4).map(product => (
-                            <div key={product?.id} className="bg-gray-50 p-3 rounded-lg">
+                        <div className="space-y-2 mt-3 pt-3 border-t border-gray-200">
+                          {listItems.slice(5).map(product => (
+                            <div key={product?.id} className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-b-0">
                               <img 
                                 src={product?.image} 
                                 alt={product?.name}
-                                className="w-full h-16 object-cover rounded mb-2"
+                                className="w-12 h-12 object-cover rounded"
                               />
-                              <p className="text-xs font-medium truncate">{product?.name}</p>
-                              <p className="text-xs text-gray-500">{product?.category}</p>
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">{product?.name}</p>
+                                <p className="text-xs text-gray-500">{product?.category}</p>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -331,7 +285,7 @@ const ChecklistPage = () => {
                           ) : (
                             <>
                               <ChevronDown className="h-4 w-4 mr-1" />
-                              Show All Items ({listItems.length - 4} more)
+                              Show All Items ({listItems.length - 5} more)
                             </>
                           )}
                         </Button>
