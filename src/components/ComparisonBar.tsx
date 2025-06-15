@@ -7,6 +7,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+
+import { products } from '@/data/products';
 
 interface ComparisonBarProps {
   totals: {
@@ -25,7 +28,7 @@ interface ComparisonBarProps {
 const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalStore }: ComparisonBarProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  
+
   if (selectedProducts.length === 0) {
     return null;
   }
@@ -39,7 +42,7 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
     panda: '#7E69AB', // Secondary Purple
     tamimi: '#6E59A5', // Tertiary Purple
   };
-  
+
   // Retailer display names for tooltips
   const retailerNames = {
     lulu: 'LuLu',
@@ -53,11 +56,11 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
   const formatStoreTotal = (store: string, value: number) => {
     const storeColor = retailerColors[store as keyof typeof retailerColors] || '#6E59A5';
     const storeName = retailerNames[store as keyof typeof retailerNames];
-    
+
     return (
       <div className="flex flex-col items-center">
-        <div 
-          className="rounded-lg p-2 w-full text-center shadow-sm relative" 
+        <div
+          className="rounded-lg p-2 w-full text-center shadow-sm relative"
           style={{ backgroundColor: storeColor }}
           title={`${storeName}: ${value.toFixed(2)}`}
         >
@@ -74,22 +77,41 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
   };
 
   const handleSaveList = () => {
-    // In a real implementation, this would save to localStorage or database
     const now = new Date();
     const saveDate = now.toLocaleDateString();
-    
+
     toast({
       title: "Cart saved!",
       description: `Your selection has been saved (${saveDate})`,
     });
   };
 
+  // Compact product card for the cart slider
+  const renderProductCard = (productId: number) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return null;
+    return (
+      <div className="flex flex-col items-center justify-center bg-white border rounded-lg shadow px-2 py-2 w-28 md:w-32 h-32 md:h-36 mx-auto">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-12 h-12 object-cover mb-1 rounded"
+        />
+        <div className="text-xs font-bold text-center mb-1 line-clamp-2 w-full">{product.name}</div>
+        <div className="flex items-center gap-1">
+          <span className="text-gray-500 text-xs">Qty:</span>
+          <span className="bg-app-green text-white px-2 py-0.5 rounded-full text-xs font-semibold">{1}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className={`w-full ${isMobile ? 'fixed bottom-16 left-0 z-30 h-auto max-h-32' : 'mb-4'}`}>
+    <div className={`w-full ${isMobile ? 'fixed bottom-16 left-0 z-30 h-auto max-h-44' : 'mb-4'}`}>
       <Card className="rounded-lg shadow-lg border-t md:border border-gray-300">
         <CardContent className="p-3 md:p-4 bg-gray-50">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-1 md:mb-0">
               <div className="bg-app-green text-white p-2 rounded-full">
                 <ShoppingBasket size={18} />
               </div>
@@ -98,7 +120,35 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
                 <div className="font-bold text-sm">{selectedProducts.length} Products</div>
               </div>
             </div>
-            
+
+            <div className="flex-1 min-w-0">
+              <Carousel
+                opts={{
+                  align: "start",
+                  dragFree: true,
+                  slidesToScroll: isMobile ? 2 : 3,
+                }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {selectedProducts.map((id) => (
+                    <CarouselItem
+                      className="basis-1/2 md:basis-1/4 px-1"
+                      key={id}
+                    >
+                      {renderProductCard(id)}
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {selectedProducts.length > (isMobile ? 2 : 4) && (
+                  <>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </>
+                )}
+              </Carousel>
+            </div>
+
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 flex-1 max-w-none md:max-w-md my-2 md:my-0">
               {Object.entries(totals).map(([store, value]) => (
                 <div key={store} className="text-center">
@@ -106,10 +156,10 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
                 </div>
               ))}
             </div>
-            
+
             <div className="flex gap-2">
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
                 className="h-10 flex items-center gap-1"
                 onClick={handleSaveList}
@@ -129,3 +179,4 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
 };
 
 export default ComparisonBar;
+
