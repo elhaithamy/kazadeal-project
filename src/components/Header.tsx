@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
@@ -37,17 +37,74 @@ const retailers = [
 ];
 
 const Header = () => {
+  const [colorTheme, setColorTheme] = useState<'soft-blue' | 'navy-sky'>('soft-blue');
+
+  // Color theme configurations
+  const themes = {
+    'soft-blue': {
+      primary: 'from-blue-500 to-cyan-500',
+      secondary: 'bg-cyan-50',
+      accent: 'bg-blue-100',
+      text: 'text-blue-700',
+      logo: 'from-blue-500 to-cyan-400'
+    },
+    'navy-sky': {
+      primary: 'from-blue-900 to-sky-500',
+      secondary: 'bg-blue-50',
+      accent: 'bg-sky-100',
+      text: 'text-blue-900',
+      logo: 'from-blue-900 to-sky-400'
+    }
+  };
+
+  const currentTheme = themes[colorTheme];
+
   return (
     <header className="bg-white font-spacegrotesk text-white">
-      <div className="flex justify-center items-center py-2 bg-gradient-to-tr from-app-soft to-app-primary">
-        <Logo size="md" />
-      </div>
-      
-      <div className="flex justify-center items-center py-1 bg-app-soft/20 text-app-primary text-center text-base font-bold">
-        Hey 👋 Ready to find the best deals? <span className='ml-2 animate-wiggle'>💸</span>
+      {/* Theme Selector for Preview */}
+      <div className="flex justify-center gap-4 py-2 bg-gray-100">
+        <button 
+          onClick={() => setColorTheme('soft-blue')}
+          className={`px-4 py-2 rounded text-sm font-medium transition-all ${
+            colorTheme === 'soft-blue' 
+              ? 'bg-blue-500 text-white shadow-md' 
+              : 'bg-white text-blue-500 border border-blue-500'
+          }`}
+        >
+          Soft Blue/Teal Theme
+        </button>
+        <button 
+          onClick={() => setColorTheme('navy-sky')}
+          className={`px-4 py-2 rounded text-sm font-medium transition-all ${
+            colorTheme === 'navy-sky' 
+              ? 'bg-blue-900 text-white shadow-md' 
+              : 'bg-white text-blue-900 border border-blue-900'
+          }`}
+        >
+          Navy/Sky Theme
+        </button>
       </div>
 
-      <div className="flex overflow-x-auto gap-4 py-2 px-2 bg-white border-b border-gray-100">
+      <div className={`flex justify-center items-center py-2 bg-gradient-to-tr ${currentTheme.primary}`}>
+        <div className="flex items-center gap-2 font-spacegrotesk select-none">
+          <span 
+            className={`text-4xl drop-shadow-md bg-gradient-to-br ${currentTheme.logo} rounded-full px-2 py-1 animate-bounce`}
+            aria-label="Deals Tank Logo"
+          >🚀</span>
+          <span className="font-extrabold text-2xl tracking-tight text-white">
+            Deals Tank
+          </span>
+        </div>
+      </div>
+      
+      <div className={`flex justify-center items-center py-2 ${currentTheme.secondary} ${currentTheme.text} text-center text-base font-bold`}>
+        <div className="text-center">
+          <div className="text-lg font-black">Savings Tip 💡</div>
+          <div className="text-sm opacity-80 mt-1">Real discounts? Yes. Best price? Not always.</div>
+        </div>
+      </div>
+
+      <div className={`flex overflow-x-auto gap-4 py-2 px-2 bg-white border-b border-gray-100`}>
         {retailers.map((retailer, index) => (
           <div
             key={index}
@@ -56,14 +113,14 @@ const Header = () => {
             <img
               src={retailer.logo}
               alt={retailer.name}
-              className="h-10 w-10 object-contain bg-gradient-to-br from-app-soft/30 to-app-soft/5 rounded-xl"
+              className={`h-10 w-10 object-contain ${currentTheme.accent} rounded-xl`}
             />
             <span className="text-xs font-semibold">{retailer.name}</span>
             <span className="text-[10px] text-gray-500">{retailer.offerDate}</span>
           </div>
         ))}
       </div>
-      <div className="bg-gradient-to-r from-app-primary/90 to-app-primary h-20 flex items-center justify-center rounded-b-2xl shadow-md">
+      <div className={`bg-gradient-to-r ${currentTheme.primary} h-20 flex items-center justify-center rounded-b-2xl shadow-md`}>
         <div className="text-center text-white p-2">
           <h1 className="text-xl font-black font-spacegrotesk">Find the Best Deals ✨</h1>
           <p className="text-sm opacity-90">
