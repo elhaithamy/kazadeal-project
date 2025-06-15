@@ -44,7 +44,7 @@ const TopActionBar = () => {
   return (
     <div className="flex flex-col md:flex-row gap-3 mb-4">
       {/* Leaflet Banner - 30% */}
-      <div className="flex-[3] bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-4 text-white">
+      <div className="flex-[3] bg-gradient-to-r from-app-primary to-app-soft rounded-2xl p-4 text-white">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-bold text-lg">📰 Retailers Magazines</h3>
@@ -65,7 +65,7 @@ const TopActionBar = () => {
           <Bell className="h-6 w-6 mx-auto mb-1" />
           <p className="text-xs font-medium">Price Alerts</p>
         </div>
-        <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-3 text-white text-center cursor-pointer hover:scale-105 transition-all">
+        <div className="bg-gradient-to-r from-app-success to-emerald-500 rounded-xl p-3 text-white text-center cursor-pointer hover:scale-105 transition-all">
           <User className="h-6 w-6 mx-auto mb-1" />
           <p className="text-xs font-medium">Your Account</p>
         </div>
@@ -79,7 +79,7 @@ const TopActionBar = () => {
       <div className="flex-[2] flex gap-2 items-center justify-end">
         <Popover open={showSharePopup} onOpenChange={setShowSharePopup}>
           <PopoverTrigger asChild>
-            <div className="bg-gradient-to-r from-app-green to-app-highlight rounded-xl p-3 text-white text-center cursor-pointer hover:scale-105 transition-all">
+            <div className="bg-gradient-to-r from-app-primary to-app-soft rounded-xl p-3 text-white text-center cursor-pointer hover:scale-105 transition-all">
               <Share2 className="h-5 w-5 mx-auto" />
             </div>
           </PopoverTrigger>
@@ -87,7 +87,7 @@ const TopActionBar = () => {
             <div className="text-center">
               <h4 className="font-semibold mb-2">Share Deals Tank! 🚀</h4>
               <p className="text-sm text-gray-600 mb-3">Spread the word about amazing deals!</p>
-              <Button onClick={handleShare} className="w-full bg-app-green hover:bg-app-green/90">
+              <Button onClick={handleShare} className="w-full bg-app-primary hover:bg-app-primary/90">
                 Share Now
               </Button>
             </div>
@@ -104,7 +104,7 @@ const TopActionBar = () => {
             <div className="text-center">
               <h4 className="font-semibold mb-2">Join Deals Tank! 💪</h4>
               <p className="text-sm text-gray-600 mb-3">Sign up now to save your favorite deals and get personalized recommendations!</p>
-              <Button className="w-full bg-app-green hover:bg-app-green/90">
+              <Button className="w-full bg-app-primary hover:bg-app-primary/90">
                 Sign Up Now
               </Button>
             </div>

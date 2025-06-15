@@ -39,14 +39,11 @@ const retailers = [
 const Header = () => {
   return (
     <header className="bg-white font-spacegrotesk text-white">
-      <div className="flex justify-center items-center py-2 bg-gradient-to-tr from-app-green to-app-highlight relative">
-        <div className="absolute left-4">
-          <Logo size="sm" showText={false} />
-        </div>
+      <div className="flex justify-center items-center py-2 bg-gradient-to-tr from-app-soft to-app-primary">
         <Logo size="md" />
       </div>
       
-      <div className="flex justify-center items-center py-1 bg-app-green/10 text-app-green text-center text-base font-bold">
+      <div className="flex justify-center items-center py-1 bg-app-soft/20 text-app-primary text-center text-base font-bold">
         Hey 👋 Ready to find the best deals? <span className='ml-2 animate-wiggle'>💸</span>
       </div>
 
@@ -59,14 +56,14 @@ const Header = () => {
             <img
               src={retailer.logo}
               alt={retailer.name}
-              className="h-10 w-10 object-contain bg-gradient-to-br from-app-green/30 to-app-green/5 rounded-xl"
+              className="h-10 w-10 object-contain bg-gradient-to-br from-app-soft/30 to-app-soft/5 rounded-xl"
             />
             <span className="text-xs font-semibold">{retailer.name}</span>
             <span className="text-[10px] text-gray-500">{retailer.offerDate}</span>
           </div>
         ))}
       </div>
-      <div className="bg-gradient-to-r from-app-green/90 to-app-green h-20 flex items-center justify-center rounded-b-2xl shadow-md">
+      <div className="bg-gradient-to-r from-app-primary/90 to-app-primary h-20 flex items-center justify-center rounded-b-2xl shadow-md">
         <div className="text-center text-white p-2">
           <h1 className="text-xl font-black font-spacegrotesk">Find the Best Deals ✨</h1>
           <p className="text-sm opacity-90">

@@ -67,13 +67,16 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				app: {
-					green: {
-						DEFAULT: '#4CAF50',
-						light: '#66BB6A',
-						dark: '#388E3C',
+					primary: {
+						DEFAULT: '#6366F1',
+						light: '#818CF8',
+						dark: '#4F46E5',
 					},
-					highlight: '#8BC34A',
-					lowlight: '#F1F8E9',
+					soft: '#A5B4FC',
+					accent: '#E0E7FF',
+					success: '#10B981',
+					warning: '#F59E0B',
+					background: '#FAFBFF',
 				}
 			},
 			borderRadius: {

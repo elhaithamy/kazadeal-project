@@ -23,11 +23,11 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', showText = true }) => {
   return (
     <div className="flex items-center gap-2 font-spacegrotesk select-none">
       <span 
-        className={`${iconSize[size]} drop-shadow-md bg-gradient-to-br from-app-green to-app-highlight rounded-full px-2 py-1 animate-bounce`}
+        className={`${iconSize[size]} drop-shadow-md bg-gradient-to-br from-app-primary to-app-soft rounded-full px-2 py-1 animate-bounce`}
         aria-label="Deals Tank Logo"
       >🚀</span>
       {showText && (
-        <span className={`font-extrabold ${fontSize[size]} tracking-tight from-app-green to-app-highlight bg-gradient-to-r text-transparent bg-clip-text`}>
+        <span className={`font-extrabold ${fontSize[size]} tracking-tight from-app-primary to-app-soft bg-gradient-to-r text-transparent bg-clip-text`}>
           Deals Tank
         </span>
       )}

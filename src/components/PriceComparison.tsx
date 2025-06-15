@@ -306,11 +306,19 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
       <Card className="mb-6 bg-white shadow-lg">
         <CardContent className="pt-6">
-          {/* Deals Truth Header */}
+          {/* Savings Tip Header */}
           <div className="text-center mb-6">
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-app-green via-app-highlight to-app-green bg-clip-text mb-2">
-              DEALS TRUTH
+            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-app-primary via-app-soft to-app-primary bg-clip-text mb-2">
+              SAVINGS TIP
             </h1>
+            <div className="max-w-2xl mx-auto mb-4">
+              <p className="text-lg font-bold text-gray-800 mb-1" dir="rtl">
+                خصومات حقيقية، بس مش كل خصم يعني أفضل سعر.
+              </p>
+              <p className="text-sm text-gray-600 italic">
+                Real discounts? Yes. Best price? Not always.
+              </p>
+            </div>
             <div className="flex items-center justify-center text-sm text-gray-500 mb-4">
               <Calendar className="w-4 h-4 mr-1" />
               <span>Last Updated: {lastUpdateDate}</span>
@@ -327,7 +335,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                   value={localSearchQuery}
                   onChange={(e) => setLocalSearchQuery(e.target.value)}
                   placeholder="Search for the best deals..."
-                  className="pl-9 pr-4 py-2 w-full rounded-xl border-2 border-gray-200 focus:border-app-green"
+                  className="pl-9 pr-4 py-2 w-full rounded-xl border-2 border-gray-200 focus:border-app-primary"
                   onKeyDown={handleKeyPress}
                 />
               </div>
@@ -335,7 +343,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                 variant="default" 
                 size="sm"
                 onClick={handleSearch}
-                className="flex-shrink-0 bg-app-green hover:bg-app-green/80 px-6 rounded-xl"
+                className="flex-shrink-0 bg-app-primary hover:bg-app-primary/80 px-6 rounded-xl"
               >
                 Search
               </Button>
