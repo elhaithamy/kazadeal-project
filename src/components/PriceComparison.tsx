@@ -203,8 +203,39 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     toggleProductSelection(product.id);
   };
 
+  // Helper for rendering the store price grid for a single product in two columns.
+  const renderCompactPriceTable = (product: Product) => {
+    // Get the entries as array for easier mapping
+    const prices = [
+      { label: 'LuLu', value: product.prices.lulu },
+      { label: 'Panda', value: product.prices.panda },
+      { label: 'Othaim', value: product.prices.othaim },
+      { label: 'Carrefour', value: product.prices.carrefour },
+      { label: 'Danube', value: product.prices.danube },
+      { label: 'Tamimi', value: product.prices.tamimi }
+    ];
+    // Find the lowest price value per product
+    const lowestPrice = Math.min(...prices.map(p => p.value));
+
+    return (
+      <div className="grid grid-cols-2 gap-2 w-full">
+        {prices.map(({ label, value }) => (
+          <div
+            key={label}
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl border 
+              ${value === lowestPrice ? 'bg-app-green/20 border-app-green text-app-green font-extrabold' : 'bg-gray-100 border-gray-200 text-gray-700'}
+              text-xs`}
+          >
+            <span className="font-semibold text-[11px] mb-0.5">{label}</span>
+            <span className="text-base">{value.toFixed(2)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderProductItem = (product: Product) => {
-    const lowestPrice = findLowestPrice(product.prices);
+    const lowestPrice = Math.min(...Object.values(product.prices));
     const isSelected = selectedProducts.includes(product.id);
     const productTag = getProductTag(product.id);
     const quantity = getQuantity(product.id);
@@ -256,25 +287,9 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-2 mb-3 text-xs font-semibold">
-              <div className="text-center p-2 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border">
-                <div className="text-gray-500 text-[10px] mb-1">LuLu</div>
-                <div className={`${product.prices.lulu === lowestPrice ? 'text-app-green font-extrabold text-sm' : 'text-gray-700'}`}>
-                  {calculateTotalPrice(product.prices.lulu, product.id).toFixed(2)}
-                </div>
-              </div>
-              <div className="text-center p-2 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border">
-                <div className="text-gray-500 text-[10px] mb-1">Panda</div>
-                <div className={`${product.prices.panda === lowestPrice ? 'text-app-green font-extrabold text-sm' : 'text-gray-700'}`}>
-                  {calculateTotalPrice(product.prices.panda, product.id).toFixed(2)}
-                </div>
-              </div>
-              <div className="text-center p-2 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border">
-                <div className="text-gray-500 text-[10px] mb-1">Othaim</div>
-                <div className={`${product.prices.othaim === lowestPrice ? 'text-app-green font-extrabold text-sm' : 'text-gray-700'}`}>
-                  {calculateTotalPrice(product.prices.othaim, product.id).toFixed(2)}
-                </div>
-              </div>
+            {/* Responsive price table for comparison: 2 per row */}
+            <div className="mb-3 w-full">
+              {renderCompactPriceTable(product)}
             </div>
             
             <div className="mt-auto">
