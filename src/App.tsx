@@ -10,6 +10,7 @@ import SearchPage from "./pages/SearchPage";
 import SettingsPage from "./pages/SettingsPage";
 import AdminPage from "./pages/AdminPage";
 import RetailerLeaflets from "./pages/RetailerLeaflets";
+import BasketPage from "./pages/BasketPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/leaflets" element={<RetailerLeaflets />} />
+          <Route path="/basket" element={<BasketPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

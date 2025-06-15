@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
-import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NewArrivals from '@/components/NewArrivals';
 import ProductTag, { TagType } from '@/components/ProductTag';
@@ -50,7 +49,6 @@ const getLastUpdateDate = () => {
 
 const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, onCategoryChange }: PriceComparisonProps) => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
-  const { toast } = useToast();
   const isMobile = useIsMobile();
   const [displayedItems, setDisplayedItems] = useState(15);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
@@ -64,6 +62,11 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
       ...prev,
       [productId]: Math.max(1, value)
     }));
+  };
+
+  const handleQuantityInputChange = (productId: number, value: string) => {
+    const numValue = parseInt(value) || 1;
+    handleQuantityChange(productId, Math.max(1, numValue));
   };
 
   const handleSearch = () => {
@@ -198,10 +201,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
 
   const handleSelectProduct = (product: Product) => {
     toggleProductSelection(product.id);
-    toast({
-      title: selectedProducts.includes(product.id) ? "Removed from comparison" : "Added to comparison",
-      description: selectedProducts.includes(product.id) ? "Product removed from your comparison list" : "Product added to your comparison list",
-    });
   };
 
   const renderProductItem = (product: Product) => {
@@ -241,7 +240,13 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                 >
                   -
                 </button>
-                <span className="px-3 py-1 text-sm font-bold">{quantity}</span>
+                <Input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => handleQuantityInputChange(product.id, e.target.value)}
+                  className="w-16 h-7 text-center text-sm font-bold border-0 bg-transparent focus:ring-0 focus:border-0"
+                  min="1"
+                />
                 <button 
                   onClick={() => handleQuantityChange(product.id, quantity + 1)}
                   className="bg-app-green text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold"
