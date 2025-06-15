@@ -1,13 +1,14 @@
 
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Trash2, Calendar } from 'lucide-react';
+import React, { useState, useEffect, useContext } from 'react';
+import { ArrowLeft, Trash2, Calendar, ShoppingCart, ChevronDown, ChevronUp, Share2, Copy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
+import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
+import { products } from '@/data/products';
 
 // Define the saved list type
 interface SavedList {
@@ -25,13 +26,13 @@ interface SavedList {
   };
 }
 
-// Mock saved lists (in a real app, this would come from localStorage or a database)
+// Mock saved lists
 const mockSavedLists: SavedList[] = [
   {
     id: '1',
     date: '2025-05-09',
     name: 'Weekly Groceries',
-    items: [1, 2, 3],
+    items: [1, 2, 3, 4, 5, 6],
     totalPrices: {
       lulu: 42,
       othaim: 38,
@@ -45,7 +46,7 @@ const mockSavedLists: SavedList[] = [
     id: '2',
     date: '2025-05-08',
     name: 'Household Items',
-    items: [9, 10, 12, 15],
+    items: [9, 10, 12, 15, 16, 17, 18],
     totalPrices: {
       lulu: 89.4,
       othaim: 89.5,
@@ -59,12 +60,12 @@ const mockSavedLists: SavedList[] = [
 
 const ChecklistPage = () => {
   const [savedLists, setSavedLists] = useState<SavedList[]>(mockSavedLists);
+  const [expandedLists, setExpandedLists] = useState<Set<string>>(new Set());
+  const { toggleProductSelection } = useContext(ProductSelectionContext);
   const { toast } = useToast();
 
-  // Pretend to load lists from storage
   useEffect(() => {
     // In a real app, you would load from localStorage or a database
-    // setSavedLists(JSON.parse(localStorage.getItem('savedLists') || '[]'));
   }, []);
 
   const handleDeleteList = (id: string) => {
@@ -73,7 +74,73 @@ const ChecklistPage = () => {
       title: 'List deleted',
       description: 'Your saved list has been removed'
     });
-    // In a real app: localStorage.setItem('savedLists', JSON.stringify(updatedLists));
+  };
+
+  const handleCheckListPrices = (listItems: number[]) => {
+    // Add all list items to cart for comparison
+    listItems.forEach(productId => {
+      toggleProductSelection(productId);
+    });
+    
+    toast({
+      title: 'Items added to comparison',
+      description: `${listItems.length} items added to your basket for price comparison`
+    });
+  };
+
+  const toggleExpandList = (listId: string) => {
+    const newExpanded = new Set(expandedLists);
+    if (newExpanded.has(listId)) {
+      newExpanded.delete(listId);
+    } else {
+      newExpanded.add(listId);
+    }
+    setExpandedLists(newExpanded);
+  };
+
+  const handleShareList = async (list: SavedList) => {
+    const shareText = `Check out my shopping list: ${list.name}\n\nItems:\n${
+      list.items.map(id => {
+        const product = products.find(p => p.id === id);
+        return product ? `• ${product.name}` : '';
+      }).filter(Boolean).join('\n')
+    }`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Shopping List: ${list.name}`,
+          text: shareText,
+        });
+      } catch (error) {
+        console.log('Share cancelled');
+      }
+    } else {
+      // Fallback to clipboard
+      handleCopyList(list);
+    }
+  };
+
+  const handleCopyList = async (list: SavedList) => {
+    const shareText = `Shopping List: ${list.name}\n\nItems:\n${
+      list.items.map(id => {
+        const product = products.find(p => p.id === id);
+        return product ? `• ${product.name}` : '';
+      }).filter(Boolean).join('\n')
+    }`;
+
+    try {
+      await navigator.clipboard.writeText(shareText);
+      toast({
+        title: 'List copied',
+        description: 'Shopping list copied to clipboard'
+      });
+    } catch (error) {
+      toast({
+        title: 'Copy failed',
+        description: 'Unable to copy to clipboard'
+      });
+    }
   };
 
   const formatDate = (dateStr: string) => {
@@ -98,12 +165,25 @@ const ChecklistPage = () => {
     return { store: bestStore, price: lowestPrice };
   };
 
+  const getListItems = (itemIds: number[]) => {
+    return itemIds.map(id => products.find(p => p.id === id)).filter(Boolean);
+  };
+
+  const storeInfo = {
+    lulu: { name: 'LuLu Hypermarket', color: 'bg-blue-500' },
+    othaim: { name: 'Othaim Markets', color: 'bg-purple-500' },
+    carrefour: { name: 'Carrefour', color: 'bg-orange-500' },
+    danube: { name: 'Danube', color: 'bg-blue-600' },
+    panda: { name: 'Panda', color: 'bg-green-500' },
+    tamimi: { name: 'Tamimi Markets', color: 'bg-indigo-500' }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
       
       <div className="bg-white shadow-sm mb-4">
-        <div className="container mx-auto px-4 py-2 flex items-center">
+        <div className="container mx-auto px-4 py-3 flex items-center">
           <Link to="/" className="mr-4">
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -111,7 +191,7 @@ const ChecklistPage = () => {
         </div>
       </div>
       
-      <main className="flex-1 mb-16 px-4">
+      <main className="flex-1 mb-16 px-4 max-w-4xl mx-auto w-full">
         {savedLists.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <p className="mb-4">You don't have any saved lists yet</p>
@@ -123,62 +203,144 @@ const ChecklistPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
-            {savedLists.map(list => (
-              <Card key={list.id} className="shadow-sm">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <div>
-                      <h2 className="font-medium text-lg">{list.name}</h2>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>{formatDate(list.date)}</span>
+          <div className="space-y-6">
+            {/* Best Deals Section */}
+            <Card className="border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
+              <CardContent className="p-4">
+                <h2 className="text-lg font-bold text-green-800 mb-4">Best Deals from Your Lists</h2>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                  {Object.entries(storeInfo).map(([store, info]) => {
+                    const totalSavings = savedLists.reduce((sum, list) => {
+                      const bestDeal = findBestStore(list.totalPrices);
+                      return sum + (bestDeal.store === store ? list.totalPrices[store as keyof typeof list.totalPrices] : 0);
+                    }, 0);
+                    
+                    return (
+                      <div key={store} className={`${info.color} text-white p-3 rounded-lg text-center`}>
+                        <div className="text-xs font-medium">{info.name}</div>
+                        <div className="text-sm font-bold">SAR {totalSavings.toFixed(0)}</div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Link to={`/?list=${list.id}`}>
-                        <Button size="sm" className="bg-app-green">View</Button>
-                      </Link>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleDeleteList(list.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-sm mb-2">
-                      <span className="font-medium">{list.items.length} items</span>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Saved Lists */}
+            {savedLists.map(list => {
+              const listItems = getListItems(list.items);
+              const previewItems = listItems.slice(0, 4);
+              const isExpanded = expandedLists.has(list.id);
+              const hasMoreItems = listItems.length > 4;
+              
+              return (
+                <Card key={list.id} className="shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h2 className="font-medium text-lg">{list.name}</h2>
+                        <div className="flex items-center text-sm text-gray-500 mb-2">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>{formatDate(list.date)}</span>
+                          <span className="ml-3">{list.items.length} items</span>
+                        </div>
+                        <div className="text-sm text-green-600 font-medium">
+                          Best at {findBestStore(list.totalPrices).store}: SAR {findBestStore(list.totalPrices).price.toFixed(2)}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          size="sm" 
+                          className="bg-app-green hover:bg-app-green/90"
+                          onClick={() => handleCheckListPrices(list.items)}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-1" />
+                          Check List Prices
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleShareList(list)}
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleCopyList(list)}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleDeleteList(list.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     
-                    <div className="bg-gray-50 rounded-md p-3">
-                      <div className="text-sm mb-2 font-medium">Price Comparison:</div>
-                      <div className="grid grid-cols-3 gap-2 text-xs">
-                        {Object.entries(list.totalPrices).map(([store, price]) => {
-                          const isBest = findBestStore(list.totalPrices).store === store;
-                          return (
-                            <div 
-                              key={store} 
-                              className={`p-2 rounded ${isBest ? 'bg-app-green text-white' : 'bg-gray-100'}`}
-                            >
-                              <div className="capitalize">{store}</div>
-                              <div className="font-bold">{price.toFixed(2)}</div>
+                    {/* Items Preview */}
+                    <div className="space-y-2">
+                      <h3 className="font-medium text-sm text-gray-700">Items in this list:</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {previewItems.map(product => (
+                          <div key={product?.id} className="bg-gray-50 p-3 rounded-lg">
+                            <img 
+                              src={product?.image} 
+                              alt={product?.name}
+                              className="w-full h-16 object-cover rounded mb-2"
+                            />
+                            <p className="text-xs font-medium truncate">{product?.name}</p>
+                            <p className="text-xs text-gray-500">{product?.category}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Expanded Items */}
+                      {isExpanded && hasMoreItems && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                          {listItems.slice(4).map(product => (
+                            <div key={product?.id} className="bg-gray-50 p-3 rounded-lg">
+                              <img 
+                                src={product?.image} 
+                                alt={product?.name}
+                                className="w-full h-16 object-cover rounded mb-2"
+                              />
+                              <p className="text-xs font-medium truncate">{product?.name}</p>
+                              <p className="text-xs text-gray-500">{product?.category}</p>
                             </div>
-                          );
-                        })}
-                      </div>
-                      
-                      <div className="mt-3 text-sm font-medium text-app-green">
-                        Best Price: {findBestStore(list.totalPrices).store} ({findBestStore(list.totalPrices).price.toFixed(2)})
-                      </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Show All/Show Less Button */}
+                      {hasMoreItems && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => toggleExpandList(list.id)}
+                          className="w-full mt-3"
+                        >
+                          {isExpanded ? (
+                            <>
+                              <ChevronUp className="h-4 w-4 mr-1" />
+                              Show Less
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown className="h-4 w-4 mr-1" />
+                              Show All Items ({listItems.length - 4} more)
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </main>
