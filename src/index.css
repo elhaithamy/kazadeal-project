@@ -95,7 +95,7 @@
 }
 
 .best-price {
-  @apply relative text-app-green font-bold;
+  @apply relative text-app-primary font-bold;
 }
 
 .comparison-row:nth-child(even) {
@@ -111,7 +111,7 @@
 }
 
 .price-lowest {
-  @apply bg-app-green text-white;
+  @apply bg-app-primary text-white;
 }
 
 .price-medium {
