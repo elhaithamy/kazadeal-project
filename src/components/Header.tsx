@@ -37,7 +37,7 @@ const retailers = [
 ];
 
 const Header = () => {
-  const [colorTheme, setColorTheme] = useState<'soft-blue' | 'navy-sky'>('soft-blue');
+  const [colorTheme, setColorTheme] = useState<'soft-blue' | 'navy-sky' | 'warm-green' | 'purple-lavender' | 'coral-orange'>('soft-blue');
 
   // Color theme configurations
   const themes = {
@@ -46,14 +46,50 @@ const Header = () => {
       secondary: 'bg-cyan-50',
       accent: 'bg-blue-100',
       text: 'text-blue-700',
-      logo: 'from-blue-500 to-cyan-400'
+      logo: 'from-blue-500 to-cyan-400',
+      buttonBg: 'bg-blue-500',
+      buttonText: 'text-blue-500',
+      buttonBorder: 'border-blue-500'
     },
     'navy-sky': {
       primary: 'from-blue-900 to-sky-500',
       secondary: 'bg-blue-50',
       accent: 'bg-sky-100',
       text: 'text-blue-900',
-      logo: 'from-blue-900 to-sky-400'
+      logo: 'from-blue-900 to-sky-400',
+      buttonBg: 'bg-blue-900',
+      buttonText: 'text-blue-900',
+      buttonBorder: 'border-blue-900'
+    },
+    'warm-green': {
+      primary: 'from-green-600 to-emerald-500',
+      secondary: 'bg-green-50',
+      accent: 'bg-emerald-100',
+      text: 'text-green-800',
+      logo: 'from-green-600 to-emerald-400',
+      buttonBg: 'bg-green-600',
+      buttonText: 'text-green-600',
+      buttonBorder: 'border-green-600'
+    },
+    'purple-lavender': {
+      primary: 'from-purple-600 to-indigo-500',
+      secondary: 'bg-purple-50',
+      accent: 'bg-indigo-100',
+      text: 'text-purple-800',
+      logo: 'from-purple-600 to-indigo-400',
+      buttonBg: 'bg-purple-600',
+      buttonText: 'text-purple-600',
+      buttonBorder: 'border-purple-600'
+    },
+    'coral-orange': {
+      primary: 'from-orange-500 to-red-500',
+      secondary: 'bg-orange-50',
+      accent: 'bg-red-100',
+      text: 'text-orange-800',
+      logo: 'from-orange-500 to-red-400',
+      buttonBg: 'bg-orange-500',
+      buttonText: 'text-orange-500',
+      buttonBorder: 'border-orange-500'
     }
   };
 
@@ -62,26 +98,56 @@ const Header = () => {
   return (
     <header className="bg-white font-spacegrotesk text-white">
       {/* Theme Selector for Preview */}
-      <div className="flex justify-center gap-4 py-2 bg-gray-100">
+      <div className="flex flex-wrap justify-center gap-2 py-3 bg-gray-100">
         <button 
           onClick={() => setColorTheme('soft-blue')}
-          className={`px-4 py-2 rounded text-sm font-medium transition-all ${
+          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
             colorTheme === 'soft-blue' 
-              ? 'bg-blue-500 text-white shadow-md' 
-              : 'bg-white text-blue-500 border border-blue-500'
+              ? `${themes['soft-blue'].buttonBg} text-white shadow-md` 
+              : `bg-white ${themes['soft-blue'].buttonText} border ${themes['soft-blue'].buttonBorder}`
           }`}
         >
-          Soft Blue/Teal Theme
+          Soft Blue
         </button>
         <button 
           onClick={() => setColorTheme('navy-sky')}
-          className={`px-4 py-2 rounded text-sm font-medium transition-all ${
+          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
             colorTheme === 'navy-sky' 
-              ? 'bg-blue-900 text-white shadow-md' 
-              : 'bg-white text-blue-900 border border-blue-900'
+              ? `${themes['navy-sky'].buttonBg} text-white shadow-md` 
+              : `bg-white ${themes['navy-sky'].buttonText} border ${themes['navy-sky'].buttonBorder}`
           }`}
         >
-          Navy/Sky Theme
+          Navy Sky
+        </button>
+        <button 
+          onClick={() => setColorTheme('warm-green')}
+          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+            colorTheme === 'warm-green' 
+              ? `${themes['warm-green'].buttonBg} text-white shadow-md` 
+              : `bg-white ${themes['warm-green'].buttonText} border ${themes['warm-green'].buttonBorder}`
+          }`}
+        >
+          Warm Green
+        </button>
+        <button 
+          onClick={() => setColorTheme('purple-lavender')}
+          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+            colorTheme === 'purple-lavender' 
+              ? `${themes['purple-lavender'].buttonBg} text-white shadow-md` 
+              : `bg-white ${themes['purple-lavender'].buttonText} border ${themes['purple-lavender'].buttonBorder}`
+          }`}
+        >
+          Purple
+        </button>
+        <button 
+          onClick={() => setColorTheme('coral-orange')}
+          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+            colorTheme === 'coral-orange' 
+              ? `${themes['coral-orange'].buttonBg} text-white shadow-md` 
+              : `bg-white ${themes['coral-orange'].buttonText} border ${themes['coral-orange'].buttonBorder}`
+          }`}
+        >
+          Coral Orange
         </button>
       </div>
 
