@@ -92,53 +92,54 @@ const LastUpdateOffers = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div>
-      <div className="flex items-center gap-2 mb-3 px-2 pt-2">
+    <div className="mb-6">
+      <div className="flex items-center gap-2 mb-4 px-4">
         <Tag className="h-5 w-5 text-blue-500" />
-        <h2 className="text-xl font-bold">Latest Offers</h2>
+        <h2 className="text-lg font-bold">Latest Offers</h2>
       </div>
-      <div className="relative px-8">
+      <div className="relative px-12">
         <Carousel
           opts={{
             align: "start",
             loop: true,
-            containScroll: false
+            containScroll: false,
+            slidesToScroll: isMobile ? 2 : 3
           }}
           className="w-full"
         >
-          <CarouselContent className="pb-1">
+          <CarouselContent className="pb-2 -ml-3">
             {offers.map((offer) => (
               <CarouselItem 
                 key={offer.id} 
-                className="basis-2/3 sm:basis-2/5 md:basis-1/3 lg:basis-1/4 px-1 md:px-2"
+                className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 pl-3"
               >
-                <div className="flex flex-col items-center py-3 px-1 hover-scale">
-                  <div className="relative w-12 h-12 mb-2">
+                <div className="flex flex-col items-center py-4 px-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
+                  <div className="relative w-14 h-14 mb-3">
                     <img 
                       src={offer.image} 
                       alt={offer.title} 
-                      className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm bg-white"
+                      className="w-full h-full object-cover rounded-full border-2 border-gray-100 shadow-sm bg-white"
                     />
                     {offer.badge && (
-                      <div className="absolute -top-2 -right-2">
+                      <div className="absolute -top-1 -right-1">
                         <ProductTag type={offer.badgeType === 'hot' ? 'hot-deal' : (offer.badgeType === 'best' ? 'bestseller' : 'bulky')} />
                       </div>
                     )}
                   </div>
-                  <h3 className="font-medium text-center text-xs mb-1 line-clamp-2 leading-relaxed tracking-wide min-h-[3rem]">
+                  <h3 className="font-medium text-center text-xs mb-2 line-clamp-2 leading-relaxed tracking-wide min-h-[2.5rem] px-1">
                     {offer.title}
                   </h3>
-                  <p className="text-xs text-gray-500 text-center mb-2">{offer.store}</p>
-                  <div className="mt-auto text-xs flex items-center">
-                    <Clock className="h-3 w-3 mr-1 text-gray-500" />
+                  <p className="text-xs text-gray-500 text-center mb-3">{offer.store}</p>
+                  <div className="text-[9px] flex items-center bg-gray-100 px-2 py-1 rounded-full">
+                    <Clock className="h-2.5 w-2.5 mr-1 text-gray-500" />
                     <span className="font-medium text-gray-700">Expires: {offer.expiry}</span>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10" />
-          <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10" />
+          <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 h-8 w-8 z-10 bg-white shadow-md hover:bg-gray-50" />
+          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 h-8 w-8 z-10 bg-white shadow-md hover:bg-gray-50" />
         </Carousel>
       </div>
     </div>
