@@ -51,7 +51,7 @@ const NewArrivals = () => {
         <Sparkles className="h-5 w-5 text-yellow-500" />
         <h2 className="text-xl font-bold">New Arrivals</h2>
       </div>
-      <div className="relative pb-12">
+      <div className="relative px-8">
         <Carousel
           opts={{
             align: "start",
@@ -89,10 +89,8 @@ const NewArrivals = () => {
               );
             })}
           </CarouselContent>
-          <div className="flex w-full justify-between px-8 absolute bottom-0 left-0 right-0">
-            <CarouselPrevious className="static relative bottom-0 left-0 -translate-y-0 h-8 w-8" />
-            <CarouselNext className="static relative bottom-0 right-0 -translate-y-0 h-8 w-8" />
-          </div>
+          <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10" />
+          <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10" />
         </Carousel>
       </div>
     </div>

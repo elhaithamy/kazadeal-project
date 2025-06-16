@@ -91,14 +91,13 @@ const offers: OfferItem[] = [
 const LastUpdateOffers = () => {
   const isMobile = useIsMobile();
 
-  // Modified to match NewArrivals style
   return (
     <div>
       <div className="flex items-center gap-2 mb-3 px-2 pt-2">
         <Tag className="h-5 w-5 text-blue-500" />
         <h2 className="text-xl font-bold">Latest Offers</h2>
       </div>
-      <div className="relative pb-12">
+      <div className="relative px-8">
         <Carousel
           opts={{
             align: "start",
@@ -138,10 +137,8 @@ const LastUpdateOffers = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="flex w-full justify-between px-8 absolute bottom-0 left-0 right-0">
-            <CarouselPrevious className="static relative bottom-0 left-0 -translate-y-0 h-8 w-8" />
-            <CarouselNext className="static relative bottom-0 right-0 -translate-y-0 h-8 w-8" />
-          </div>
+          <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10" />
+          <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 z-10" />
         </Carousel>
       </div>
     </div>

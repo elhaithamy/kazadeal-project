@@ -203,33 +203,52 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     toggleProductSelection(product.id);
   };
 
-  // Helper for rendering the store price grid for a single product in two columns.
+  // Color palette for retailers
+  const retailerColors = {
+    lulu: '#0EA5E9',
+    othaim: '#9b87f5', 
+    carrefour: '#F97316',
+    danube: '#1EAEDB',
+    panda: '#7E69AB',
+    tamimi: '#6E59A5',
+  };
+
+  // Helper for rendering the store price grid for a single product.
   const renderCompactPriceTable = (product: Product) => {
-    // Get the entries as array for easier mapping
     const prices = [
-      { label: 'LuLu', value: product.prices.lulu },
-      { label: 'Panda', value: product.prices.panda },
-      { label: 'Othaim', value: product.prices.othaim },
-      { label: 'Carrefour', value: product.prices.carrefour },
-      { label: 'Danube', value: product.prices.danube },
-      { label: 'Tamimi', value: product.prices.tamimi }
+      { label: 'LuLu', value: product.prices.lulu, key: 'lulu' },
+      { label: 'Panda', value: product.prices.panda, key: 'panda' },
+      { label: 'Othaim', value: product.prices.othaim, key: 'othaim' },
+      { label: 'Carrefour', value: product.prices.carrefour, key: 'carrefour' },
+      { label: 'Danube', value: product.prices.danube, key: 'danube' },
+      { label: 'Tamimi', value: product.prices.tamimi, key: 'tamimi' }
     ];
-    // Find the lowest price value per product
+    
     const lowestPrice = Math.min(...prices.map(p => p.value));
 
     return (
       <div className="grid grid-cols-2 gap-2 w-full">
-        {prices.map(({ label, value }) => (
-          <div
-            key={label}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl border 
-              ${value === lowestPrice ? 'bg-app-green/20 border-app-green text-app-green font-extrabold' : 'bg-gray-100 border-gray-200 text-gray-700'}
-              text-xs`}
-          >
-            <span className="font-semibold text-[11px] mb-0.5">{label}</span>
-            <span className="text-base">{value.toFixed(2)}</span>
-          </div>
-        ))}
+        {prices.map(({ label, value, key }) => {
+          const color = retailerColors[key as keyof typeof retailerColors];
+          const isLowest = value === lowestPrice;
+          
+          return (
+            <div
+              key={label}
+              className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl border text-xs`}
+              style={{
+                backgroundColor: isLowest ? `${color}20` : '#f8f9fa',
+                borderColor: isLowest ? color : '#e9ecef',
+                color: isLowest ? color : '#495057'
+              }}
+            >
+              <span className="font-semibold text-[11px] mb-0.5">{label}</span>
+              <span className={`text-base ${isLowest ? 'font-extrabold' : 'font-medium'}`}>
+                {value.toFixed(2)}
+              </span>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -287,7 +306,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               </div>
             </div>
             
-            {/* Responsive price table for comparison: 2 per row */}
+            {/* Responsive price table for comparison */}
             <div className="mb-3 w-full">
               {renderCompactPriceTable(product)}
             </div>
@@ -306,12 +325,12 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                 {isSelected ? (
                   <>
                     <ThumbsUp className="w-4 h-4 mr-2" />
-                    Selected! 🎉
+                    Selected!
                   </>
                 ) : (
                   <>
                     <Plus className="w-4 h-4 mr-2" />
-                    Add to Compare
+                    Compare
                   </>
                 )}
               </Button>

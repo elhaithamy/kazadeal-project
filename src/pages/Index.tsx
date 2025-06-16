@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
 import BottomNav from '@/components/BottomNav';
+import USPFooter from '@/components/USPFooter';
 import { ProductSelectionProvider } from '@/contexts/ProductSelectionContext';
 import TopActionBar from '@/components/TopActionBar';
 
@@ -31,6 +33,9 @@ const Index = () => {
             </div>
           </div>
         </main>
+        
+        {/* USP Footer */}
+        <USPFooter />
         
         {/* Fixed bottom nav spacing */}
         <div className="pb-16 md:pb-0">

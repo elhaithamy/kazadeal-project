@@ -91,37 +91,56 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
     const product = products.find(p => p.id === productId);
     if (!product) return null;
     return (
-      <div className="flex flex-col items-center justify-center bg-white border rounded-lg shadow px-2 py-2 w-28 md:w-32 h-32 md:h-36 mx-auto">
+      <div className="flex flex-col items-center justify-center bg-white border rounded-lg shadow px-2 py-2 w-24 md:w-28 h-28 md:h-32 mx-auto">
         <img
           src={product.image}
           alt={product.name}
-          className="w-12 h-12 object-cover mb-1 rounded"
+          className="w-10 h-10 object-cover mb-1 rounded"
         />
-        <div className="text-xs font-bold text-center mb-1 line-clamp-2 w-full">{product.name}</div>
+        <div className="text-[10px] font-bold text-center mb-1 line-clamp-2 w-full">{product.name}</div>
         <div className="flex items-center gap-1">
-          <span className="text-gray-500 text-xs">Qty:</span>
-          <span className="bg-app-green text-white px-2 py-0.5 rounded-full text-xs font-semibold">{1}</span>
+          <span className="text-gray-500 text-[8px]">Qty:</span>
+          <span className="bg-app-green text-white px-1.5 py-0.5 rounded-full text-[8px] font-semibold">{1}</span>
         </div>
       </div>
     );
   };
 
   return (
-    <div className={`w-full ${isMobile ? 'fixed bottom-16 left-0 z-30 h-auto max-h-44' : 'mb-4'}`}>
-      <Card className="rounded-lg shadow-lg border-t md:border border-gray-300">
-        <CardContent className="p-3 md:p-4 bg-gray-50">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <div className="flex items-center gap-2 mb-1 md:mb-0">
-              <div className="bg-app-green text-white p-2 rounded-full">
-                <ShoppingBasket size={18} />
+    <div className={`w-full ${isMobile ? 'fixed bottom-16 left-0 z-40 bg-white border-t-2 border-app-green shadow-2xl' : 'mb-4'}`}>
+      <Card className="rounded-none md:rounded-lg shadow-lg border-0 md:border border-gray-300">
+        <CardContent className="p-2 md:p-4 bg-gray-50">
+          <div className="flex flex-col gap-2">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="bg-app-green text-white p-2 rounded-full">
+                  <ShoppingBasket size={16} />
+                </div>
+                <div>
+                  <div className="text-xs font-medium">Comparing</div>
+                  <div className="font-bold text-sm">{selectedProducts.length} Products</div>
+                </div>
               </div>
-              <div>
-                <div className="text-xs font-medium">Comparing</div>
-                <div className="font-bold text-sm">{selectedProducts.length} Products</div>
+              
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 flex items-center gap-1 text-xs"
+                  onClick={handleSaveList}
+                >
+                  <Save size={14} />
+                  <span>Save</span>
+                </Button>
+                <Link to="/checklist">
+                  <Button size="sm" className="h-8 bg-app-green hover:bg-app-green/90 text-xs">View</Button>
+                </Link>
               </div>
             </div>
 
-            <div className="flex-1 min-w-0">
+            {/* Products Slider */}
+            <div className="flex-1 min-w-0 mb-2">
               <Carousel
                 opts={{
                   align: "start",
@@ -130,46 +149,32 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
                 }}
                 className="w-full"
               >
-                <CarouselContent>
+                <CarouselContent className="-ml-2">
                   {selectedProducts.map((id) => (
                     <CarouselItem
-                      className="basis-1/2 md:basis-1/4 px-1"
+                      className="basis-1/3 md:basis-1/4 pl-2"
                       key={id}
                     >
                       {renderProductCard(id)}
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                {selectedProducts.length > (isMobile ? 2 : 4) && (
+                {selectedProducts.length > (isMobile ? 3 : 4) && (
                   <>
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselPrevious className="left-0 h-6 w-6" />
+                    <CarouselNext className="right-0 h-6 w-6" />
                   </>
                 )}
               </Carousel>
             </div>
 
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 flex-1 max-w-none md:max-w-md my-2 md:my-0">
+            {/* Store Totals */}
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 flex-1 max-w-none">
               {Object.entries(totals).map(([store, value]) => (
                 <div key={store} className="text-center">
                   {formatStoreTotal(store, value)}
                 </div>
               ))}
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-10 flex items-center gap-1"
-                onClick={handleSaveList}
-              >
-                <Save size={16} />
-                <span>Save</span>
-              </Button>
-              <Link to="/checklist">
-                <Button size="sm" className="h-10 bg-app-green hover:bg-app-green/90">View Saved</Button>
-              </Link>
             </div>
           </div>
         </CardContent>
@@ -179,4 +184,3 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
 };
 
 export default ComparisonBar;
-
