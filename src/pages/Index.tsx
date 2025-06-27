@@ -4,8 +4,6 @@ import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
 import BottomNav from '@/components/BottomNav';
 import USPFooter from '@/components/USPFooter';
-import NewArrivals from '@/components/NewArrivals';
-import LastUpdateOffers from '@/components/LastUpdateOffers';
 import { ProductSelectionProvider } from '@/contexts/ProductSelectionContext';
 import TopActionBar from '@/components/TopActionBar';
 
@@ -32,12 +30,6 @@ const Index = () => {
                 onSearch={setSearchQuery}
                 onCategoryChange={setActiveCategory}
               />
-            </div>
-
-            {/* Carousels moved to bottom */}
-            <div className="mt-8">
-              <NewArrivals />
-              <LastUpdateOffers />
             </div>
           </div>
         </main>

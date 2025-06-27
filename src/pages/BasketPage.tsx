@@ -68,42 +68,6 @@ const BasketPage = () => {
     tamimi: { name: 'Tamimi Markets', color: 'bg-indigo-500', rating: 4.4, delivery: '30-45 min' }
   };
 
-  const formatPrice = (price: number, ranking: 'lowest' | 'medium' | 'highest') => {
-    const baseClasses = "px-2 py-1 rounded text-sm font-medium";
-    const colorClasses = {
-      lowest: "bg-green-100 text-green-800",
-      medium: "bg-yellow-100 text-yellow-800", 
-      highest: "bg-red-100 text-red-800"
-    };
-
-    return (
-      <span className={`${baseClasses} ${colorClasses[ranking]}`}>
-        SAR {price.toFixed(2)}
-      </span>
-    );
-  };
-
-  const calculatePriceRankings = (product: any) => {
-    const prices = Object.values(product.prices) as number[];
-    const sortedPrices = [...prices].sort((a, b) => a - b);
-    const lowestPrice = sortedPrices[0];
-    const highestPrice = sortedPrices[sortedPrices.length - 1];
-
-    const rankings: Record<string, 'lowest' | 'medium' | 'highest'> = {};
-    
-    Object.entries(product.prices).forEach(([store, price]) => {
-      if (price === lowestPrice) {
-        rankings[store] = 'lowest';
-      } else if (price === highestPrice) {
-        rankings[store] = 'highest';
-      } else {
-        rankings[store] = 'medium';
-      }
-    });
-
-    return rankings;
-  };
-
   if (selectedProducts.length === 0) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -186,88 +150,66 @@ const BasketPage = () => {
           </CardContent>
         </Card>
 
-        {/* Product List with Individual Comparisons */}
+        {/* Product List */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center">
               <ShoppingCart className="w-5 h-5 mr-2" />
-              Selected Products & Price Comparison
+              Selected Products
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            {selectedProductsData.map((product, index) => {
-              const priceRankings = calculatePriceRankings(product);
-              
-              return (
-                <div key={product.id}>
-                  <div className="p-4">
-                    {/* Product Header */}
-                    <div className="flex items-center space-x-4 mb-4">
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">{product.name}</h3>
-                        <p className="text-sm text-gray-500">{product.category}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => handleQuantityChange(product.id, getQuantity(product.id) - 1)}
-                          className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
-                          disabled={getQuantity(product.id) <= 1}
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <Input
-                          type="number"
-                          value={getQuantity(product.id)}
-                          onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
-                          className="w-16 text-center"
-                          min="1"
-                        />
-                        <button 
-                          onClick={() => handleQuantityChange(product.id, getQuantity(product.id) + 1)}
-                          className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <button 
-                        onClick={() => toggleProductSelection(product.id)}
-                        className="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center hover:bg-red-200"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    {/* Price Comparison for this Product */}
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <h4 className="font-medium mb-2 text-sm">Price Comparison</h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
-                        {Object.entries(product.prices).map(([store, price]) => (
-                          <div key={store} className="text-center">
-                            <div className="font-medium text-gray-600 mb-1 capitalize text-[10px]">
-                              {store}
-                            </div>
-                            {formatPrice(price * getQuantity(product.id), priceRankings[store])}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+            {selectedProductsData.map((product, index) => (
+              <div key={product.id}>
+                <div className="p-4 flex items-center space-x-4">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-16 h-16 object-cover rounded-lg"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800">{product.name}</h3>
+                    <p className="text-sm text-gray-500">{product.category}</p>
                   </div>
-                  {index < selectedProductsData.length - 1 && <Separator />}
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      onClick={() => handleQuantityChange(product.id, getQuantity(product.id) - 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+                      disabled={getQuantity(product.id) <= 1}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <Input
+                      type="number"
+                      value={getQuantity(product.id)}
+                      onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
+                      className="w-16 text-center"
+                      min="1"
+                    />
+                    <button 
+                      onClick={() => handleQuantityChange(product.id, getQuantity(product.id) + 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <button 
+                    onClick={() => toggleProductSelection(product.id)}
+                    className="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center hover:bg-red-200"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-              );
-            })}
+                {index < selectedProductsData.length - 1 && <Separator />}
+              </div>
+            ))}
           </CardContent>
         </Card>
 
-        {/* Store Totals Comparison */}
+        {/* Store Comparison */}
         <Card>
           <CardHeader>
-            <CardTitle>Total Comparison by Store</CardTitle>
+            <CardTitle>Store Comparison</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
