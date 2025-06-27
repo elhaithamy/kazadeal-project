@@ -1,3 +1,4 @@
+
 import React, { useContext, useMemo, useState } from 'react';
 import { ShoppingBasket, Plus, ThumbsUp, ChevronUp, Calendar, Search } from 'lucide-react';
 import { products, Product } from '@/data/products';
@@ -12,7 +13,6 @@ import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
 import ComparisonBar from '@/components/ComparisonBar';
 import { useInView } from 'react-intersection-observer';
-import CategoryNav from '@/components/CategoryNav';
 
 interface PriceComparisonProps {
   searchQuery?: string;
@@ -109,32 +109,9 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
       const matchesSearch = (searchQuery === '' && localSearchQuery === '') || 
         product.name.toLowerCase().includes((searchQuery || localSearchQuery).toLowerCase());
       
-      const matchesCategory = activeCategory === 'All' || 
-        (activeCategory.toLowerCase() === product.category?.toLowerCase());
-      
-      return matchesSearch && matchesCategory && product.isAvailable !== false;
+      return matchesSearch && product.isAvailable !== false;
     });
-  }, [searchQuery, localSearchQuery, activeCategory, products]);
-
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(
-      new Set(filteredProducts.map(product => product.category))
-    ).filter(Boolean) as string[];
-    
-    return uniqueCategories;
-  }, [filteredProducts]);
-
-  const productsByCategory = useMemo(() => {
-    const grouped: Record<string, Product[]> = {};
-    
-    categories.forEach(category => {
-      grouped[category] = filteredProducts.filter(
-        product => product.category === category
-      );
-    });
-    
-    return grouped;
-  }, [filteredProducts, categories]);
+  }, [searchQuery, localSearchQuery, products]);
 
   const calculateTotals = useMemo(() => {
     const calculatedTotals: TotalsType = {
@@ -402,68 +379,37 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               </div>
             )}
           </div>
-          
-          {/* Categories */}
-          <div className="mb-3">
-            <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Categories</h3>
-            <CategoryNav />
+
+          {/* Carousels */}
+          <div className="space-y-4 mb-6">
+            <Card className="bg-white">
+              <CardContent className="pt-4">
+                <NewArrivals />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white">
+              <CardContent className="pt-4">
+                <LastUpdateOffers />
+              </CardContent>
+            </Card>
           </div>
 
           {/* Products Grid */}
           <div className="space-y-8">
-            {activeCategory !== 'All' ? (
-              <div>
-                <h3 className="font-bold text-xl text-gray-800 mb-4">{activeCategory}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {filteredProducts
-                    .filter(product => product.category?.toLowerCase() === activeCategory.toLowerCase())
-                    .slice(0, displayedItems)
-                    .map((product) => (
-                      <div key={product.id}>
-                        {renderProductItem(product)}
-                      </div>
-                    ))
-                  }
-                </div>
-              </div>
-            ) : (
-              categories.map((category, index) => {
-                const categoryProducts = productsByCategory[category];
-                const showOffers = index === 1;
-                const showArrivals = index === 2;
-                
-                return (
-                  <React.Fragment key={category}>
-                    <div>
-                      <h3 className="font-bold text-xl text-gray-800 mb-4">{category}</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {categoryProducts.slice(0, displayedItems).map((product) => (
-                          <div key={product.id}>
-                            {renderProductItem(product)}
-                          </div>
-                        ))}
-                      </div>
+            <div>
+              <h3 className="font-bold text-xl text-gray-800 mb-4">All Products</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredProducts
+                  .slice(0, displayedItems)
+                  .map((product) => (
+                    <div key={product.id}>
+                      {renderProductItem(product)}
                     </div>
-
-                    {showOffers && (
-                      <Card className="bg-white">
-                        <CardContent className="pt-6">
-                          <LastUpdateOffers />
-                        </CardContent>
-                      </Card>
-                    )}
-
-                    {showArrivals && (
-                      <Card className="bg-white">
-                        <CardContent className="pt-6">
-                          <NewArrivals />
-                        </CardContent>
-                      </Card>
-                    )}
-                  </React.Fragment>
-                );
-              })
-            )}
+                  ))
+                }
+              </div>
+            </div>
           </div>
           
           {filteredProducts.slice(0, displayedItems).length < filteredProducts.length && (
