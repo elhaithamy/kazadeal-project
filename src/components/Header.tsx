@@ -162,13 +162,6 @@ const Header = () => {
           </span>
         </div>
       </div>
-      
-      <div className={`flex justify-center items-center py-2 ${currentTheme.secondary} ${currentTheme.text} text-center text-base font-bold`}>
-        <div className="text-center">
-          <div className="text-lg font-black">Savings Tip 💡</div>
-          <div className="text-sm opacity-80 mt-1">Real discounts? Yes. Best price? Not always.</div>
-        </div>
-      </div>
 
       <div className={`flex overflow-x-auto gap-4 py-2 px-2 bg-white border-b border-gray-100`}>
         {retailers.map((retailer, index) => (

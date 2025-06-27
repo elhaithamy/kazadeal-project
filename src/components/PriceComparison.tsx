@@ -322,25 +322,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
       <Card className="mb-6 bg-white shadow-lg">
         <CardContent className="pt-6">
-          {/* Savings Tip Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-app-primary via-app-soft to-app-primary bg-clip-text mb-2">
-              SAVINGS TIP
-            </h1>
-            <div className="max-w-2xl mx-auto mb-4">
-              <p className="text-lg font-bold text-gray-800 mb-1" dir="rtl">
-                خصومات حقيقية، بس مش كل خصم يعني أفضل سعر.
-              </p>
-              <p className="text-sm text-gray-600 italic">
-                Real discounts? Yes. Best price? Not always.
-              </p>
-            </div>
-            <div className="flex items-center justify-center text-sm text-gray-500 mb-4">
-              <Calendar className="w-4 h-4 mr-1" />
-              <span>Last Updated: {lastUpdateDate}</span>
-            </div>
-          </div>
-
           {/* Search Section */}
           <div className="mb-6">
             <div className="flex items-center gap-2 max-w-2xl mx-auto">
@@ -380,7 +361,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
             )}
           </div>
 
-          {/* Carousels */}
+          {/* Carousels - Moved between search and products */}
           <div className="space-y-4 mb-6">
             <Card className="bg-white">
               <CardContent className="pt-4">
