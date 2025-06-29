@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { ShoppingBasket, Save } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingBasket, Save, EyeOff, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -28,6 +28,32 @@ interface ComparisonBarProps {
 const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalStore }: ComparisonBarProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const [isHidden, setIsHidden] = useState(false);
+  const [autoHideTimeout, setAutoHideTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // Auto-hide effect when products are added
+  useEffect(() => {
+    if (selectedProducts.length > 0) {
+      // Clear existing timeout
+      if (autoHideTimeout) {
+        clearTimeout(autoHideTimeout);
+      }
+
+      // Set new timeout for 5 seconds
+      const timeout = setTimeout(() => {
+        setIsHidden(true);
+      }, 5000);
+
+      setAutoHideTimeout(timeout);
+      setIsHidden(false); // Show the bar when products are added
+    }
+
+    return () => {
+      if (autoHideTimeout) {
+        clearTimeout(autoHideTimeout);
+      }
+    };
+  }, [selectedProducts.length]);
 
   if (selectedProducts.length === 0) {
     return null;
@@ -35,12 +61,12 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
 
   // Color palette for retailers
   const retailerColors = {
-    lulu: '#0EA5E9', // Ocean Blue
-    othaim: '#9b87f5', // Primary Purple
-    carrefour: '#F97316', // Bright Orange
-    danube: '#1EAEDB', // Bright Blue
-    panda: '#7E69AB', // Secondary Purple
-    tamimi: '#6E59A5', // Tertiary Purple
+    lulu: '#0EA5E9',
+    othaim: '#9b87f5',
+    carrefour: '#F97316',
+    danube: '#1EAEDB',
+    panda: '#7E69AB',
+    tamimi: '#6E59A5',
   };
 
   // Retailer display names for tooltips
@@ -86,6 +112,13 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
     });
   };
 
+  const handleToggleVisibility = () => {
+    setIsHidden(!isHidden);
+    if (autoHideTimeout) {
+      clearTimeout(autoHideTimeout);
+    }
+  };
+
   // Compact product card for the cart slider
   const renderProductCard = (productId: number) => {
     const product = products.find(p => p.id === productId);
@@ -106,7 +139,7 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
   };
 
   return (
-    <div className={`w-full ${isMobile ? 'fixed bottom-16 left-0 z-40 bg-white border-t border-gray-200 shadow-lg' : 'mb-4'}`}>
+    <div className={`w-full transition-transform duration-300 ${isHidden ? 'translate-y-full' : 'translate-y-0'} ${isMobile ? 'fixed bottom-16 left-0 z-40 bg-white border-t border-gray-200 shadow-lg' : 'mb-4'}`}>
       <Card className="rounded-none md:rounded-lg shadow-md border-0 md:border border-gray-300">
         <CardContent className="p-2 bg-gray-50">
           <div className="flex flex-col gap-2">
@@ -132,7 +165,16 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
                   <Save size={10} />
                   <span>Save</span>
                 </Button>
-                <Link to="/checklist">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 flex items-center gap-1 text-[10px] px-2"
+                  onClick={handleToggleVisibility}
+                >
+                  <EyeOff size={10} />
+                  <span>Hide</span>
+                </Button>
+                <Link to="/basket">
                   <Button size="sm" className="h-6 bg-app-green hover:bg-app-green/90 text-[10px] px-2">View</Button>
                 </Link>
               </div>
@@ -178,6 +220,19 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
           </div>
         </CardContent>
       </Card>
+
+      {/* Show button when hidden */}
+      {isHidden && (
+        <div className={`${isMobile ? 'fixed bottom-16 right-4 z-50' : 'fixed bottom-4 right-4 z-50'}`}>
+          <Button
+            size="sm"
+            className="bg-app-green hover:bg-app-green/90 rounded-full p-2"
+            onClick={handleToggleVisibility}
+          >
+            <Eye size={16} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

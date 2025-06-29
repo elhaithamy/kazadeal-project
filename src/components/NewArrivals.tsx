@@ -1,17 +1,33 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { getNewArrivals } from '@/data/products';
 import { Sparkles, Star, Zap, Crown } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselApi,
 } from "@/components/ui/carousel";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useContext } from 'react';
+import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 
 const NewArrivals = () => {
-  const newArrivals = getNewArrivals(12);
+  const newArrivals = getNewArrivals(20); // Show up to 20 products
   const isMobile = useIsMobile();
+  const { toggleProductSelection } = useContext(ProductSelectionContext);
+  const [api, setApi] = React.useState<CarouselApi>();
+
+  // Auto-slide effect
+  useEffect(() => {
+    if (!api) return;
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 3000); // Auto-slide every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [api]);
 
   const getStatusBadge = (index: number) => {
     const statusType = index % 3;
@@ -43,6 +59,10 @@ const NewArrivals = () => {
     }
   };
 
+  const handleProductClick = (productId: number) => {
+    toggleProductSelection(productId);
+  };
+
   return (
     <div className="mb-4">
       <div className="flex items-center gap-2 mb-3 px-2">
@@ -51,6 +71,7 @@ const NewArrivals = () => {
       </div>
       <div className="px-2">
         <Carousel
+          setApi={setApi}
           opts={{
             align: "start",
             loop: true,
@@ -67,7 +88,10 @@ const NewArrivals = () => {
                   key={product.id} 
                   className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 pl-2"
                 >
-                  <div className="flex flex-col items-center py-3 px-2 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 h-full">
+                  <div 
+                    className="flex flex-col items-center py-3 px-2 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 h-full cursor-pointer transform hover:scale-105"
+                    onClick={() => handleProductClick(product.id)}
+                  >
                     <div className="relative w-12 h-12 mb-2">
                       <img 
                         src={product.image} 
@@ -84,6 +108,8 @@ const NewArrivals = () => {
                       {statusBadge.text}
                     </div>
                   </div>
+                  {/* Sneak peek effect */}
+                  <div className="absolute right-0 top-0 w-6 h-full bg-gradient-to-l from-white/80 to-transparent pointer-events-none opacity-30"></div>
                 </CarouselItem>
               );
             })}

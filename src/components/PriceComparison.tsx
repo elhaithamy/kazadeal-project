@@ -1,6 +1,6 @@
 
-import React, { useContext, useMemo, useState } from 'react';
-import { ShoppingBasket, Plus, ThumbsUp, ChevronUp, Calendar, Search } from 'lucide-react';
+import React, { useContext, useMemo, useState, useEffect } from 'react';
+import { ShoppingBasket, Plus, ThumbsUp, ChevronUp, Search } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,22 +38,12 @@ const getProductTag = (productId: number): TagType | null => {
   return null;
 };
 
-const getLastUpdateDate = () => {
-  const today = new Date();
-  return today.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-};
-
 const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, onCategoryChange }: PriceComparisonProps) => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const isMobile = useIsMobile();
-  const [displayedItems, setDisplayedItems] = useState(15);
+  const [displayedItems, setDisplayedItems] = useState(100); // Show 100 products by default
   const [quantities, setQuantities] = useState<Record<number, number>>({});
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-  const lastUpdateDate = getLastUpdateDate();
 
   const getQuantity = (productId: number) => quantities[productId] || 1;
 
@@ -80,29 +70,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
       handleSearch();
     }
   };
-
-  const calculateTotalPrice = (basePrice: number, productId: number) => {
-    return basePrice * getQuantity(productId);
-  };
-
-  const { ref: loadMoreRef, inView } = useInView({
-    threshold: 0.5,
-    onChange: (inView) => {
-      if (inView) {
-        setDisplayedItems(prev => prev + 15);
-      }
-    },
-  });
-
-  const { ref: offersRef, inView: offersInView } = useInView({
-    threshold: 0.1,
-    triggerOnce: true,
-  });
-
-  const { ref: arrivalsRef, inView: arrivalsInView } = useInView({
-    threshold: 0.1,
-    triggerOnce: true,
-  });
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -139,15 +106,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     return calculatedTotals;
   }, [filteredProducts, selectedProducts, quantities]);
 
-  const findLowestPrice = (prices: Record<string, number>) => {
-    return Math.min(...Object.values(prices));
-  };
-
-  const findLowestTotal = () => {
-    const lowestTotal = Math.min(...Object.values(calculateTotals));
-    return Object.entries(calculateTotals).find(([_, value]) => value === lowestTotal)?.[0] || '';
-  };
-
   const getPriceRankings = () => {
     const sortedStores = Object.entries(calculateTotals)
       .sort(([_, priceA], [__, priceB]) => priceA - priceB);
@@ -174,7 +132,10 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
   };
 
   const priceRankings = useMemo(() => getPriceRankings(), [calculateTotals]);
-  const lowestTotalStore = useMemo(() => findLowestTotal(), [calculateTotals]);
+  const lowestTotalStore = useMemo(() => {
+    const lowestTotal = Math.min(...Object.values(calculateTotals));
+    return Object.entries(calculateTotals).find(([_, value]) => value === lowestTotal)?.[0] || '';
+  }, [calculateTotals]);
 
   const handleSelectProduct = (product: Product) => {
     toggleProductSelection(product.id);
@@ -189,6 +150,13 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     panda: '#7E69AB',
     tamimi: '#6E59A5',
   };
+
+  // Create random categories for demo
+  const randomCategories = [
+    'Fresh Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Bakery', 
+    'Pantry Essentials', 'Beverages', 'Snacks & Sweets', 'Frozen Foods',
+    'Health & Beauty', 'Household Items'
+  ];
 
   // Helper for rendering the store price grid for a single product.
   const renderCompactPriceTable = (product: Product) => {
@@ -283,7 +251,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               </div>
             </div>
             
-            {/* Responsive price table for comparison */}
             <div className="mb-3 w-full">
               {renderCompactPriceTable(product)}
             </div>
@@ -318,29 +285,15 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     );
   };
 
+  // Split products into sections
+  const firstSection = filteredProducts.slice(0, 20);
+  const secondSection = filteredProducts.slice(20, 40);
+  const thirdSection = filteredProducts.slice(40, displayedItems);
+
   return (
     <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
       <Card className="mb-6 bg-white shadow-lg">
         <CardContent className="pt-6">
-          {/* Savings Tip Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-app-primary via-app-soft to-app-primary bg-clip-text mb-2">
-              SAVINGS TIP
-            </h1>
-            <div className="max-w-2xl mx-auto mb-4">
-              <p className="text-lg font-bold text-gray-800 mb-1" dir="rtl">
-                خصومات حقيقية، بس مش كل خصم يعني أفضل سعر.
-              </p>
-              <p className="text-sm text-gray-600 italic">
-                Real discounts? Yes. Best price? Not always.
-              </p>
-            </div>
-            <div className="flex items-center justify-center text-sm text-gray-500 mb-4">
-              <Calendar className="w-4 h-4 mr-1" />
-              <span>Last Updated: {lastUpdateDate}</span>
-            </div>
-          </div>
-
           {/* Search Section */}
           <div className="mb-6">
             <div className="flex items-center gap-2 max-w-2xl mx-auto">
@@ -380,50 +333,60 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
             )}
           </div>
 
-          {/* Carousels */}
-          <div className="space-y-4 mb-6">
+          {/* Products Grid with Carousels */}
+          <div className="space-y-8">
+            {/* First Section - Fresh Produce */}
+            <div>
+              <h3 className="font-bold text-xl text-gray-800 mb-4">Fresh Produce</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {firstSection.map((product) => (
+                  <div key={product.id}>
+                    {renderProductItem(product)}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* New Arrivals Carousel */}
             <Card className="bg-white">
               <CardContent className="pt-4">
                 <NewArrivals />
               </CardContent>
             </Card>
 
+            {/* Second Section - Dairy & Pantry */}
+            <div>
+              <h3 className="font-bold text-xl text-gray-800 mb-4">Dairy & Pantry Essentials</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {secondSection.map((product) => (
+                  <div key={product.id}>
+                    {renderProductItem(product)}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Latest Offers Carousel */}
             <Card className="bg-white">
               <CardContent className="pt-4">
                 <LastUpdateOffers />
               </CardContent>
             </Card>
-          </div>
 
-          {/* Products Grid */}
-          <div className="space-y-8">
-            <div>
-              <h3 className="font-bold text-xl text-gray-800 mb-4">All Products</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filteredProducts
-                  .slice(0, displayedItems)
-                  .map((product) => (
+            {/* Third Section - All Remaining Products */}
+            {thirdSection.length > 0 && (
+              <div>
+                <h3 className="font-bold text-xl text-gray-800 mb-4">More Products</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {thirdSection.map((product) => (
                     <div key={product.id}>
                       {renderProductItem(product)}
                     </div>
-                  ))
-                }
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
-          
-          {filteredProducts.slice(0, displayedItems).length < filteredProducts.length && (
-            <div 
-              ref={loadMoreRef}
-              className="py-8 flex justify-center"
-            >
-              <div className="animate-pulse flex space-x-2 items-center text-gray-400">
-                <div className="h-2 w-2 bg-current rounded-full"></div>
-                <div className="h-2 w-2 bg-current rounded-full"></div>
-                <div className="h-2 w-2 bg-current rounded-full"></div>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 

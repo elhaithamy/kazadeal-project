@@ -1,20 +1,31 @@
 
-import React, { useContext, useMemo, useState } from 'react';
-import { ArrowLeft, ShoppingCart, Trash2, Plus, Minus, Store, MapPin, Clock, Star } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { ArrowLeft, Save, Share, Trash2, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
+import { products, Product } from '@/data/products';
+import ProductTag, { TagType } from '@/components/ProductTag';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
-import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
-import { products } from '@/data/products';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+
+const getProductTag = (productId: number): TagType | null => {
+  if (productId % 10 === 0) return 'hot-deal';
+  if (productId % 7 === 0) return 'bulky';
+  if (productId % 5 === 0) return 'heavy-carry';
+  if (productId % 8 === 0) return 'bestseller';
+  return null;
+};
 
 const BasketPage = () => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
+  const { toast } = useToast();
   const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [listName, setListName] = useState('');
 
   const getQuantity = (productId: number) => quantities[productId] || 1;
 
@@ -25,11 +36,180 @@ const BasketPage = () => {
     }));
   };
 
-  const selectedProductsData = useMemo(() => {
-    return products.filter(product => selectedProducts.includes(product.id));
-  }, [selectedProducts]);
+  const handleQuantityInputChange = (productId: number, value: string) => {
+    const numValue = parseInt(value) || 1;
+    handleQuantityChange(productId, Math.max(1, numValue));
+  };
 
-  const calculateStoreTotals = useMemo(() => {
+  const handleRemoveProduct = (productId: number) => {
+    toggleProductSelection(productId);
+    toast({
+      title: 'Product removed',
+      description: 'Product has been removed from comparison.',
+    });
+  };
+
+  const handleSaveAsList = () => {
+    if (!listName.trim()) {
+      toast({
+        title: 'List name required',
+        description: 'Please enter a name for your list.',
+      });
+      return;
+    }
+
+    // In a real app, this would save to database
+    const savedList = {
+      name: listName,
+      products: selectedProducts,
+      quantities: quantities,
+      createdAt: new Date(),
+    };
+
+    console.log('Saving list:', savedList);
+
+    toast({
+      title: 'List saved!',
+      description: `"${listName}" has been saved to your lists.`,
+    });
+
+    setListName('');
+  };
+
+  const handleShareList = () => {
+    // In a real app, this would generate a shareable link
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: 'Link copied!',
+      description: 'Comparison link has been copied to clipboard.',
+    });
+  };
+
+  const selectedProductsData = products.filter(p => selectedProducts.includes(p.id));
+
+  // Color palette for retailers
+  const retailerColors = {
+    lulu: '#0EA5E9',
+    othaim: '#9b87f5', 
+    carrefour: '#F97316',
+    danube: '#1EAEDB',
+    panda: '#7E69AB',
+    tamimi: '#6E59A5',
+  };
+
+  const renderProductCard = (product: Product) => {
+    const isSelected = selectedProducts.includes(product.id);
+    const productTag = getProductTag(product.id);
+    const quantity = getQuantity(product.id);
+
+    const prices = [
+      { label: 'LuLu', value: product.prices.lulu, key: 'lulu' },
+      { label: 'Panda', value: product.prices.panda, key: 'panda' },
+      { label: 'Othaim', value: product.prices.othaim, key: 'othaim' },
+      { label: 'Carrefour', value: product.prices.carrefour, key: 'carrefour' },
+      { label: 'Danube', value: product.prices.danube, key: 'danube' },
+      { label: 'Tamimi', value: product.prices.tamimi, key: 'tamimi' }
+    ];
+    
+    const lowestPrice = Math.min(...prices.map(p => p.value));
+    
+    return (
+      <Card key={product.id} className="h-full rounded-2xl transition-all duration-200 border-gray-200">
+        <CardContent className="p-3 h-full">
+          <div className="flex flex-col h-full">
+            <div className="flex flex-col items-center mb-3 relative">
+              <div className="w-16 h-16 mb-2 relative bg-gradient-to-br from-app-green/10 to-app-highlight/10 rounded-2xl flex items-center justify-center shadow-sm">
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="w-14 h-14 object-cover rounded-xl shadow-sm"
+                />
+                {productTag && (
+                  <div className="absolute -top-2 -right-2">
+                    <ProductTag type={productTag} />
+                  </div>
+                )}
+              </div>
+              <h3 className="font-bold text-center text-sm line-clamp-2 leading-tight min-h-[2.5rem] text-gray-800">
+                {product.name}
+              </h3>
+            </div>
+            
+            <div className="flex items-center justify-center mb-3">
+              <div className="flex items-center bg-gray-100 rounded-full">
+                <button 
+                  onClick={() => handleQuantityChange(product.id, quantity - 1)}
+                  className="bg-app-green text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold"
+                  disabled={quantity <= 1}
+                >
+                  <Minus className="w-3 h-3" />
+                </button>
+                <Input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => handleQuantityInputChange(product.id, e.target.value)}
+                  className="w-16 h-7 text-center text-sm font-bold border-0 bg-transparent focus:ring-0 focus:border-0"
+                  min="1"
+                />
+                <button 
+                  onClick={() => handleQuantityChange(product.id, quantity + 1)}
+                  className="bg-app-green text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Price comparison table */}
+            <div className="mb-3 w-full">
+              <div className="grid grid-cols-2 gap-2 w-full">
+                {prices.map(({ label, value, key }) => {
+                  const color = retailerColors[key as keyof typeof retailerColors];
+                  const isLowest = value === lowestPrice;
+                  const totalPrice = value * quantity;
+                  
+                  return (
+                    <div
+                      key={label}
+                      className={`flex flex-col items-center justify-center py-2 px-2 rounded-xl border text-xs`}
+                      style={{
+                        backgroundColor: isLowest ? `${color}20` : '#f8f9fa',
+                        borderColor: isLowest ? color : '#e9ecef',
+                        color: isLowest ? color : '#495057'
+                      }}
+                    >
+                      <span className="font-semibold text-[11px] mb-0.5">{label}</span>
+                      <span className={`text-sm ${isLowest ? 'font-extrabold' : 'font-medium'}`}>
+                        {totalPrice.toFixed(2)}
+                      </span>
+                      <span className="text-[9px] opacity-70">
+                        ({value.toFixed(2)} each)
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="mt-auto">
+              <Button
+                variant="destructive"
+                size="sm"
+                className="w-full text-sm py-2 h-10 rounded-xl font-bold"
+                onClick={() => handleRemoveProduct(product.id)}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Remove
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Calculate totals for each store
+  const calculateTotals = () => {
     const totals = {
       lulu: 0,
       othaim: 0,
@@ -50,216 +230,127 @@ const BasketPage = () => {
     });
 
     return totals;
-  }, [selectedProductsData, quantities]);
-
-  const bestStore = useMemo(() => {
-    const entries = Object.entries(calculateStoreTotals);
-    return entries.reduce((best, current) => 
-      current[1] < best[1] ? current : best
-    );
-  }, [calculateStoreTotals]);
-
-  const storeInfo = {
-    lulu: { name: 'LuLu Hypermarket', color: 'bg-blue-500', rating: 4.5, delivery: '30-45 min' },
-    othaim: { name: 'Othaim Markets', color: 'bg-purple-500', rating: 4.3, delivery: '25-40 min' },
-    carrefour: { name: 'Carrefour', color: 'bg-orange-500', rating: 4.4, delivery: '35-50 min' },
-    danube: { name: 'Danube', color: 'bg-blue-600', rating: 4.2, delivery: '40-55 min' },
-    panda: { name: 'Panda', color: 'bg-green-500', rating: 4.6, delivery: '20-35 min' },
-    tamimi: { name: 'Tamimi Markets', color: 'bg-indigo-500', rating: 4.4, delivery: '30-45 min' }
   };
 
-  if (selectedProducts.length === 0) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        
-        <div className="bg-white shadow-sm mb-4">
-          <div className="container mx-auto px-4 py-2 flex items-center">
-            <Link to="/" className="mr-4">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-semibold">Your Basket</h1>
-          </div>
-        </div>
-        
-        <main className="flex-1 mb-16 px-4">
-          <div className="max-w-md mx-auto mt-16">
-            <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                <ShoppingCart className="w-12 h-12 text-gray-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Your basket is empty</h2>
-              <p className="text-gray-500 mb-6">Add products to compare prices and start saving!</p>
-              <Link 
-                to="/" 
-                className="inline-block bg-app-green text-white px-6 py-3 rounded-md font-semibold hover:bg-app-green/90 transition-colors"
-              >
-                Start Shopping
-              </Link>
-            </div>
-          </div>
-        </main>
-        
-        <BottomNav />
-      </div>
-    );
-  }
+  const totals = calculateTotals();
+  const lowestTotal = Math.min(...Object.values(totals));
+  const bestStore = Object.entries(totals).find(([_, value]) => value === lowestTotal)?.[0];
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen">
       <Header />
       
-      <div className="bg-white shadow-sm mb-4">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center">
-            <Link to="/" className="mr-4">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-semibold">Your Basket</h1>
-          </div>
-          <Badge variant="secondary" className="bg-app-green text-white">
-            {selectedProducts.length} items
-          </Badge>
+      <main className="flex-1 container mx-auto px-4 py-6 mb-16">
+        <div className="flex items-center gap-4 mb-6">
+          <Link to="/">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold">Shopping Comparison</h1>
         </div>
-      </div>
-      
-      <main className="flex-1 mb-16 px-4 max-w-4xl mx-auto w-full">
-        {/* Best Deal Banner */}
-        <Card className="mb-6 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4">
-                  <Store className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-green-800">Best Deal Found!</h3>
-                  <p className="text-green-600 text-sm">
-                    {storeInfo[bestStore[0] as keyof typeof storeInfo].name} - Save SAR {(Math.max(...Object.values(calculateStoreTotals)) - bestStore[1]).toFixed(2)}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-700">SAR {bestStore[1].toFixed(2)}</div>
-                <div className="flex items-center text-sm text-green-600">
-                  <Star className="w-3 h-3 mr-1 fill-current" />
-                  {storeInfo[bestStore[0] as keyof typeof storeInfo].rating}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Product List */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              Selected Products
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            {selectedProductsData.map((product, index) => (
-              <div key={product.id}>
-                <div className="p-4 flex items-center space-x-4">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">{product.name}</h3>
-                    <p className="text-sm text-gray-500">{product.category}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button 
-                      onClick={() => handleQuantityChange(product.id, getQuantity(product.id) - 1)}
-                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
-                      disabled={getQuantity(product.id) <= 1}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <Input
-                      type="number"
-                      value={getQuantity(product.id)}
-                      onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
-                      className="w-16 text-center"
-                      min="1"
-                    />
-                    <button 
-                      onClick={() => handleQuantityChange(product.id, getQuantity(product.id) + 1)}
-                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <button 
-                    onClick={() => toggleProductSelection(product.id)}
-                    className="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center hover:bg-red-200"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-                {index < selectedProductsData.length - 1 && <Separator />}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Store Comparison */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Store Comparison</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {Object.entries(calculateStoreTotals).map(([store, total]) => {
-                const info = storeInfo[store as keyof typeof storeInfo];
-                const isBest = store === bestStore[0];
-                
-                return (
-                  <div 
-                    key={store}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      isBest ? 'border-green-300 bg-green-50' : 'border-gray-200 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 ${info.color} rounded-full flex items-center justify-center`}>
-                          <Store className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{info.name}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <div className="flex items-center">
-                              <Star className="w-3 h-3 mr-1 fill-current text-yellow-400" />
-                              {info.rating}
-                            </div>
-                            <div className="flex items-center">
-                              <Clock className="w-3 h-3 mr-1" />
-                              {info.delivery}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`text-xl font-bold ${isBest ? 'text-green-700' : 'text-gray-800'}`}>
-                          SAR {total.toFixed(2)}
+        {selectedProductsData.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <p className="text-gray-500 mb-4">No products selected for comparison yet.</p>
+              <Link to="/">
+                <Button className="bg-app-green hover:bg-app-green/90">
+                  Start Comparing Products
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-6">
+            {/* Summary Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Comparison Summary</span>
+                  <Badge variant="secondary">{selectedProductsData.length} products</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                  {Object.entries(totals).map(([store, total]) => {
+                    const storeName = store.charAt(0).toUpperCase() + store.slice(1);
+                    const color = retailerColors[store as keyof typeof retailerColors];
+                    const isBest = store === bestStore;
+                    
+                    return (
+                      <div
+                        key={store}
+                        className={`p-3 rounded-lg border-2 text-center ${
+                          isBest ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                        }`}
+                      >
+                        <div className="font-semibold text-sm mb-1">{storeName}</div>
+                        <div 
+                          className="text-xl font-bold"
+                          style={{ color: isBest ? '#059669' : color }}
+                        >
+                          {total.toFixed(2)}
                         </div>
                         {isBest && (
-                          <Badge className="bg-green-500 text-white text-xs">Best Price</Badge>
+                          <Badge className="mt-1 bg-green-500 text-white text-xs">
+                            Best Price
+                          </Badge>
                         )}
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+
+                <div className="flex gap-2 flex-wrap">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleShareList}
+                  >
+                    <Share className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Products Grid */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Selected Products</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {selectedProductsData.map(renderProductCard)}
+              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Save as List Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Save as List</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter list name..."
+                    value={listName}
+                    onChange={(e) => setListName(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={handleSaveAsList}
+                    className="bg-app-green hover:bg-app-green/90"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save List
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </main>
-      
+
       <BottomNav />
     </div>
   );

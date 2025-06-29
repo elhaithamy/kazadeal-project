@@ -13,6 +13,7 @@ import RetailerLeaflets from "./pages/RetailerLeaflets";
 import BasketPage from "./pages/BasketPage";
 import BestDealsPage from "./pages/BestDealsPage";
 import NearbyStoresPage from "./pages/NearbyStoresPage";
+import AccountPage from "./pages/AccountPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,7 +32,8 @@ const App = () => (
           <Route path="/leaflets" element={<RetailerLeaflets />} />
           <Route path="/basket" element={<BasketPage />} />
           <Route path="/best-deals" element={<BestDealsPage />} />
-          <Route path="/nearby-stores" element={<NearbyStoresPage />} /> 
+          <Route path="/nearby-stores" element={<NearbyStoresPage />} />
+          <Route path="/account" element={<AccountPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
