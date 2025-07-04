@@ -103,7 +103,11 @@
 }
 
 .hover-scale {
-  @apply transition-transform duration-200 hover:scale-105;
+  transition: transform 0.2s ease-in-out;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
 }
 
 .glass-container {
@@ -111,15 +115,15 @@
 }
 
 .price-lowest {
-  @apply bg-blue-600 text-white;
+  @apply bg-emerald-600 text-white;
 }
 
 .price-medium {
-  @apply bg-gray-400 text-white;
+  @apply bg-slate-500 text-white;
 }
 
 .price-highest {
-  @apply bg-red-500 text-white;
+  @apply bg-slate-600 text-white;
 }
 
 /* Mobile optimization */
@@ -135,13 +139,4 @@
   input, select {
     @apply text-base; /* Prevents zoom on iOS */
   }
-}
-
-/* Professional transitions */
-.transition-colors {
-  @apply transition-colors duration-200;
-}
-
-.transition-all {
-  @apply transition-all duration-200;
 }
