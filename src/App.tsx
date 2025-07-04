@@ -9,7 +9,6 @@ import Index from "./pages/Index";
 import ChecklistPage from "./pages/ChecklistPage";
 import AdminPage from "./pages/AdminPage";
 import RetailerLeaflets from "./pages/RetailerLeaflets";
-import BasketPage from "./pages/BasketPage";
 import BestDealsPage from "./pages/BestDealsPage";
 import NearbyStoresPage from "./pages/NearbyStoresPage";
 import AccountPage from "./pages/AccountPage";
@@ -28,7 +27,6 @@ const App = () => (
           <Route path="/checklist" element={<ChecklistPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/leaflets" element={<RetailerLeaflets />} />
-          <Route path="/basket" element={<BasketPage />} />
           <Route path="/best-deals" element={<BestDealsPage />} />
           <Route path="/nearby-stores" element={<NearbyStoresPage />} />
           <Route path="/account" element={<AccountPage />} />

@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState, useEffect } from 'react';
-import { ShoppingBasket, Plus, ThumbsUp, ChevronUp, Search, Palette } from 'lucide-react';
+import { Plus, ThumbsUp, Search, Palette } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,23 +10,12 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import NewArrivals from '@/components/NewArrivals';
 import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
-import ComparisonBar from '@/components/ComparisonBar';
-import { useInView } from 'react-intersection-observer';
 
 interface PriceComparisonProps {
   searchQuery?: string;
   activeCategory?: string;
   onSearch?: (value: string) => void;
   onCategoryChange?: (category: string) => void;
-}
-
-interface TotalsType {
-  lulu: number;
-  othaim: number;
-  carrefour: number;
-  danube: number;
-  panda: number;
-  tamimi: number;
 }
 
 const getProductTag = (productId: number): TagType | null => {
@@ -37,14 +26,14 @@ const getProductTag = (productId: number): TagType | null => {
   return null;
 };
 
-// Engagement color options for lowest price
+// Professional engagement colors for mature audience
 const engagementColors = [
-  { name: 'Electric Green', bg: '#00FF88', border: '#00E678', text: '#FFFFFF' },
-  { name: 'Neon Orange', bg: '#FF6B35', border: '#E55A2B', text: '#FFFFFF' },
-  { name: 'Hot Pink', bg: '#FF1B8D', border: '#E5187C', text: '#FFFFFF' },
-  { name: 'Electric Blue', bg: '#00D4FF', border: '#00BFEB', text: '#000000' },
-  { name: 'Lime Punch', bg: '#CDFF00', border: '#B8E600', text: '#000000' },
-  { name: 'Sunset Red', bg: '#FF4545', border: '#E63E3E', text: '#FFFFFF' },
+  { name: 'Trust Blue', bg: '#2563EB', border: '#1D4ED8', text: '#FFFFFF' },
+  { name: 'Forest Green', bg: '#059669', border: '#047857', text: '#FFFFFF' },
+  { name: 'Professional Navy', bg: '#1E40AF', border: '#1E3A8A', text: '#FFFFFF' },
+  { name: 'Success Green', bg: '#16A34A', border: '#15803D', text: '#FFFFFF' },
+  { name: 'Deep Teal', bg: '#0D9488', border: '#0F766E', text: '#FFFFFF' },
+  { name: 'Rich Purple', bg: '#7C3AED', border: '#6D28D9', text: '#FFFFFF' },
 ];
 
 const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, onCategoryChange }: PriceComparisonProps) => {
@@ -93,78 +82,20 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     });
   }, [searchQuery, localSearchQuery, products]);
 
-  const calculateTotals = useMemo(() => {
-    const calculatedTotals: TotalsType = {
-      lulu: 0,
-      othaim: 0,
-      carrefour: 0,
-      danube: 0,
-      panda: 0,
-      tamimi: 0
-    };
-
-    const productsToCalculate = selectedProducts.length > 0 ? 
-      filteredProducts.filter(p => selectedProducts.includes(p.id)) : 
-      filteredProducts;
-
-    productsToCalculate.forEach(product => {
-      calculatedTotals.lulu += product.prices.lulu * getQuantity(product.id);
-      calculatedTotals.othaim += product.prices.othaim * getQuantity(product.id);
-      calculatedTotals.carrefour += product.prices.carrefour * getQuantity(product.id);
-      calculatedTotals.danube += product.prices.danube * getQuantity(product.id);
-      calculatedTotals.panda += product.prices.panda * getQuantity(product.id);
-      calculatedTotals.tamimi += product.prices.tamimi * getQuantity(product.id);
-    });
-
-    return calculatedTotals;
-  }, [filteredProducts, selectedProducts, quantities]);
-
-  const getPriceRankings = () => {
-    const sortedStores = Object.entries(calculateTotals)
-      .sort(([_, priceA], [__, priceB]) => priceA - priceB);
-    
-    const rankings: Record<string, 'lowest' | 'medium' | 'highest'> = {};
-    
-    if (sortedStores.length === 0) return rankings;
-    
-    rankings[sortedStores[0][0]] = 'lowest';
-    
-    if (sortedStores.length > 1) {
-      rankings[sortedStores[sortedStores.length - 1][0]] = 'highest';
-      
-      for (let i = 1; i < sortedStores.length - 1; i++) {
-        rankings[sortedStores[i][0]] = 'medium';
-      }
-      
-      if (sortedStores.length === 2) {
-        rankings[sortedStores[1][0]] = 'highest';
-      }
-    }
-    
-    return rankings;
-  };
-
-  const priceRankings = useMemo(() => getPriceRankings(), [calculateTotals]);
-  const lowestTotalStore = useMemo(() => {
-    const lowestTotal = Math.min(...Object.values(calculateTotals));
-    return Object.entries(calculateTotals).find(([_, value]) => value === lowestTotal)?.[0] || '';
-  }, [calculateTotals]);
-
   const handleSelectProduct = (product: Product) => {
     toggleProductSelection(product.id);
   };
 
-  // Color palette for retailers
+  // Professional color palette for retailers
   const retailerColors = {
-    lulu: '#0EA5E9',
-    othaim: '#9b87f5', 
-    carrefour: '#F97316',
-    danube: '#1EAEDB',
-    panda: '#7E69AB',
-    tamimi: '#6E59A5',
+    lulu: '#2563EB',
+    othaim: '#7C3AED', 
+    carrefour: '#DC2626',
+    danube: '#0891B2',
+    panda: '#7C2D12',
+    tamimi: '#6D28D9',
   };
 
-  // Helper for rendering the store price grid for a single product.
   const renderCompactPriceTable = (product: Product) => {
     const prices = [
       { label: 'LuLu', value: product.prices.lulu, key: 'lulu' },
@@ -211,15 +142,15 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     const quantity = getQuantity(product.id);
     
     return (
-      <Card className={`h-full rounded-2xl transition-all duration-200 ${isSelected ? 'border-app-green border-3 scale-105 shadow-lg ring-2 ring-app-green/30' : 'border-gray-200 hover:border-app-green/50'} font-spacegrotesk`}>
+      <Card className={`h-full rounded-lg transition-all duration-200 ${isSelected ? 'border-blue-600 border-2 shadow-md ring-1 ring-blue-600/20' : 'border-gray-200 hover:border-blue-400'} font-spacegrotesk`}>
         <CardContent className="p-3 h-full">
           <div className="flex flex-col h-full">
             <div className="flex flex-col items-center mb-3 relative">
-              <div className="w-16 h-16 mb-2 relative bg-gradient-to-br from-app-green/10 to-app-highlight/10 rounded-2xl flex items-center justify-center shadow-sm">
+              <div className="w-16 h-16 mb-2 relative bg-gradient-to-br from-blue-50 to-gray-50 rounded-lg flex items-center justify-center shadow-sm border">
                 <img 
                   src={product.image} 
                   alt={product.name} 
-                  className="w-14 h-14 object-cover rounded-xl shadow-sm"
+                  className="w-14 h-14 object-cover rounded-md"
                 />
                 {productTag && (
                   <div className="absolute -top-2 -right-2">
@@ -227,16 +158,16 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                   </div>
                 )}
               </div>
-              <h3 className="font-bold text-center text-sm line-clamp-2 leading-tight min-h-[2.5rem] text-gray-800">
+              <h3 className="font-semibold text-center text-sm line-clamp-2 leading-tight min-h-[2.5rem] text-gray-800">
                 {product.name}
               </h3>
             </div>
             
             <div className="flex items-center justify-center mb-3">
-              <div className="flex items-center bg-gray-100 rounded-full">
+              <div className="flex items-center bg-gray-100 rounded-full border">
                 <button 
                   onClick={() => handleQuantityChange(product.id, quantity - 1)}
-                  className="bg-app-green text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold"
+                  className="bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-semibold hover:bg-blue-700"
                   disabled={quantity <= 1}
                 >
                   -
@@ -245,12 +176,12 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                   type="number"
                   value={quantity}
                   onChange={(e) => handleQuantityInputChange(product.id, e.target.value)}
-                  className="w-16 h-7 text-center text-sm font-bold border-0 bg-transparent focus:ring-0 focus:border-0"
+                  className="w-16 h-7 text-center text-sm font-semibold border-0 bg-transparent focus:ring-0 focus:border-0"
                   min="1"
                 />
                 <button 
                   onClick={() => handleQuantityChange(product.id, quantity + 1)}
-                  className="bg-app-green text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-bold"
+                  className="bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-semibold hover:bg-blue-700"
                 >
                   +
                 </button>
@@ -265,17 +196,17 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               <Button
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
-                className={`w-full text-sm py-2 h-10 rounded-xl font-bold border-2 transition-all duration-200 ${
+                className={`w-full text-sm py-2 h-10 rounded-lg font-semibold border transition-all duration-200 ${
                   isSelected 
-                    ? "bg-gradient-to-r from-app-green to-app-highlight border-app-green text-white shadow-lg transform scale-105" 
-                    : "border-app-green text-app-green hover:bg-app-green hover:text-white"
+                    ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white shadow-sm" 
+                    : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
                 }`}
                 onClick={() => handleSelectProduct(product)}
               >
                 {isSelected ? (
                   <>
                     <ThumbsUp className="w-4 h-4 mr-2" />
-                    Selected!
+                    Selected
                   </>
                 ) : (
                   <>
@@ -304,7 +235,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
 
   return (
     <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
-      <Card className="mb-6 bg-white shadow-lg">
+      <Card className="mb-6 bg-white shadow-sm border border-gray-200">
         <CardContent className="pt-6">
           {/* Search Section */}
           <div className="mb-6">
@@ -316,7 +247,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                   value={localSearchQuery}
                   onChange={(e) => setLocalSearchQuery(e.target.value)}
                   placeholder="Search for the best deals..."
-                  className="pl-9 pr-4 py-2 w-full rounded-xl border-2 border-gray-200 focus:border-app-primary"
+                  className="pl-9 pr-4 py-2 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   onKeyDown={handleKeyPress}
                 />
               </div>
@@ -324,7 +255,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                 variant="default" 
                 size="sm"
                 onClick={handleSearch}
-                className="flex-shrink-0 bg-app-primary hover:bg-app-primary/80 px-6 rounded-xl"
+                className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 px-6 rounded-lg"
               >
                 Search
               </Button>
@@ -337,7 +268,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               variant="outline"
               size="sm"
               onClick={() => setShowColorPalette(!showColorPalette)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               <Palette className="h-4 w-4" />
               Choose Highlight Color
@@ -345,8 +276,8 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
           </div>
 
           {showColorPalette && (
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-semibold mb-2">Select engagement color for lowest prices:</h4>
+            <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
+              <h4 className="font-semibold mb-2 text-gray-800">Select highlight color for lowest prices:</h4>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                 {engagementColors.map((color) => (
                   <button
@@ -362,7 +293,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                       color: color.text
                     }}
                   >
-                    <div className="text-xs font-bold">{color.name}</div>
+                    <div className="text-xs font-semibold">{color.name}</div>
                     <div className="text-xs">49.99</div>
                   </button>
                 ))}
@@ -399,7 +330,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
             </div>
 
             {/* New Arrivals Carousel */}
-            <Card className="bg-white">
+            <Card className="bg-white border border-gray-200">
               <CardContent className="pt-4">
                 <NewArrivals />
               </CardContent>
@@ -418,7 +349,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
             </div>
 
             {/* Latest Offers Carousel */}
-            <Card className="bg-white">
+            <Card className="bg-white border border-gray-200">
               <CardContent className="pt-4">
                 <LastUpdateOffers />
               </CardContent>
@@ -440,13 +371,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
           </div>
         </CardContent>
       </Card>
-
-      <ComparisonBar 
-        totals={calculateTotals}
-        selectedProducts={selectedProducts}
-        priceRankings={priceRankings}
-        lowestTotalStore={lowestTotalStore}
-      />
     </div>
   );
 };

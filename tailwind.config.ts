@@ -66,17 +66,19 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Professional color palette for mature audience
 				app: {
 					primary: {
-						DEFAULT: '#6366F1',
-						light: '#818CF8',
-						dark: '#4F46E5',
+						DEFAULT: '#2563EB', // Professional blue
+						light: '#60A5FA',
+						dark: '#1D4ED8',
 					},
-					soft: '#A5B4FC',
-					accent: '#E0E7FF',
-					success: '#10B981',
-					warning: '#F59E0B',
-					background: '#FAFBFF',
+					secondary: '#64748B', // Neutral slate
+					accent: '#F1F5F9', // Light gray
+					success: '#059669', // Forest green
+					warning: '#D97706', // Amber
+					background: '#FAFBFC', // Clean white-gray
+					muted: '#F8FAFC', // Very light gray
 				}
 			},
 			borderRadius: {
@@ -101,10 +103,6 @@ export default {
 						height: '0'
 					}
 				},
-				'wiggle': {
-					'0%, 100%': { transform: 'rotate(-3deg)' },
-					'50%': { transform: 'rotate(3deg)' },
-				},
 				'fade-in': {
 					'0%': { opacity: '0', transform: 'translateY(10px)' },
 					'100%': { opacity: '1', transform: 'translateY(0)' }
@@ -113,7 +111,6 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'wiggle': 'wiggle 1s ease-in-out infinite',
 				'fade-in': 'fade-in 0.3s ease-out'
 			}
 		}
