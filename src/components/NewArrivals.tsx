@@ -1,12 +1,14 @@
 
 import React, { useEffect } from 'react';
 import { getNewArrivals } from '@/data/products';
-import { Sparkles, Star, Zap, Crown } from 'lucide-react';
+import { Sparkles, Star, Zap, Crown, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselApi,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useContext } from 'react';
@@ -69,7 +71,7 @@ const NewArrivals = () => {
         <Sparkles className="h-5 w-5 text-yellow-500" />
         <h2 className="text-lg font-bold">New Arrivals</h2>
       </div>
-      <div className="px-2">
+      <div className="px-2 relative">
         <Carousel
           setApi={setApi}
           opts={{
@@ -108,12 +110,12 @@ const NewArrivals = () => {
                       {statusBadge.text}
                     </div>
                   </div>
-                  {/* Sneak peek effect */}
-                  <div className="absolute right-0 top-0 w-6 h-full bg-gradient-to-l from-white/80 to-transparent pointer-events-none opacity-30"></div>
                 </CarouselItem>
               );
             })}
           </CarouselContent>
+          <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/90 hover:bg-white border shadow-md" />
+          <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/90 hover:bg-white border shadow-md" />
         </Carousel>
       </div>
     </div>

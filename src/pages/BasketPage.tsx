@@ -1,4 +1,3 @@
-
 import React, { useContext, useState } from 'react';
 import { ArrowLeft, Save, Share, Trash2, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -85,6 +84,7 @@ const BasketPage = () => {
     });
   };
 
+  // Get actual product data for selected products
   const selectedProductsData = products.filter(p => selectedProducts.includes(p.id));
 
   // Color palette for retailers

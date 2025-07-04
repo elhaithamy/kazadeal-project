@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { ShoppingBasket, Save, EyeOff, Eye } from 'lucide-react';
+import { ShoppingBasket, List, EyeOff, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -30,6 +29,7 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
   const { toast } = useToast();
   const [isHidden, setIsHidden] = useState(false);
   const [autoHideTimeout, setAutoHideTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [savedListsCount, setSavedListsCount] = useState(1);
 
   // Auto-hide effect when products are added
   useEffect(() => {
@@ -102,13 +102,24 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
     );
   };
 
-  const handleSaveList = () => {
+  const handleAddToList = () => {
     const now = new Date();
     const saveDate = now.toLocaleDateString();
+    const listName = `List ${savedListsCount} - ${saveDate}`;
+
+    // In a real app, this would save to database
+    const savedList = {
+      name: listName,
+      products: selectedProducts,
+      createdAt: now,
+    };
+
+    console.log('Saving list:', savedList);
+    setSavedListsCount(prev => prev + 1);
 
     toast({
-      title: "Cart saved!",
-      description: `Your selection has been saved (${saveDate})`,
+      title: "Added to Lists!",
+      description: `"${listName}" has been created with ${selectedProducts.length} products`,
     });
   };
 
@@ -139,7 +150,7 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
   };
 
   return (
-    <div className={`w-full transition-transform duration-300 ${isHidden ? 'translate-y-full' : 'translate-y-0'} ${isMobile ? 'fixed bottom-16 left-0 z-40 bg-white border-t border-gray-200 shadow-lg' : 'mb-4'}`}>
+    <div className={`w-full transition-transform duration-300 ${isHidden ? 'translate-y-full' : 'translate-y-0'} ${isMobile ? 'fixed bottom-16 left-0 z-40' : 'fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-4xl z-40'} bg-white border-t md:border border-gray-200 shadow-lg ${!isMobile ? 'rounded-lg' : ''}`}>
       <Card className="rounded-none md:rounded-lg shadow-md border-0 md:border border-gray-300">
         <CardContent className="p-2 bg-gray-50">
           <div className="flex flex-col gap-2">
@@ -160,10 +171,10 @@ const ComparisonBar = ({ totals, selectedProducts, priceRankings, lowestTotalSto
                   size="sm"
                   variant="outline"
                   className="h-6 flex items-center gap-1 text-[10px] px-2"
-                  onClick={handleSaveList}
+                  onClick={handleAddToList}
                 >
-                  <Save size={10} />
-                  <span>Save</span>
+                  <List size={10} />
+                  <span>Add to List</span>
                 </Button>
                 <Button
                   size="sm"

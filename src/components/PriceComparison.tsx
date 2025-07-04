@@ -1,6 +1,5 @@
-
 import React, { useContext, useMemo, useState, useEffect } from 'react';
-import { ShoppingBasket, Plus, ThumbsUp, ChevronUp, Search } from 'lucide-react';
+import { ShoppingBasket, Plus, ThumbsUp, ChevronUp, Search, Palette } from 'lucide-react';
 import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,12 +37,26 @@ const getProductTag = (productId: number): TagType | null => {
   return null;
 };
 
+// Engagement color options for lowest price
+const engagementColors = [
+  { name: 'Electric Green', bg: '#00FF88', border: '#00E678', text: '#FFFFFF' },
+  { name: 'Neon Orange', bg: '#FF6B35', border: '#E55A2B', text: '#FFFFFF' },
+  { name: 'Hot Pink', bg: '#FF1B8D', border: '#E5187C', text: '#FFFFFF' },
+  { name: 'Electric Blue', bg: '#00D4FF', border: '#00BFEB', text: '#000000' },
+  { name: 'Lime Punch', bg: '#CDFF00', border: '#B8E600', text: '#000000' },
+  { name: 'Sunset Red', bg: '#FF4545', border: '#E63E3E', text: '#FFFFFF' },
+];
+
 const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, onCategoryChange }: PriceComparisonProps) => {
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const isMobile = useIsMobile();
-  const [displayedItems, setDisplayedItems] = useState(100); // Show 100 products by default
+  const [displayedItems, setDisplayedItems] = useState(100);
   const [quantities, setQuantities] = useState<Record<number, number>>({});
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+  const [selectedEngagementColor, setSelectedEngagementColor] = useState(engagementColors[0]);
+  const [showColorPalette, setShowColorPalette] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const getQuantity = (productId: number) => quantities[productId] || 1;
 
@@ -151,13 +164,6 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     tamimi: '#6E59A5',
   };
 
-  // Create random categories for demo
-  const randomCategories = [
-    'Fresh Produce', 'Dairy & Eggs', 'Meat & Seafood', 'Bakery', 
-    'Pantry Essentials', 'Beverages', 'Snacks & Sweets', 'Frozen Foods',
-    'Health & Beauty', 'Household Items'
-  ];
-
   // Helper for rendering the store price grid for a single product.
   const renderCompactPriceTable = (product: Product) => {
     const prices = [
@@ -182,9 +188,9 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               key={label}
               className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl border text-xs`}
               style={{
-                backgroundColor: isLowest ? `${color}20` : '#f8f9fa',
-                borderColor: isLowest ? color : '#e9ecef',
-                color: isLowest ? color : '#495057'
+                backgroundColor: isLowest ? selectedEngagementColor.bg : '#f8f9fa',
+                borderColor: isLowest ? selectedEngagementColor.border : '#e9ecef',
+                color: isLowest ? selectedEngagementColor.text : '#495057'
               }}
             >
               <span className="font-semibold text-[11px] mb-0.5">{label}</span>
@@ -285,10 +291,16 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     );
   };
 
-  // Split products into sections
+  // Pagination for products
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPageProducts = filteredProducts.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  // Split products into sections for the layout
   const firstSection = filteredProducts.slice(0, 20);
   const secondSection = filteredProducts.slice(20, 40);
-  const thirdSection = filteredProducts.slice(40, displayedItems);
+  const thirdSection = filteredProducts.slice(40, 100);
 
   return (
     <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
@@ -318,6 +330,45 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               </Button>
             </div>
           </div>
+
+          {/* Color Palette Selector */}
+          <div className="mb-4 flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowColorPalette(!showColorPalette)}
+              className="flex items-center gap-2"
+            >
+              <Palette className="h-4 w-4" />
+              Choose Highlight Color
+            </Button>
+          </div>
+
+          {showColorPalette && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-semibold mb-2">Select engagement color for lowest prices:</h4>
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                {engagementColors.map((color) => (
+                  <button
+                    key={color.name}
+                    onClick={() => {
+                      setSelectedEngagementColor(color);
+                      setShowColorPalette(false);
+                    }}
+                    className="p-2 rounded-lg border-2 transition-all hover:scale-105"
+                    style={{
+                      backgroundColor: color.bg,
+                      borderColor: selectedEngagementColor.name === color.name ? '#000' : color.border,
+                      color: color.text
+                    }}
+                  >
+                    <div className="text-xs font-bold">{color.name}</div>
+                    <div className="text-xs">49.99</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col mb-2">
             {selectedProducts.length > 0 && (

@@ -1,0 +1,7 @@
+
+id,name,category,price_lulu,price_othaim,price_carrefour,price_danube,price_panda,price_tamimi,image_url,is_available
+1,Almarai Fresh Milk 1L,Dairy,4.75,4.80,4.85,4.70,4.90,4.65,https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400,true
+2,Saudi Bananas 1kg,Fruits,8.50,8.75,8.25,8.90,8.45,8.60,https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400,true
+3,White Toast Bread,Bakery,3.25,3.50,3.15,3.45,3.30,3.20,https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400,true
+4,Chicken Breast 1kg,Meat,24.50,25.00,24.25,25.50,24.75,24.00,https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400,true
+5,Basmati Rice 5kg,Pantry,45.00,46.50,44.75,47.00,45.25,44.50,https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400,true

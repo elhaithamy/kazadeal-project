@@ -1,351 +1,344 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Mail, Phone, Bell, Store, Save, Edit } from 'lucide-react';
+import { ArrowLeft, User, Bell, MapPin, Globe, Heart, List as ListIcon, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
-
-interface PriceAlert {
-  id: number;
-  productName: string;
-  targetPrice: number;
-  currentPrice: number;
-  store: string;
-  isActive: boolean;
-}
-
-interface SavedList {
-  id: number;
-  name: string;
-  itemCount: number;
-  createdDate: string;
-  totalEstimate: number;
-}
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from "@/components/ui/switch";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 const AccountPage = () => {
-  const { toast } = useToast();
-  const [userInfo, setUserInfo] = useState({
-    email: 'user@example.com',
-    phone: '+966 12 345 6789',
-    firstName: 'Ahmed',
-    lastName: 'Al-Rashid'
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    preferredStore: 'lulu'
   });
-  
-  const [priceAlerts, setPriceAlerts] = useState<PriceAlert[]>([
-    {
-      id: 1,
-      productName: 'Organic Bananas',
-      targetPrice: 5.99,
-      currentPrice: 7.50,
-      store: 'LuLu',
-      isActive: true
-    },
-    {
-      id: 2,
-      productName: 'Almarai Milk',
-      targetPrice: 8.00,
-      currentPrice: 8.50,
-      store: 'Panda',
-      isActive: true
-    }
-  ]);
-
-  const [savedLists, setSavedLists] = useState<SavedList[]>([
-    {
-      id: 1,
-      name: 'Weekly Groceries',
-      itemCount: 15,
-      createdDate: '2024-01-15',
-      totalEstimate: 245.50
-    },
-    {
-      id: 2,
-      name: 'Party Supplies',
-      itemCount: 8,
-      createdDate: '2024-01-10',
-      totalEstimate: 89.99
-    }
-  ]);
-
-  const [preferredStores, setPreferredStores] = useState({
-    lulu: true,
-    othaim: false,
-    carrefour: true,
-    danube: false,
-    panda: true,
-    tamimi: false
-  });
-
-  const [notifications, setNotifications] = useState({
+  const [settings, setSettings] = useState({
+    notifications: true,
     priceAlerts: true,
-    weeklyDeals: true,
-    newArrivals: false,
-    email: true,
-    sms: false
+    locationServices: true,
+    language: 'en'
   });
+  const [savedLists, setSavedLists] = useState([
+    { id: 1, name: "Weekly Groceries", items: 12, date: "2024-01-15" },
+    { id: 2, name: "Monthly Stock-up", items: 24, date: "2024-01-10" }
+  ]);
 
-  const handleSaveProfile = () => {
-    toast({
-      title: 'Profile updated!',
-      description: 'Your account information has been saved.',
-    });
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggedIn(true);
+    setShowLoginForm(false);
   };
 
-  const handleTogglePriceAlert = (alertId: number) => {
-    setPriceAlerts(prev =>
-      prev.map(alert =>
-        alert.id === alertId ? { ...alert, isActive: !alert.isActive } : alert
-      )
+  if (!isLoggedIn && !showLoginForm) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        
+        <div className="bg-white shadow-sm mb-4">
+          <div className="container mx-auto px-4 py-2 flex items-center">
+            <Link to="/" className="mr-4">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <h1 className="text-xl font-semibold">Account</h1>
+          </div>
+        </div>
+        
+        <main className="flex-1 mb-16 px-4">
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <User className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+              <h2 className="text-xl font-semibold mb-2">Sign in to your account</h2>
+              <p className="text-gray-500 mb-6">Access your saved lists, price alerts, and preferences</p>
+              
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => setShowLoginForm(true)}
+                  className="w-full bg-app-green hover:bg-app-green/90"
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setIsLoggedIn(true);
+                    setShowLoginForm(false);
+                  }}
+                  className="w-full"
+                >
+                  Create Account
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+        
+        <BottomNav />
+      </div>
     );
-  };
+  }
 
-  const handleToggleStore = (store: keyof typeof preferredStores) => {
-    setPreferredStores(prev => ({
-      ...prev,
-      [store]: !prev[store]
-    }));
-  };
-
-  const stores = [
-    { key: 'lulu', name: 'LuLu Hypermarket', color: '#0EA5E9' },
-    { key: 'othaim', name: 'Othaim Markets', color: '#9b87f5' },
-    { key: 'carrefour', name: 'Carrefour', color: '#F97316' },
-    { key: 'danube', name: 'Danube', color: '#1EAEDB' },
-    { key: 'panda', name: 'Panda', color: '#7E69AB' },
-    { key: 'tamimi', name: 'Tamimi Markets', color: '#6E59A5' }
-  ];
+  if (showLoginForm) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        
+        <div className="bg-white shadow-sm mb-4">
+          <div className="container mx-auto px-4 py-2 flex items-center">
+            <Link to="/" className="mr-4">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <h1 className="text-xl font-semibold">Sign In</h1>
+          </div>
+        </div>
+        
+        <main className="flex-1 mb-16 px-4">
+          <Card>
+            <CardContent className="pt-6">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Email</label>
+                  <Input 
+                    type="email" 
+                    placeholder="Enter your email"
+                    value={userProfile.email}
+                    onChange={(e) => setUserProfile({...userProfile, email: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Phone Number</label>
+                  <Input 
+                    type="tel" 
+                    placeholder="Enter your phone number"
+                    value={userProfile.phone}
+                    onChange={(e) => setUserProfile({...userProfile, phone: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Password</label>
+                  <Input 
+                    type="password" 
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+                
+                <div className="flex gap-2 pt-4">
+                  <Button 
+                    type="submit"
+                    className="flex-1 bg-app-green hover:bg-app-green/90"
+                  >
+                    Sign In
+                  </Button>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={() => setShowLoginForm(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </main>
+        
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-6 mb-16">
-        <div className="flex items-center gap-4 mb-6">
-          <Link to="/">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
+      <div className="bg-white shadow-sm mb-4">
+        <div className="container mx-auto px-4 py-2 flex items-center">
+          <Link to="/" className="mr-4">
+            <ArrowLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-2xl font-bold">My Account</h1>
+          <h1 className="text-xl font-semibold">Account & Settings</h1>
         </div>
+      </div>
+      
+      <main className="flex-1 mb-16 px-4 space-y-6">
+        {/* Profile Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Profile Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Name</label>
+              <Input 
+                value={userProfile.name}
+                onChange={(e) => setUserProfile({...userProfile, name: e.target.value})}
+                placeholder="Enter your name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Email</label>
+              <Input 
+                value={userProfile.email}
+                onChange={(e) => setUserProfile({...userProfile, email: e.target.value})}
+                placeholder="Enter your email"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Phone Number</label>
+              <Input 
+                value={userProfile.phone}
+                onChange={(e) => setUserProfile({...userProfile, phone: e.target.value})}
+                placeholder="Enter your phone number"
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="space-y-6">
-          {/* Profile Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Profile Information</span>
-                <Edit className="h-4 w-4 text-gray-500" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={userInfo.firstName}
-                    onChange={(e) => setUserInfo({...userInfo, firstName: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={userInfo.lastName}
-                    onChange={(e) => setUserInfo({...userInfo, lastName: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={userInfo.email}
-                      onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
-                      className="pl-10"
-                    />
+        {/* Saved Lists */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ListIcon className="h-5 w-5" />
+              Your Saved Lists
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {savedLists.map(list => (
+                <div key={list.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <h3 className="font-medium">{list.name}</h3>
+                    <p className="text-sm text-gray-500">{list.items} items • {list.date}</p>
                   </div>
+                  <Badge variant="outline">{list.items}</Badge>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={userInfo.phone}
-                      onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-              <Button onClick={handleSaveProfile} className="bg-app-green hover:bg-app-green/90">
-                <Save className="h-4 w-4 mr-2" />
-                Save Profile
-              </Button>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Price Alerts */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
-                Price Alerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {priceAlerts.map(alert => (
-                  <div key={alert.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex-1">
-                      <div className="font-medium">{alert.productName}</div>
-                      <div className="text-sm text-gray-500">
-                        Target: {alert.targetPrice.toFixed(2)} SAR | Current: {alert.currentPrice.toFixed(2)} SAR
-                      </div>
-                      <Badge variant="outline" className="mt-1 text-xs">
-                        {alert.store}
-                      </Badge>
-                    </div>
-                    <Switch
-                      checked={alert.isActive}
-                      onCheckedChange={() => handleTogglePriceAlert(alert.id)}
-                    />
-                  </div>
-                ))}
+        {/* Price Alerts */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="h-5 w-5" />
+              Price Alerts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <h3 className="font-medium">Milk - Almarai</h3>
+                  <p className="text-sm text-gray-500">Alert when below 4.50 SAR</p>
+                </div>
+                <Badge className="bg-green-100 text-green-800">Active</Badge>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <h3 className="font-medium">Bread - L'usine</h3>
+                  <p className="text-sm text-gray-500">Alert when below 3.00 SAR</p>
+                </div>
+                <Badge className="bg-green-100 text-green-800">Active</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Saved Lists */}
-          <Card>
-            <CardHeader>
-              <CardTitle>My Saved Lists</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {savedLists.map(list => (
-                  <div key={list.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex-1">
-                      <div className="font-medium">{list.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {list.itemCount} items • Created {list.createdDate}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-semibold">{list.totalEstimate.toFixed(2)} SAR</div>
-                      <div className="text-xs text-gray-500">estimated</div>
-                    </div>
-                  </div>
-                ))}
+        {/* Settings Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4" />
+                <span className="font-medium">Notifications</span>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Preferred Stores */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Store className="h-5 w-5" />
-                Preferred Stores
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {stores.map(store => (
-                  <div key={store.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: store.color }}
-                      />
-                      <span className="font-medium">{store.name}</span>
-                    </div>
-                    <Switch
-                      checked={preferredStores[store.key as keyof typeof preferredStores]}
-                      onCheckedChange={() => handleToggleStore(store.key as keyof typeof preferredStores)}
-                    />
-                  </div>
-                ))}
+              <Switch 
+                checked={settings.notifications}
+                onCheckedChange={(checked) => setSettings({...settings, notifications: checked})}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                <span className="font-medium">Price Alerts</span>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Notification Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Preferences</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">Price Alerts</div>
-                    <div className="text-sm text-gray-500">Get notified when prices drop</div>
-                  </div>
-                  <Switch
-                    checked={notifications.priceAlerts}
-                    onCheckedChange={(checked) => setNotifications({...notifications, priceAlerts: checked})}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">Weekly Deals</div>
-                    <div className="text-sm text-gray-500">Best deals of the week</div>
-                  </div>
-                  <Switch
-                    checked={notifications.weeklyDeals}
-                    onCheckedChange={(checked) => setNotifications({...notifications, weeklyDeals: checked})}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">New Arrivals</div>
-                    <div className="text-sm text-gray-500">Latest products and offers</div>
-                  </div>
-                  <Switch
-                    checked={notifications.newArrivals}
-                    onCheckedChange={(checked) => setNotifications({...notifications, newArrivals: checked})}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">Email Notifications</div>
-                    <div className="text-sm text-gray-500">Receive notifications via email</div>
-                  </div>
-                  <Switch
-                    checked={notifications.email}
-                    onCheckedChange={(checked) => setNotifications({...notifications, email: checked})}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">SMS Notifications</div>
-                    <div className="text-sm text-gray-500">Receive notifications via SMS</div>
-                  </div>
-                  <Switch
-                    checked={notifications.sms}
-                    onCheckedChange={(checked) => setNotifications({...notifications, sms: checked})}
-                  />
-                </div>
+              <Switch 
+                checked={settings.priceAlerts}
+                onCheckedChange={(checked) => setSettings({...settings, priceAlerts: checked})}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <span className="font-medium">Location Services</span>
               </div>
-            </CardContent>
-          </Card>
+              <Switch 
+                checked={settings.locationServices}
+                onCheckedChange={(checked) => setSettings({...settings, locationServices: checked})}
+              />
+            </div>
+            
+            <div>
+              <label className="flex items-center gap-2 font-medium mb-2">
+                <Globe className="h-4 w-4" />
+                Language
+              </label>
+              <select 
+                className="w-full p-2 border rounded-md"
+                value={settings.language}
+                onChange={(e) => setSettings({...settings, language: e.target.value})}
+              >
+                <option value="en">English</option>
+                <option value="ar">Arabic</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block font-medium mb-2">Preferred Store</label>
+              <select 
+                className="w-full p-2 border rounded-md"
+                value={userProfile.preferredStore}
+                onChange={(e) => setUserProfile({...userProfile, preferredStore: e.target.value})}
+              >
+                <option value="lulu">LuLu</option>
+                <option value="othaim">Othaim</option>
+                <option value="carrefour">Carrefour</option>
+                <option value="danube">Danube</option>
+                <option value="panda">Panda</option>
+                <option value="tamimi">Tamimi</option>
+              </select>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <div className="mt-6">
+          <Button className="w-full bg-app-green hover:bg-app-green/90">
+            Save Changes
+          </Button>
         </div>
       </main>
-
+      
       <BottomNav />
     </div>
   );

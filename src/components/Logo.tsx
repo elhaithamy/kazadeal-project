@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { ShoppingCart } from 'lucide-react';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -13,19 +14,20 @@ const fontSize: Record<string, string> = {
 };
 
 const iconSize: Record<string, string> = {
-  sm: 'text-2xl',
-  md: 'text-4xl',
-  lg: 'text-5xl'
+  sm: 'text-sm',
+  md: 'text-lg',
+  lg: 'text-xl'
 };
 
-// Tank emoji for deals website
 const Logo: React.FC<LogoProps> = ({ size = 'md', showText = true }) => {
   return (
     <div className="flex items-center gap-2 font-spacegrotesk select-none">
-      <span 
-        className={`${iconSize[size]} drop-shadow-md bg-gradient-to-br from-app-primary to-app-soft rounded-full px-2 py-1 animate-bounce`}
-        aria-label="Deals Tank Logo"
-      >🚀</span>
+      <div className={`${iconSize[size]} drop-shadow-md bg-gradient-to-br from-app-primary to-app-soft rounded-full p-2 relative`}>
+        <ShoppingCart className="text-white" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-8 h-0.5 bg-red-500 rotate-45 rounded-full"></div>
+        </div>
+      </div>
       {showText && (
         <span className={`font-extrabold ${fontSize[size]} tracking-tight from-app-primary to-app-soft bg-gradient-to-r text-transparent bg-clip-text`}>
           Deals Tank

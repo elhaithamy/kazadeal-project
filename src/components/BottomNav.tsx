@@ -11,7 +11,7 @@ const BottomNav = () => {
     { icon: ShoppingBasket, label: 'Basket', path: '/basket' },
     { icon: List, label: 'Lists', path: '/checklist' },
     { icon: FileText, label: 'Leaflets', path: '/leaflets' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
+    { icon: Settings, label: 'Settings', path: '/account' }, // Changed to point to account
     { icon: User, label: 'Account', path: '/account' },
   ];
 
