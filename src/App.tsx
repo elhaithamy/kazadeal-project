@@ -12,7 +12,6 @@ import RetailerLeaflets from "./pages/RetailerLeaflets";
 import BestDealsPage from "./pages/BestDealsPage";
 import NearbyStoresPage from "./pages/NearbyStoresPage";
 import AccountPage from "./pages/AccountPage";
-import CategoryPage from "./pages/CategoryPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
@@ -32,7 +31,7 @@ const App = () => (
           <Route path="/best-deals" element={<BestDealsPage />} />
           <Route path="/nearby-stores" element={<NearbyStoresPage />} />
           <Route path="/account" element={<AccountPage />} />
-          <Route path="/category/:categoryName" element={<CategoryPage />} />
+          
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
