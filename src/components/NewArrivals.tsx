@@ -62,7 +62,8 @@ const NewArrivals = () => {
   };
 
   const handleProductClick = (productId: number) => {
-    toggleProductSelection(productId);
+    // Convert to string for consistency with database UUIDs
+    toggleProductSelection(`demo-${productId}`);
   };
 
   return (

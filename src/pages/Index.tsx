@@ -19,7 +19,10 @@ const Index = () => {
           <div className="container mx-auto px-2">
             {/* Top Action Bar */}
             <div className="mt-4">
-              <TopActionBar />
+              <TopActionBar 
+                onCategorySelect={setActiveCategory}
+                activeCategory={activeCategory}
+              />
             </div>
 
             {/* Main Content - Single Column for Mobile Friendly */}

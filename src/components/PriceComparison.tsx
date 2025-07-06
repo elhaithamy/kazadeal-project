@@ -1,6 +1,5 @@
 import React, { useContext, useMemo, useState, useEffect } from 'react';
 import { Plus, ThumbsUp, Search, Palette } from 'lucide-react';
-import { products, Product } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +9,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import NewArrivals from '@/components/NewArrivals';
 import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
+import ReviewsSection from '@/components/ReviewsSection';
+import { useProducts, ProductWithPrices } from '@/hooks/useProducts';
 
 interface PriceComparisonProps {
   searchQuery?: string;
@@ -18,12 +19,13 @@ interface PriceComparisonProps {
   onCategoryChange?: (category: string) => void;
 }
 
-const getProductTag = (productId: number): TagType | null => {
-  if (productId % 10 === 0) return 'hot-deal';
-  if (productId % 7 === 0) return 'bulky';
-  if (productId % 5 === 0) return 'heavy-carry';
-  if (productId % 8 === 0) return 'bestseller';
-  return null;
+const getProductTag = (productId: string): TagType | null => {
+  const numId = parseInt(productId.slice(-1));
+  if (numId % 10 === 0) return 'hot-deal';
+  if (numId % 7 === 0) return 'bulky';
+  if (numId % 5 === 0) return 'heavy-carry';
+  if (numId % 8 === 0) return 'bestseller';
+  return 'hot-deal';
 };
 
 // Professional engagement colors for mature audience
@@ -40,23 +42,26 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
   const { selectedProducts, toggleProductSelection } = useContext(ProductSelectionContext);
   const isMobile = useIsMobile();
   const [displayedItems, setDisplayedItems] = useState(100);
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
   const [selectedEngagementColor, setSelectedEngagementColor] = useState(engagementColors[0]);
   const [showColorPalette, setShowColorPalette] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedProduct, setSelectedProduct] = useState<ProductWithPrices | null>(null);
   const itemsPerPage = 20;
+  
+  const { products, loading, error, getProductsByCategory, searchProducts } = useProducts();
 
-  const getQuantity = (productId: number) => quantities[productId] || 1;
+  const getQuantity = (productId: string) => quantities[productId] || 1;
 
-  const handleQuantityChange = (productId: number, value: number) => {
+  const handleQuantityChange = (productId: string, value: number) => {
     setQuantities(prev => ({
       ...prev,
       [productId]: Math.max(1, value)
     }));
   };
 
-  const handleQuantityInputChange = (productId: number, value: string) => {
+  const handleQuantityInputChange = (productId: string, value: string) => {
     const numValue = parseInt(value) || 1;
     handleQuantityChange(productId, Math.max(1, numValue));
   };
@@ -74,15 +79,25 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
   };
 
   const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      const matchesSearch = (searchQuery === '' && localSearchQuery === '') || 
-        product.name.toLowerCase().includes((searchQuery || localSearchQuery).toLowerCase());
-      
-      return matchesSearch && product.isAvailable !== false;
-    });
-  }, [searchQuery, localSearchQuery, products]);
+    let filtered = products;
+    
+    // Filter by category
+    if (activeCategory !== 'All') {
+      filtered = getProductsByCategory(activeCategory);
+    }
+    
+    // Filter by search
+    if (searchQuery || localSearchQuery) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes((searchQuery || localSearchQuery).toLowerCase()) ||
+        product.description?.toLowerCase().includes((searchQuery || localSearchQuery).toLowerCase())
+      );
+    }
+    
+    return filtered.filter(product => product.is_active);
+  }, [products, activeCategory, searchQuery, localSearchQuery, getProductsByCategory]);
 
-  const handleSelectProduct = (product: Product) => {
+  const handleSelectProduct = (product: ProductWithPrices) => {
     toggleProductSelection(product.id);
   };
 
@@ -96,27 +111,31 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     tamimi: '#6D28D9',
   };
 
-  const renderCompactPriceTable = (product: Product) => {
-    const prices = [
-      { label: 'LuLu', value: product.prices.lulu, key: 'lulu' },
-      { label: 'Panda', value: product.prices.panda, key: 'panda' },
-      { label: 'Othaim', value: product.prices.othaim, key: 'othaim' },
-      { label: 'Carrefour', value: product.prices.carrefour, key: 'carrefour' },
-      { label: 'Danube', value: product.prices.danube, key: 'danube' },
-      { label: 'Tamimi', value: product.prices.tamimi, key: 'tamimi' }
-    ];
+  const renderCompactPriceTable = (product: ProductWithPrices) => {
+    if (!product.prices || product.prices.length === 0) {
+      return (
+        <div className="text-center text-sm text-gray-500 py-2">
+          No prices available
+        </div>
+      );
+    }
+    
+    const prices = product.prices.map(price => ({
+      label: price.retailers?.name || 'Unknown',
+      value: price.price,
+      key: price.retailer_id
+    }));
     
     const lowestPrice = Math.min(...prices.map(p => p.value));
 
     return (
       <div className="grid grid-cols-2 gap-2 w-full">
         {prices.map(({ label, value, key }) => {
-          const color = retailerColors[key as keyof typeof retailerColors];
           const isLowest = value === lowestPrice;
           
           return (
             <div
-              key={label}
+              key={key}
               className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl border text-xs`}
               style={{
                 backgroundColor: isLowest ? selectedEngagementColor.bg : '#f8f9fa',
@@ -135,8 +154,9 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
     );
   };
 
-  const renderProductItem = (product: Product) => {
-    const lowestPrice = Math.min(...Object.values(product.prices));
+  const renderProductItem = (product: ProductWithPrices) => {
+    const prices = product.prices.map(p => p.price);
+    const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
     const isSelected = selectedProducts.includes(product.id);
     const productTag = getProductTag(product.id);
     const quantity = getQuantity(product.id);
@@ -148,7 +168,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
             <div className="flex flex-col items-center mb-3 relative">
               <div className="w-16 h-16 mb-2 relative bg-gradient-to-br from-blue-50 to-gray-50 rounded-lg flex items-center justify-center shadow-sm border">
                 <img 
-                  src={product.image} 
+                  src={product.image_url} 
                   alt={product.name} 
                   className="w-14 h-14 object-cover rounded-md"
                 />
@@ -215,6 +235,15 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
                   </>
                 )}
               </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full text-sm py-2 h-8 rounded-lg font-medium border mt-2"
+                onClick={() => setSelectedProduct(product)}
+              >
+                View Reviews
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -233,8 +262,44 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
   const secondSection = filteredProducts.slice(20, 40);
   const thirdSection = filteredProducts.slice(40, 100);
 
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
+        <Card className="mb-6 bg-white shadow-sm border border-gray-200">
+          <CardContent className="pt-6">
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Loading products...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
+        <Card className="mb-6 bg-white shadow-sm border border-gray-200">
+          <CardContent className="pt-6">
+            <div className="text-center py-8">
+              <p className="text-red-600">{error}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-0 md:px-4 py-2">
+      {selectedProduct && (
+        <ReviewsSection
+          productId={selectedProduct.id}
+          productName={selectedProduct.name}
+        />
+      )}
+      
       <Card className="mb-6 bg-white shadow-sm border border-gray-200">
         <CardContent className="pt-6">
           {/* Search Section */}

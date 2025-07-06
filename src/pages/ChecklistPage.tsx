@@ -79,7 +79,7 @@ const ChecklistPage = () => {
   const handleCheckListPrices = (listItems: number[]) => {
     // Add all list items to cart for comparison
     listItems.forEach(productId => {
-      toggleProductSelection(productId);
+      toggleProductSelection(`demo-${productId}`);
     });
     
     toast({

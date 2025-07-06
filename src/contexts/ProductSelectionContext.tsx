@@ -2,8 +2,8 @@
 import React, { createContext, useState, ReactNode } from 'react';
 
 type ProductSelectionContextType = {
-  selectedProducts: number[];
-  toggleProductSelection: (productId: number | "clear") => void;
+  selectedProducts: string[];
+  toggleProductSelection: (productId: string | "clear") => void;
 };
 
 export const ProductSelectionContext = createContext<ProductSelectionContextType>({
@@ -16,9 +16,9 @@ type ProductSelectionProviderProps = {
 };
 
 export const ProductSelectionProvider: React.FC<ProductSelectionProviderProps> = ({ children }) => {
-  const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
-  const toggleProductSelection = (productId: number | "clear") => {
+  const toggleProductSelection = (productId: string | "clear") => {
     if (productId === "clear") {
       setSelectedProducts([]);
       return;

@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 const categories = [
   { 
@@ -55,36 +54,49 @@ const categories = [
   },
 ];
 
-const CategoryNav = () => {
+interface CategoryNavProps {
+  onCategorySelect: (category: string) => void;
+  activeCategory?: string;
+}
+
+const CategoryNav: React.FC<CategoryNavProps> = ({ onCategorySelect, activeCategory }) => {
   return (
     <div className="px-2 py-1">
       <div className="grid grid-cols-5 gap-3 mb-3">
         {categories.slice(0, 5).map((category, index) => (
-          <Link 
+          <button 
             key={index}
-            to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
-            className="flex flex-col items-center space-y-2 hover-scale"
+            onClick={() => onCategorySelect(category.name)}
+            className={`flex flex-col items-center space-y-2 hover-scale ${
+              activeCategory === category.name ? 'scale-105' : ''
+            }`}
           >
-            <div className={`w-14 h-14 rounded-full ${category.color} flex items-center justify-center text-white shadow-lg`}>
+            <div className={`w-14 h-14 rounded-full ${category.color} flex items-center justify-center text-white shadow-lg ${
+              activeCategory === category.name ? 'ring-2 ring-primary' : ''
+            }`}>
               <span className="text-2xl">{category.emoji}</span>
             </div>
             <span className="text-[9px] font-medium text-center text-gray-700 line-clamp-2 leading-tight">{category.name}</span>
-          </Link>
+          </button>
         ))}
       </div>
       
       <div className="grid grid-cols-5 gap-3">
         {categories.slice(5, 10).map((category, index) => (
-          <Link 
+          <button 
             key={index + 5}
-            to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
-            className="flex flex-col items-center space-y-2 hover-scale"
+            onClick={() => onCategorySelect(category.name)}
+            className={`flex flex-col items-center space-y-2 hover-scale ${
+              activeCategory === category.name ? 'scale-105' : ''
+            }`}
           >
-            <div className={`w-14 h-14 rounded-full ${category.color} flex items-center justify-center text-white shadow-lg`}>
+            <div className={`w-14 h-14 rounded-full ${category.color} flex items-center justify-center text-white shadow-lg ${
+              activeCategory === category.name ? 'ring-2 ring-primary' : ''
+            }`}>
               <span className="text-2xl">{category.emoji}</span>
             </div>
             <span className="text-[9px] font-medium text-center text-gray-700 line-clamp-2 leading-tight">{category.name}</span>
-          </Link>
+          </button>
         ))}
       </div>
     </div>

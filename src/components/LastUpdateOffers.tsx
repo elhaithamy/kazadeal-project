@@ -132,7 +132,7 @@ const LastUpdateOffers = () => {
 
   const handleOfferClick = (offerId: number) => {
     // For demo purposes, add a random product to comparison
-    const randomProductId = Math.floor(Math.random() * 100) + 1;
+    const randomProductId = `demo-${Math.floor(Math.random() * 100) + 1}`;
     toggleProductSelection(randomProductId);
   };
 
