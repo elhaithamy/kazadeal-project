@@ -6,8 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { products } from '@/data/products';
+import AdCard from '@/components/AdCard';
+import { useAds } from '@/hooks/useAds';
 
 const BestDealsPage = () => {
+  const { currentAd } = useAds();
+
   // Get products with their best prices and retailer info
   const bestDeals = useMemo(() => {
     return products.map(product => {
@@ -75,8 +79,30 @@ const BestDealsPage = () => {
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {bestDeals.map((product) => (
-            <Card key={product.id} className="hover:shadow-lg transition-shadow duration-200">
+          {bestDeals.map((product, index) => (
+            <React.Fragment key={product.id}>
+              {/* Insert ad every 6 products */}
+              {index > 0 && index % 6 === 0 && currentAd && (
+                <AdCard
+                  title={currentAd.title}
+                  description={currentAd.description || undefined}
+                  image_url={currentAd.image_url || undefined}
+                  link_url={currentAd.link_url || undefined}
+                  className="col-span-1"
+                />
+              )}
+              
+              {/* Insert another ad after every 12 products */}
+              {index > 0 && index % 12 === 0 && currentAd && (
+                <AdCard
+                  title={currentAd.title}
+                  description={currentAd.description || undefined}
+                  image_url={currentAd.image_url || undefined}
+                  link_url={currentAd.link_url || undefined}
+                  className="col-span-1 bg-gradient-to-br from-accent/30 to-primary/20"
+                />
+              )}
+            <Card className="hover:shadow-lg transition-shadow duration-200">
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
                   <div className="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
@@ -120,6 +146,7 @@ const BestDealsPage = () => {
                 </div>
               </CardContent>
             </Card>
+            </React.Fragment>
           ))}
         </div>
       </div>

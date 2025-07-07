@@ -14,6 +14,9 @@ import NearbyStoresPage from "./pages/NearbyStoresPage";
 import AccountPage from "./pages/AccountPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
+import AuthPage from "./pages/AuthPage";
+import RetailersManagementPage from "./pages/RetailersManagementPage";
+import AdsManagementPage from "./pages/AdsManagementPage";
 
 const queryClient = new QueryClient();
 
@@ -25,13 +28,15 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/checklist" element={<ChecklistPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/retailers" element={<RetailersManagementPage />} />
+          <Route path="/admin/ads" element={<AdsManagementPage />} />
           <Route path="/leaflets" element={<RetailerLeaflets />} />
           <Route path="/best-deals" element={<BestDealsPage />} />
           <Route path="/nearby-stores" element={<NearbyStoresPage />} />
           <Route path="/account" element={<AccountPage />} />
-          
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

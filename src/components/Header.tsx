@@ -2,42 +2,27 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { User, LogOut } from 'lucide-react';
+import { useProducts } from '@/hooks/useProducts';
 
-const retailers = [
-  {
-    name: 'Carrefour Egypt',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Carrefour_logo.svg/200px-Carrefour_logo.svg.png',
-    offerDate: '25 Apr 2025'
-  },
-  {
-    name: 'Beit El Gomla',
-    logo: 'https://pbs.twimg.com/profile_images/1364549142055309315/4mTBrKdz_400x400.jpg',
-    offerDate: '30 Apr 2025'
-  },
-  {
-    name: 'Spinneys',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Spinneys_logo.svg/200px-Spinneys_logo.svg.png',
-    offerDate: '22 Apr 2025'
-  },
-  {
-    name: 'Panda',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Panda_Retail_Company_logo.svg/200px-Panda_Retail_Company_logo.svg.png',
-    offerDate: '28 Apr 2025'
-  },
-  {
-    name: 'Fathallah Market',
-    logo: 'https://via.placeholder.com/100x100/4CAF50/FFFFFF?text=FM',
-    offerDate: '23 Apr 2025'
-  },
-  {
-    name: 'Zahran Market',
-    logo: 'https://via.placeholder.com/100x100/FF5722/FFFFFF?text=ZM',
-    offerDate: '21 Apr 2025'
-  }
-];
+// Static retailers data will be replaced with dynamic data from Supabase
 
 const Header = () => {
+  const { user, signOut } = useAuth();
+  const { products } = useProducts();
   const [colorTheme, setColorTheme] = useState<'soft-blue' | 'navy-sky' | 'warm-green' | 'purple-lavender' | 'coral-orange'>('soft-blue');
+
+  // Get unique retailers from products (simplified for now)
+  const retailers = [
+    { name: 'LuLu', logo: '/retailer-logos/lulu.png', offerDate: '30 Apr 2025' },
+    { name: 'Carrefour', logo: '/retailer-logos/carrefour.png', offerDate: '28 Apr 2025' },
+    { name: 'Panda', logo: '/retailer-logos/panda.png', offerDate: '25 Apr 2025' },
+    { name: 'Danube', logo: '/retailer-logos/danube.png', offerDate: '27 Apr 2025' },
+    { name: 'Othaim', logo: '/retailer-logos/othaim.png', offerDate: '26 Apr 2025' },
+    { name: 'Tamimi', logo: '/retailer-logos/tamimi.png', offerDate: '29 Apr 2025' },
+  ].filter((_, index) => index < Math.max(3, 6)); // Ensure minimum 3 retailers
 
   // Color theme configurations
   const themes = {
@@ -96,104 +81,62 @@ const Header = () => {
   const currentTheme = themes[colorTheme];
 
   return (
-    <header className="bg-white font-spacegrotesk text-white">
-      {/* Theme Selector for Preview */}
-      <div className="flex flex-wrap justify-center gap-2 py-3 bg-gray-100">
-        <button 
-          onClick={() => setColorTheme('soft-blue')}
-          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-            colorTheme === 'soft-blue' 
-              ? `${themes['soft-blue'].buttonBg} text-white shadow-md` 
-              : `bg-white ${themes['soft-blue'].buttonText} border ${themes['soft-blue'].buttonBorder}`
-          }`}
-        >
-          Soft Blue
-        </button>
-        <button 
-          onClick={() => setColorTheme('navy-sky')}
-          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-            colorTheme === 'navy-sky' 
-              ? `${themes['navy-sky'].buttonBg} text-white shadow-md` 
-              : `bg-white ${themes['navy-sky'].buttonText} border ${themes['navy-sky'].buttonBorder}`
-          }`}
-        >
-          Navy Sky
-        </button>
-        <button 
-          onClick={() => setColorTheme('warm-green')}
-          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-            colorTheme === 'warm-green' 
-              ? `${themes['warm-green'].buttonBg} text-white shadow-md` 
-              : `bg-white ${themes['warm-green'].buttonText} border ${themes['warm-green'].buttonBorder}`
-          }`}
-        >
-          Warm Green
-        </button>
-        <button 
-          onClick={() => setColorTheme('purple-lavender')}
-          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-            colorTheme === 'purple-lavender' 
-              ? `${themes['purple-lavender'].buttonBg} text-white shadow-md` 
-              : `bg-white ${themes['purple-lavender'].buttonText} border ${themes['purple-lavender'].buttonBorder}`
-          }`}
-        >
-          Purple
-        </button>
-        <button 
-          onClick={() => setColorTheme('coral-orange')}
-          className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-            colorTheme === 'coral-orange' 
-              ? `${themes['coral-orange'].buttonBg} text-white shadow-md` 
-              : `bg-white ${themes['coral-orange'].buttonText} border ${themes['coral-orange'].buttonBorder}`
-          }`}
-        >
-          Coral Orange
-        </button>
-      </div>
-
-      <div className={`flex justify-center items-center py-2 bg-gradient-to-tr ${currentTheme.primary}`}>
-        <div className="flex items-center gap-2 font-spacegrotesk select-none">
-          <span 
-            className={`text-4xl drop-shadow-md bg-gradient-to-br ${currentTheme.logo} rounded-full px-2 py-1 animate-bounce`}
-            aria-label="Deals Tank Logo"
-          >🚀</span>
-          <span className="font-extrabold text-2xl tracking-tight text-white">
-            Deals Tank
-          </span>
-        </div>
-      </div>
-      
-      <div className={`flex justify-center items-center py-2 ${currentTheme.secondary} ${currentTheme.text} text-center text-base font-bold`}>
-        <div className="text-center">
-          <div className="text-lg font-black">Savings Tip 💡</div>
-          <div className="text-sm opacity-80 mt-1">Real discounts? Yes. Best price? Not always.</div>
-        </div>
-      </div>
-
-      <div className={`flex overflow-x-auto gap-4 py-2 px-2 bg-white border-b border-gray-100`}>
-        {retailers.map((retailer, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center text-center gap-1 text-gray-700 whitespace-nowrap flex-shrink-0 min-w-[72px]"
-          >
-            <img
-              src={retailer.logo}
-              alt={retailer.name}
-              className={`h-10 w-10 object-contain ${currentTheme.accent} rounded-xl`}
-            />
-            <span className="text-xs font-semibold">{retailer.name}</span>
-            <span className="text-[10px] text-gray-500">{retailer.offerDate}</span>
+    <header className="bg-card shadow-sm border-b">
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          <Logo />
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <Link to="/account">
+                  <Button variant="ghost" size="sm">
+                    <User className="h-4 w-4 mr-2" />
+                    Account
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="sm" onClick={signOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Link to="/auth">
+                <Button variant="default" size="sm">
+                  <User className="h-4 w-4 mr-2" />
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
-        ))}
-      </div>
-      <div className={`bg-gradient-to-r ${currentTheme.primary} h-20 flex items-center justify-center rounded-b-2xl shadow-md`}>
-        <div className="text-center text-white p-2">
-          <h1 className="text-xl font-black font-spacegrotesk">Find the Best Deals ✨</h1>
-          <p className="text-sm opacity-90">
-            Compare prices across stores & save on every purchase!
-          </p>
         </div>
       </div>
+
+      {/* Dynamic Retailers Bar */}
+      {retailers.length >= 3 && (
+        <div className="bg-secondary/10 border-t border-border">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex justify-center overflow-x-auto gap-6">
+              {retailers.map((retailer, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center text-center gap-2 min-w-[80px]"
+                >
+                  <img
+                    src={retailer.logo}
+                    alt={retailer.name}
+                    className="h-12 w-12 object-contain bg-background rounded-lg p-1 shadow-sm"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
+                  />
+                  <span className="text-xs font-medium text-foreground">{retailer.name}</span>
+                  <span className="text-[10px] text-muted-foreground">{retailer.offerDate}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

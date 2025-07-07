@@ -206,7 +206,7 @@ const AdminPage = () => {
       </div>
 
       <Tabs defaultValue="settings" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             Settings
@@ -222,6 +222,10 @@ const AdminPage = () => {
           <TabsTrigger value="leaflets" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Leaflets
+          </TabsTrigger>
+          <TabsTrigger value="ads" className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Ads
           </TabsTrigger>
         </TabsList>
 
@@ -256,11 +260,19 @@ const AdminPage = () => {
         <TabsContent value="retailers">
           <Card>
             <CardHeader>
-              <CardTitle>Retailers Management</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>Retailers Management</CardTitle>
+                <Button asChild>
+                  <a href="/admin/retailers">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Manage Retailers
+                  </a>
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                {retailers.map((retailer) => (
+                {retailers.slice(0, 5).map((retailer) => (
                   <div key={retailer.id} className="flex items-center gap-4 p-4 border rounded-lg">
                     <img src={retailer.logo_url} alt={retailer.name} className="w-12 h-12 object-cover rounded" />
                     <div className="flex-1">
@@ -270,11 +282,13 @@ const AdminPage = () => {
                     <Badge variant={retailer.is_active ? "default" : "secondary"}>
                       {retailer.is_active ? "Active" : "Inactive"}
                     </Badge>
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
                   </div>
                 ))}
+                {retailers.length > 5 && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    And {retailers.length - 5} more retailers...
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>

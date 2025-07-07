@@ -4,6 +4,9 @@ import { ArrowLeft, MapPin, Navigation, Phone, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
+import LocationSelector from '@/components/LocationSelector';
 
 const NearbyStoresPage = () => {
   const stores = [
@@ -72,28 +75,31 @@ const NearbyStoresPage = () => {
     'Tamimi': 'border-violet-200 bg-violet-50'
   };
 
+  const handleLocationChange = (location: { latitude: number; longitude: number }) => {
+    console.log('Location updated:', location);
+    // Here you would typically call an API to find nearby stores
+    // For now, we'll just use the static stores data
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link to="/">
-              <Button variant="ghost" size="sm" className="p-2">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-6 w-6 text-blue-500" />
-              <h1 className="text-2xl font-bold text-gray-900">Nearby Stores</h1>
-            </div>
+    <div className="flex flex-col min-h-screen bg-background">
+      <Header />
+      
+      <div className="bg-card shadow-sm mb-4">
+        <div className="container mx-auto px-4 py-3 flex items-center">
+          <Link to="/" className="mr-4">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <div className="flex items-center gap-2">
+            <MapPin className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-semibold">Nearby Stores</h1>
           </div>
-          <p className="text-gray-600 mt-2">Find the closest retailers near you</p>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <main className="flex-1 mb-16 px-4 max-w-7xl mx-auto w-full">
+        <LocationSelector onLocationChange={handleLocationChange} />
+        
         <div className="space-y-4">
           {stores.map((store) => (
             <Card 
@@ -141,10 +147,9 @@ const NearbyStoresPage = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </main>
       
-      {/* Bottom spacing for mobile nav */}
-      <div className="pb-20 md:pb-4"></div>
+      <BottomNav />
     </div>
   );
 };

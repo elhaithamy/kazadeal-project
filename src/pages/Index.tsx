@@ -5,7 +5,6 @@ import PriceComparison from '@/components/PriceComparison';
 import BottomNav from '@/components/BottomNav';
 import USPFooter from '@/components/USPFooter';
 import { ProductSelectionProvider } from '@/contexts/ProductSelectionContext';
-import TopActionBar from '@/components/TopActionBar';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,14 +16,6 @@ const Index = () => {
         <Header />
         <main className="flex-1 pb-3">
           <div className="container mx-auto px-2">
-            {/* Top Action Bar */}
-            <div className="mt-4">
-              <TopActionBar 
-                onCategorySelect={setActiveCategory}
-                activeCategory={activeCategory}
-              />
-            </div>
-
             {/* Main Content - Single Column for Mobile Friendly */}
             <div className="w-full">
               <PriceComparison 
