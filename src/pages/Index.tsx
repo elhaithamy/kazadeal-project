@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
+import ProductImportExport from '@/components/ProductImportExport';
 import BottomNav from '@/components/BottomNav';
 import USPFooter from '@/components/USPFooter';
-import { ProductSelectionProvider } from '@/contexts/ProductSelectionContext';
+import { ProductSelectionProvider, ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,13 +18,25 @@ const Index = () => {
         <main className="flex-1 pb-3">
           <div className="container mx-auto px-2">
             {/* Main Content - Single Column for Mobile Friendly */}
-            <div className="w-full">
+            <div className="w-full space-y-6">
               <PriceComparison 
                 searchQuery={searchQuery} 
                 activeCategory={activeCategory} 
                 onSearch={setSearchQuery}
                 onCategoryChange={setActiveCategory}
               />
+              
+              {/* Import/Export Section */}
+              <ProductSelectionContext.Consumer>
+                {({ selectedProducts }) => (
+                  <ProductImportExport 
+                    selectedProducts={Array.from(selectedProducts)}
+                    onImport={(products) => {
+                      console.log('Imported products:', products);
+                    }}
+                  />
+                )}
+              </ProductSelectionContext.Consumer>
             </div>
           </div>
         </main>

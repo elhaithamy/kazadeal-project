@@ -1,85 +1,106 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { ArrowLeft, Trash2, Calendar, ShoppingCart, ChevronDown, ChevronUp, Share2, Copy, Pin, Edit, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Trash2, Calendar, ShoppingCart, ChevronDown, ChevronUp, Share2, Copy, Pin, Edit, MoreVertical, Upload, Image, Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { ProductSelectionContext } from '@/contexts/ProductSelectionContext';
 import { products } from '@/data/products';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 // Define the saved list type
 interface SavedList {
   id: string;
-  date: string;
+  created_at: string;
   name: string;
-  items: number[];
-  totalPrices: {
-    lulu: number;
-    othaim: number;
-    carrefour: number;
-    danube: number;
-    panda: number;
-    tamimi: number;
-  };
+  items: any[];
+  background_image_url?: string;
+  reminder_date?: string;
+  reminder_email?: boolean;
+  user_id: string;
 }
 
-// Mock saved lists
-const mockSavedLists: SavedList[] = [
-  {
-    id: '1',
-    date: '2025-05-09',
-    name: 'Weekly Groceries',
-    items: [1, 2, 3, 4, 5, 6],
-    totalPrices: {
-      lulu: 42,
-      othaim: 38,
-      carrefour: 39.3,
-      danube: 39.3,
-      panda: 33,
-      tamimi: 50
-    }
-  },
-  {
-    id: '2',
-    date: '2025-05-08',
-    name: 'Household Items',
-    items: [9, 10, 12, 15, 16, 17, 18],
-    totalPrices: {
-      lulu: 89.4,
-      othaim: 89.5,
-      carrefour: 87.0,
-      danube: 91.25,
-      panda: 83.2,
-      tamimi: 92.75
-    }
-  }
-];
 
 const ChecklistPage = () => {
-  const [savedLists, setSavedLists] = useState<SavedList[]>(mockSavedLists);
+  const { user } = useAuth();
+  const [savedLists, setSavedLists] = useState<SavedList[]>([]);
   const [expandedLists, setExpandedLists] = useState<Set<string>>(new Set());
+  const [editingList, setEditingList] = useState<SavedList | null>(null);
+  const [uploading, setUploading] = useState(false);
   const { toggleProductSelection } = useContext(ProductSelectionContext);
   const { toast } = useToast();
 
   useEffect(() => {
-    // In a real app, you would load from localStorage or a database
-  }, []);
+    if (user) {
+      loadSavedLists();
+    }
+  }, [user]);
 
-  const handleDeleteList = (id: string) => {
-    setSavedLists(savedLists.filter(list => list.id !== id));
-    toast({
-      title: 'List deleted',
-      description: 'Your saved list has been removed'
-    });
+  const loadSavedLists = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('saved_lists')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading saved lists:', error);
+        return;
+      }
+
+      setSavedLists((data || []).map((list: any) => ({
+        ...list,
+        items: Array.isArray(list.items) ? list.items : []
+      })));
+    } catch (error) {
+      console.error('Error loading saved lists:', error);
+    }
   };
 
-  const handleCheckListPrices = (listItems: number[]) => {
+  const handleDeleteList = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('saved_lists')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to delete list',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      setSavedLists(savedLists.filter(list => list.id !== id));
+      toast({
+        title: 'List deleted',
+        description: 'Your saved list has been removed'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete list',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleCheckListPrices = (listItems: any[]) => {
     // Add all list items to cart for comparison
-    listItems.forEach(productId => {
-      toggleProductSelection(`demo-${productId}`);
+    listItems.forEach((item, index) => {
+      toggleProductSelection(`demo-${index + 1}`);
     });
     
     toast({
@@ -100,10 +121,7 @@ const ChecklistPage = () => {
 
   const handleShareList = async (list: SavedList) => {
     const shareText = `Check out my shopping list: ${list.name}\n\nItems:\n${
-      list.items.map(id => {
-        const product = products.find(p => p.id === id);
-        return product ? `• ${product.name}` : '';
-      }).filter(Boolean).join('\n')
+      list.items.map((item: any) => `• ${item.name || 'Item'}`).join('\n')
     }`;
 
     if (navigator.share) {
@@ -123,10 +141,7 @@ const ChecklistPage = () => {
 
   const handleCopyList = async (list: SavedList) => {
     const shareText = `Shopping List: ${list.name}\n\nItems:\n${
-      list.items.map(id => {
-        const product = products.find(p => p.id === id);
-        return product ? `• ${product.name}` : '';
-      }).filter(Boolean).join('\n')
+      list.items.map((item: any) => `• ${item.name || 'Item'}`).join('\n')
     }`;
 
     try {
@@ -144,10 +159,80 @@ const ChecklistPage = () => {
   };
 
   const handleEditList = (list: SavedList) => {
-    toast({
-      title: 'Edit list',
-      description: `Editing ${list.name} - feature coming soon!`
-    });
+    setEditingList(list);
+  };
+
+  const handleBackgroundUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editingList || !event.target.files || event.target.files.length === 0) return;
+
+    try {
+      setUploading(true);
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `list-bg-${editingList.id}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('user-uploads')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('user-uploads')
+        .getPublicUrl(fileName);
+
+      const { error } = await supabase
+        .from('saved_lists')
+        .update({ background_image_url: data.publicUrl })
+        .eq('id', editingList.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Background image uploaded successfully'
+      });
+
+      loadSavedLists();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to upload background image',
+        variant: 'destructive'
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleReminderUpdate = async (reminderDate: string, reminderEmail: boolean) => {
+    if (!editingList) return;
+
+    try {
+      const { error } = await supabase
+        .from('saved_lists')
+        .update({ 
+          reminder_date: reminderDate || null,
+          reminder_email: reminderEmail
+        })
+        .eq('id', editingList.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Reminder settings updated'
+      });
+
+      loadSavedLists();
+      setEditingList(null);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update reminder settings',
+        variant: 'destructive'
+      });
+    }
   };
 
   const formatDate = (dateStr: string) => {
@@ -156,10 +241,6 @@ const ChecklistPage = () => {
       month: 'short',
       day: 'numeric'
     });
-  };
-
-  const getListItems = (itemIds: number[]) => {
-    return itemIds.map(id => products.find(p => p.id === id)).filter(Boolean);
   };
 
   return (
@@ -189,7 +270,7 @@ const ChecklistPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
             {savedLists.map(list => {
-              const listItems = getListItems(list.items);
+              const listItems = Array.isArray(list.items) ? list.items : [];
               const previewItems = listItems.slice(0, 4);
               const isExpanded = expandedLists.has(list.id);
               const hasMoreItems = listItems.length > 4;
@@ -219,31 +300,49 @@ const ChecklistPage = () => {
                   </div>
                   
                   {/* Card with shadow and slight rotation for natural look */}
-                  <Card className="transform rotate-1 hover:rotate-0 transition-transform duration-300 shadow-lg hover:shadow-xl bg-yellow-50 border-yellow-200 min-h-[300px]">
+                  <Card 
+                    className="transform rotate-1 hover:rotate-0 transition-transform duration-300 shadow-lg hover:shadow-xl border-yellow-200 min-h-[300px] relative overflow-hidden"
+                    style={{
+                      background: list.background_image_url 
+                        ? `linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url(${list.background_image_url})` 
+                        : 'rgb(254, 252, 232)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}
+                  >
                     <CardContent className="p-4 pt-6">
                       {/* Header */}
                       <div className="mb-4">
                         <h2 className="font-bold text-lg text-gray-900 mb-1">{list.name}</h2>
                         <div className="flex items-center text-sm text-gray-700 mb-2">
                           <Calendar className="h-3 w-3 mr-1" />
-                          <span className="font-medium">{formatDate(list.date)}</span>
+                          <span className="font-medium">{formatDate(list.created_at)}</span>
                           <span className="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">
-                            {list.items.length} items
+                            {listItems.length} items
                           </span>
                         </div>
+                        {/* Reminder indicator */}
+                        {list.reminder_date && (
+                          <div className="flex items-center text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full w-fit">
+                            <Bell className="h-3 w-3 mr-1" />
+                            Reminder: {formatDate(list.reminder_date)}
+                          </div>
+                        )}
                       </div>
                       
                       {/* Items Preview */}
                       <div className="space-y-2 mb-4 flex-1">
-                        {previewItems.map(product => (
-                          <div key={product?.id} className="flex items-center gap-2">
-                            <img 
-                              src={product?.image} 
-                              alt={product?.name}
-                              className="w-8 h-8 object-cover rounded border"
-                            />
+                        {previewItems.map((item: any, index: number) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-primary/10 rounded border flex items-center justify-center">
+                              <span className="text-xs font-medium text-primary">
+                                {item?.name?.[0]?.toUpperCase() || '•'}
+                              </span>
+                            </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-sm text-gray-900 truncate">{product?.name}</p>
+                              <p className="font-semibold text-sm text-gray-900 truncate">
+                                {item?.name || `Item ${index + 1}`}
+                              </p>
                             </div>
                           </div>
                         ))}
@@ -252,15 +351,17 @@ const ChecklistPage = () => {
                       {/* Expanded Items */}
                       {isExpanded && hasMoreItems && (
                         <div className="space-y-2 mb-4 pb-3 border-t border-yellow-300 pt-3">
-                          {listItems.slice(4).map(product => (
-                            <div key={product?.id} className="flex items-center gap-2">
-                              <img 
-                                src={product?.image} 
-                                alt={product?.name}
-                                className="w-8 h-8 object-cover rounded border"
-                              />
+                          {listItems.slice(4).map((item: any, index: number) => (
+                            <div key={index + 4} className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-primary/10 rounded border flex items-center justify-center">
+                                <span className="text-xs font-medium text-primary">
+                                  {item?.name?.[0]?.toUpperCase() || '•'}
+                                </span>
+                              </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm text-gray-900 truncate">{product?.name}</p>
+                                <p className="font-semibold text-sm text-gray-900 truncate">
+                                  {item?.name || `Item ${index + 5}`}
+                                </p>
                               </div>
                             </div>
                           ))}
@@ -293,8 +394,8 @@ const ChecklistPage = () => {
                       <div className="space-y-2">
                         <Button 
                           size="sm" 
-                          className="w-full bg-app-green hover:bg-app-green/90 text-white font-semibold"
-                          onClick={() => handleCheckListPrices(list.items)}
+                          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold"
+                          onClick={() => handleCheckListPrices(listItems)}
                         >
                           <ShoppingCart className="h-3 w-3 mr-1" />
                           Check List Prices
@@ -335,6 +436,77 @@ const ChecklistPage = () => {
           </div>
         )}
       </main>
+
+      {/* Edit List Dialog */}
+      <Dialog open={!!editingList} onOpenChange={() => setEditingList(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Customize List: {editingList?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {/* Background Image Upload */}
+            <div>
+              <Label htmlFor="background-upload" className="text-sm font-medium">
+                Background Image
+              </Label>
+              <div className="mt-2">
+                {editingList?.background_image_url && (
+                  <div className="mb-2">
+                    <img 
+                      src={editingList.background_image_url} 
+                      alt="Background preview" 
+                      className="w-full h-20 object-cover rounded border"
+                    />
+                  </div>
+                )}
+                <label htmlFor="background-upload">
+                  <Button variant="outline" size="sm" disabled={uploading} asChild>
+                    <span>
+                      <Image className="h-4 w-4 mr-2" />
+                      {uploading ? 'Uploading...' : 'Change Background'}
+                    </span>
+                  </Button>
+                </label>
+                <input
+                  id="background-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBackgroundUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
+            {/* Reminder Settings */}
+            <div>
+              <Label className="text-sm font-medium">Reminder Settings</Label>
+              <div className="mt-2 space-y-3">
+                <div>
+                  <Label htmlFor="reminder-date" className="text-xs text-muted-foreground">
+                    Reminder Date
+                  </Label>
+                  <Input
+                    id="reminder-date"
+                    type="date"
+                    defaultValue={editingList?.reminder_date || ''}
+                    className="mt-1"
+                  />
+                </div>
+                <Button 
+                  onClick={() => {
+                    const dateInput = document.getElementById('reminder-date') as HTMLInputElement;
+                    handleReminderUpdate(dateInput.value, editingList?.reminder_email || false);
+                  }}
+                  className="w-full"
+                >
+                  <Bell className="h-4 w-4 mr-2" />
+                  Save Reminder
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       <BottomNav />
     </div>

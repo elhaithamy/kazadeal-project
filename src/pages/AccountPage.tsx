@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { ArrowLeft, User, Bell, MapPin, Globe, Heart, List as ListIcon, Settings } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, User, Bell, MapPin, Globe, Heart, List as ListIcon, Settings, LogOut, Upload } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,15 +9,20 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const AccountPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false);
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [userProfile, setUserProfile] = useState({
-    name: '',
+    first_name: '',
+    last_name: '',
     email: '',
-    phone: '',
-    preferredStore: 'lulu'
+    avatar_url: ''
   });
   const [settings, setSettings] = useState({
     notifications: true,
@@ -25,18 +30,160 @@ const AccountPage = () => {
     locationServices: true,
     language: 'en'
   });
-  const [savedLists, setSavedLists] = useState([
-    { id: 1, name: "Weekly Groceries", items: 12, date: "2024-01-15" },
-    { id: 2, name: "Monthly Stock-up", items: 24, date: "2024-01-10" }
-  ]);
+  const [savedLists, setSavedLists] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoggedIn(true);
-    setShowLoginForm(false);
+  useEffect(() => {
+    if (user) {
+      loadUserProfile();
+      loadSavedLists();
+    }
+  }, [user]);
+
+  const loadUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user?.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      if (data) {
+        setUserProfile({
+          first_name: data.first_name || '',
+          last_name: data.last_name || '',
+          email: data.email || user?.email || '',
+          avatar_url: data.avatar_url || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
   };
 
-  if (!isLoggedIn && !showLoginForm) {
+  const loadSavedLists = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('saved_lists')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading saved lists:', error);
+        return;
+      }
+
+      setSavedLists(data || []);
+    } catch (error) {
+      console.error('Error loading saved lists:', error);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          first_name: userProfile.first_name,
+          last_name: userProfile.last_name,
+          email: userProfile.email,
+          avatar_url: userProfile.avatar_url,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to save profile changes',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Profile saved successfully'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to save profile changes',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('user-uploads')
+        .upload(fileName, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage
+        .from('user-uploads')
+        .getPublicUrl(fileName);
+
+      setUserProfile({ ...userProfile, avatar_url: data.publicUrl });
+      
+      toast({
+        title: 'Success',
+        description: 'Avatar uploaded successfully'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to upload avatar',
+        variant: 'destructive'
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
@@ -58,22 +205,16 @@ const AccountPage = () => {
               <p className="text-gray-500 mb-6">Access your saved lists, price alerts, and preferences</p>
               
               <div className="space-y-3">
-                <Button 
-                  onClick={() => setShowLoginForm(true)}
-                  className="w-full bg-app-green hover:bg-app-green/90"
-                >
-                  Sign In
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => {
-                    setIsLoggedIn(true);
-                    setShowLoginForm(false);
-                  }}
-                  className="w-full"
-                >
-                  Create Account
-                </Button>
+                <Link to="/auth">
+                  <Button className="w-full bg-primary hover:bg-primary/90">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="outline" className="w-full">
+                    Create Account
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
@@ -84,77 +225,6 @@ const AccountPage = () => {
     );
   }
 
-  if (showLoginForm) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        
-        <div className="bg-white shadow-sm mb-4">
-          <div className="container mx-auto px-4 py-2 flex items-center">
-            <Link to="/" className="mr-4">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-semibold">Sign In</h1>
-          </div>
-        </div>
-        
-        <main className="flex-1 mb-16 px-4">
-          <Card>
-            <CardContent className="pt-6">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email"
-                    value={userProfile.email}
-                    onChange={(e) => setUserProfile({...userProfile, email: e.target.value})}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Phone Number</label>
-                  <Input 
-                    type="tel" 
-                    placeholder="Enter your phone number"
-                    value={userProfile.phone}
-                    onChange={(e) => setUserProfile({...userProfile, phone: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Password</label>
-                  <Input 
-                    type="password" 
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-                
-                <div className="flex gap-2 pt-4">
-                  <Button 
-                    type="submit"
-                    className="flex-1 bg-app-green hover:bg-app-green/90"
-                  >
-                    Sign In
-                  </Button>
-                  <Button 
-                    type="button"
-                    variant="outline" 
-                    onClick={() => setShowLoginForm(false)}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </main>
-        
-        <BottomNav />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -173,19 +243,62 @@ const AccountPage = () => {
         {/* Profile Section */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Profile Information
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Profile Information
+              </div>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Name</label>
-              <Input 
-                value={userProfile.name}
-                onChange={(e) => setUserProfile({...userProfile, name: e.target.value})}
-                placeholder="Enter your name"
-              />
+            {/* Avatar Section */}
+            <div className="flex items-center gap-4">
+              <Avatar className="h-20 w-20">
+                <AvatarImage src={userProfile.avatar_url} />
+                <AvatarFallback className="text-lg">
+                  {userProfile.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <label htmlFor="avatar-upload">
+                  <Button variant="outline" size="sm" disabled={uploading} asChild>
+                    <span>
+                      <Upload className="h-4 w-4 mr-2" />
+                      {uploading ? 'Uploading...' : 'Change Avatar'}
+                    </span>
+                  </Button>
+                </label>
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">First Name</label>
+                <Input 
+                  value={userProfile.first_name}
+                  onChange={(e) => setUserProfile({...userProfile, first_name: e.target.value})}
+                  placeholder="Enter your first name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Last Name</label>
+                <Input 
+                  value={userProfile.last_name}
+                  onChange={(e) => setUserProfile({...userProfile, last_name: e.target.value})}
+                  placeholder="Enter your last name"
+                />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Email</label>
@@ -193,14 +306,7 @@ const AccountPage = () => {
                 value={userProfile.email}
                 onChange={(e) => setUserProfile({...userProfile, email: e.target.value})}
                 placeholder="Enter your email"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Phone Number</label>
-              <Input 
-                value={userProfile.phone}
-                onChange={(e) => setUserProfile({...userProfile, phone: e.target.value})}
-                placeholder="Enter your phone number"
+                type="email"
               />
             </div>
           </CardContent>
@@ -209,23 +315,49 @@ const AccountPage = () => {
         {/* Saved Lists */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ListIcon className="h-5 w-5" />
-              Your Saved Lists
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ListIcon className="h-5 w-5" />
+                Your Saved Lists
+              </div>
+              <Link to="/checklist">
+                <Button variant="outline" size="sm">
+                  View All
+                </Button>
+              </Link>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {savedLists.map(list => (
-                <div key={list.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium">{list.name}</h3>
-                    <p className="text-sm text-gray-500">{list.items} items • {list.date}</p>
+            {savedLists.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <ListIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="mb-4">No saved lists yet</p>
+                <Link to="/">
+                  <Button variant="outline" size="sm">
+                    Start Shopping
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {savedLists.slice(0, 3).map((list: any) => (
+                  <div key={list.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div>
+                      <h3 className="font-medium">{list.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {Array.isArray(list.items) ? list.items.length : 0} items • {new Date(list.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Badge variant="outline">{Array.isArray(list.items) ? list.items.length : 0}</Badge>
                   </div>
-                  <Badge variant="outline">{list.items}</Badge>
-                </div>
-              ))}
-            </div>
+                ))}
+                {savedLists.length > 3 && (
+                  <p className="text-center text-sm text-muted-foreground pt-2">
+                    +{savedLists.length - 3} more lists
+                  </p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -314,26 +446,11 @@ const AccountPage = () => {
               </select>
             </div>
             
-            <div>
-              <label className="block font-medium mb-2">Preferred Store</label>
-              <select 
-                className="w-full p-2 border rounded-md"
-                value={userProfile.preferredStore}
-                onChange={(e) => setUserProfile({...userProfile, preferredStore: e.target.value})}
-              >
-                <option value="lulu">LuLu</option>
-                <option value="othaim">Othaim</option>
-                <option value="carrefour">Carrefour</option>
-                <option value="danube">Danube</option>
-                <option value="panda">Panda</option>
-                <option value="tamimi">Tamimi</option>
-              </select>
-            </div>
           </CardContent>
         </Card>
         
         <div className="mt-6">
-          <Button className="w-full bg-app-green hover:bg-app-green/90">
+          <Button onClick={handleSaveProfile} className="w-full bg-primary hover:bg-primary/90">
             Save Changes
           </Button>
         </div>
