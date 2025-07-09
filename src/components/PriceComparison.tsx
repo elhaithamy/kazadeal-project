@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState, useEffect } from 'react';
-import { Plus, ThumbsUp, Search, Palette } from 'lucide-react';
+import { Plus, ThumbsUp, Search, Palette, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import NewArrivals from '@/components/NewArrivals';
 import ProductTag, { TagType } from '@/components/ProductTag';
 import LastUpdateOffers from '@/components/LastUpdateOffers';
 import ReviewsSection from '@/components/ReviewsSection';
+import ComparisonCart from '@/components/ComparisonCart';
 import { useProducts, ProductWithPrices } from '@/hooks/useProducts';
 
 interface PriceComparisonProps {
@@ -48,6 +49,7 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
   const [showColorPalette, setShowColorPalette] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState<ProductWithPrices | null>(null);
+  const [showCart, setShowCart] = useState(false);
   const itemsPerPage = 20;
   
   const { products, loading, error, getProductsByCategory, searchProducts } = useProducts();
@@ -300,6 +302,11 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
         />
       )}
       
+      <ComparisonCart 
+        isOpen={showCart} 
+        onClose={() => setShowCart(false)} 
+      />
+      
       <Card className="mb-6 bg-white shadow-sm border border-gray-200">
         <CardContent className="pt-6">
           {/* Search Section */}
@@ -324,6 +331,17 @@ const PriceComparison = ({ searchQuery = '', activeCategory = 'All', onSearch, o
               >
                 Search
               </Button>
+              {selectedProducts.length > 0 && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowCart(true)}
+                  className="flex-shrink-0 flex items-center gap-2"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Cart ({selectedProducts.length})
+                </Button>
+              )}
             </div>
           </div>
 

@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import ProductImportExport from '@/components/ProductImportExport';
 
 const AccountPage = () => {
   const { user, loading, signOut } = useAuth();
@@ -32,6 +33,7 @@ const AccountPage = () => {
   });
   const [savedLists, setSavedLists] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [showImportExport, setShowImportExport] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -312,19 +314,25 @@ const AccountPage = () => {
           </CardContent>
         </Card>
 
-        {/* Saved Lists */}
+        {/* Saved Lists with Import/Export */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ListIcon className="h-5 w-5" />
-                Your Saved Lists
+                Your Saved Lists ({savedLists.length})
               </div>
-              <Link to="/checklist">
-                <Button variant="outline" size="sm">
-                  View All
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setShowImportExport(true)}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import/Export
                 </Button>
-              </Link>
+                <Link to="/checklist">
+                  <Button variant="outline" size="sm">
+                    View All
+                  </Button>
+                </Link>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -356,6 +364,29 @@ const AccountPage = () => {
                     +{savedLists.length - 3} more lists
                   </p>
                 )}
+              </div>
+            )}
+
+            {/* Import/Export Section */}
+            {showImportExport && (
+              <div className="mt-6 border-t pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold">Import/Export Lists</h3>
+                  <Button variant="ghost" size="sm" onClick={() => setShowImportExport(false)}>
+                    ×
+                  </Button>
+                </div>
+                <ProductImportExport 
+                  selectedProducts={[]}
+                  onImport={(products) => {
+                    console.log('Imported products:', products);
+                    loadSavedLists(); // Reload lists after import
+                    toast({
+                      title: 'Import successful',
+                      description: 'Products imported successfully',
+                    });
+                  }}
+                />
               </div>
             )}
           </CardContent>

@@ -23,11 +23,11 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', showText = true }) => {
   return (
     <div className="flex items-center gap-2 select-none">
       <div className="bg-primary p-2 rounded-lg">
-        <img src={logoImage} alt="PriceWise" className="h-6 w-6" />
+        <img src={logoImage} alt="KazaDeal" className="h-6 w-6" />
       </div>
       {showText && (
         <span className={`font-bold ${fontSize[size]} tracking-tight text-foreground`}>
-          PriceWise
+          KazaDeal
         </span>
       )}
     </div>

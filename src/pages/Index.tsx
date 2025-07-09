@@ -2,10 +2,9 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import PriceComparison from '@/components/PriceComparison';
-import ProductImportExport from '@/components/ProductImportExport';
 import BottomNav from '@/components/BottomNav';
 import USPFooter from '@/components/USPFooter';
-import { ProductSelectionProvider, ProductSelectionContext } from '@/contexts/ProductSelectionContext';
+import { ProductSelectionProvider } from '@/contexts/ProductSelectionContext';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,18 +24,6 @@ const Index = () => {
                 onSearch={setSearchQuery}
                 onCategoryChange={setActiveCategory}
               />
-              
-              {/* Import/Export Section */}
-              <ProductSelectionContext.Consumer>
-                {({ selectedProducts }) => (
-                  <ProductImportExport 
-                    selectedProducts={Array.from(selectedProducts)}
-                    onImport={(products) => {
-                      console.log('Imported products:', products);
-                    }}
-                  />
-                )}
-              </ProductSelectionContext.Consumer>
             </div>
           </div>
         </main>

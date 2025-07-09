@@ -10,13 +10,12 @@ import ChecklistPage from "./pages/ChecklistPage";
 import AdminPage from "./pages/AdminPage";
 import RetailerLeaflets from "./pages/RetailerLeaflets";
 import BestDealsPage from "./pages/BestDealsPage";
-import NearbyStoresPage from "./pages/NearbyStoresPage";
 import AccountPage from "./pages/AccountPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import RetailersManagementPage from "./pages/RetailersManagementPage";
-import AdsManagementPage from "./pages/AdsManagementPage";
+import OfferLogicPage from "./pages/OfferLogicPage";
 
 const queryClient = new QueryClient();
 
@@ -32,10 +31,9 @@ const App = () => (
           <Route path="/checklist" element={<ChecklistPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/retailers" element={<RetailersManagementPage />} />
-          <Route path="/admin/ads" element={<AdsManagementPage />} />
           <Route path="/leaflets" element={<RetailerLeaflets />} />
           <Route path="/best-deals" element={<BestDealsPage />} />
-          <Route path="/nearby-stores" element={<NearbyStoresPage />} />
+          <Route path="/offer-logic" element={<OfferLogicPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
