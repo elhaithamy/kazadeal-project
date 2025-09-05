@@ -19,6 +19,28 @@ jobs:
         with:
           node-version: "20"
 
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies
+        run: npm install @supabase/supabase-js csv-parser
+
+      - name: Run Sync Script
+        run: node scripts/syncProducts.js
+
+
       - name: Install Dependencies
         run: npm install supabase @supabase/supabase-js csv-parser
 
