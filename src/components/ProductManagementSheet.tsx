@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { useProducts } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import BulkProductImport from '@/components/BulkProductImport';
+import SingleProductManager from '@/components/SingleProductManager';
 
 interface ProductFormData {
   name: string;
@@ -235,8 +237,10 @@ const ProductManagementSheet = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="products">Products Table</TabsTrigger>
+          <TabsTrigger value="single">Add Single Product</TabsTrigger>
+          <TabsTrigger value="bulk">Bulk Import</TabsTrigger>
           <TabsTrigger value="latest">Latest Offers</TabsTrigger>
           <TabsTrigger value="new">New Arrivals</TabsTrigger>
         </TabsList>
@@ -469,6 +473,14 @@ const ProductManagementSheet = () => {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="single">
+          <SingleProductManager />
+        </TabsContent>
+
+        <TabsContent value="bulk">
+          <BulkProductImport />
         </TabsContent>
 
         <TabsContent value="latest">

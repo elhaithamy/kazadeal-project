@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import RetailersManagementPage from "./pages/RetailersManagementPage";
 import OfferLogicPage from "./pages/OfferLogicPage";
+import ProductsPage from "./pages/ProductsPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/leaflets" element={<RetailerLeaflets />} />
           <Route path="/best-deals" element={<BestDealsPage />} />
           <Route path="/offer-logic" element={<OfferLogicPage />} />
+          <Route path="/products" element={<ProductsPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />

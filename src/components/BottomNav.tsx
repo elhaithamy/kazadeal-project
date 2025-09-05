@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, List, FileText, MapPin, User } from 'lucide-react';
+import { Home, List, FileText, Package, User } from 'lucide-react';
 
 const BottomNav = () => {
   const location = useLocation();
@@ -9,6 +9,7 @@ const BottomNav = () => {
   const navItems = [
     { icon: Home, label: 'Home', path: '/' },
     { icon: List, label: 'Lists', path: '/checklist' },
+    { icon: Package, label: 'Add Product', path: '/products' },
     { icon: FileText, label: 'Offers', path: '/best-deals' },
     { icon: User, label: 'Account', path: '/account' },
   ];
