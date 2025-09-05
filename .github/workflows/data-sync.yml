@@ -1,1 +1,26 @@
 
+name: Sync Products & Prices
+
+on:
+  workflow_dispatch:   # Lets you run it manually
+  push:
+    paths:
+      - "data/products_and_prices.csv"   # Runs automatically when CSV is updated
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Dependencies
+        run: npm install supabase @supabase/supabase-js csv-parser
+
+      - name: Sync Products & Prices to Supabase
+        run: node scripts/syncProducts.js
