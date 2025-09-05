@@ -297,7 +297,15 @@ const AdminPage = () => {
         <TabsContent value="products">
           <Card>
             <CardHeader>
-              <CardTitle>Products Management</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>Products Management</CardTitle>
+                <Button asChild>
+                  <a href="/products">
+                    <Package className="h-4 w-4 mr-2" />
+                    Manage Products
+                  </a>
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
@@ -311,11 +319,13 @@ const AdminPage = () => {
                     <Badge variant={product.is_active ? "default" : "secondary"}>
                       {product.is_active ? "Active" : "Inactive"}
                     </Badge>
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
                   </div>
                 ))}
+                {products.length > 10 && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    And {products.length - 10} more products...
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
